@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS offices (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    agency_id INT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    address VARCHAR(255) DEFAULT NULL,
+    barangay VARCHAR(100) DEFAULT NULL,
+    city VARCHAR(100) NOT NULL DEFAULT 'General Santos City',
+    province VARCHAR(100) NOT NULL DEFAULT 'South Cotabato',
+    contact_number VARCHAR(50) DEFAULT NULL,
+    email VARCHAR(150) DEFAULT NULL,
+    opening_hours VARCHAR(255) DEFAULT NULL,
+    latitude DECIMAL(10,7) DEFAULT NULL,
+    longitude DECIMAL(10,7) DEFAULT NULL,
+    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    last_verified_at DATE DEFAULT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_offices_agency FOREIGN KEY (agency_id) REFERENCES agencies(id) ON DELETE CASCADE,
+    KEY idx_offices_agency (agency_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

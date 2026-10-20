@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS service_requirements (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    service_id INT UNSIGNED NOT NULL,
+    requirement_text VARCHAR(255) NOT NULL,
+    notes VARCHAR(500) DEFAULT NULL,
+    is_optional TINYINT(1) NOT NULL DEFAULT 0,
+    display_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_requirements_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
+    KEY idx_requirements_service (service_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Bay — deep Sarangani Bay teal-blue (primary) */
+  --color-bay-50: #eef8fb;
+  --color-bay-100: #d4eef5;
+  --color-bay-200: #aedde9;
+  --color-bay-300: #78c3d8;
+  --color-bay-400: #3fa2bf;
+  --color-bay-500: #2385a4;
+  --color-bay-600: #176b88;
+  --color-bay-700: #15576f;
+  --color-bay-800: #16485c;
+  --color-bay-900: #163d4e;
+  --color-bay-950: #0a2633;
+
+  /* Sun — warm gold accent */
+  --color-sun-50: #fffaeb;
+  --color-sun-100: #fff1c2;
+  --color-sun-200: #ffe285;
+  --color-sun-300: #ffd23f;
+  --color-sun-400: #f7bd16;
+  --color-sun-500: #e0a106;
+  --color-sun-600: #b97d04;
+  --color-sun-700: #925f08;
+  --color-sun-800: #784d0d;
+  --color-sun-900: #663f10;
+
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-stone-50 font-sans text-stone-900 antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-bay-600);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
