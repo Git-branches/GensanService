@@ -36,19 +36,55 @@ export function Kicker({ children, tone = 'light', className = '' }) {
   )
 }
 
-export default function PageHeader({ kicker, title, description, breadcrumbs, children }) {
+const SECTION_CLASS =
+  'relative overflow-hidden border-b border-bay-100 bg-gradient-to-br from-bay-50 via-white to-sun-50/60'
+
+export default function PageHeader({ kicker, title, description, breadcrumbs, image, children }) {
+  const intro = (
+    <>
+      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+      {kicker && <Kicker className={breadcrumbs ? 'mt-6' : ''}>{kicker}</Kicker>}
+      <h1 className="mt-3 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl">
+        {title}
+      </h1>
+      {description && <p className="mt-3 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>}
+    </>
+  )
+
+  if (!image) {
+    return (
+      <section className={SECTION_CLASS}>
+        <BayPattern className="text-bay-200/60" />
+        <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+          {intro}
+          {children}
+        </div>
+      </section>
+    )
+  }
+
+  // Same composition as the home hero: text left, people right, standing on the header's bottom edge.
+  // Any search/filter form (children) moves just below the header so the photo stays flush.
   return (
-    <section className="relative overflow-hidden border-b border-bay-100 bg-gradient-to-br from-bay-50 via-white to-sun-50/60">
-      <BayPattern className="text-bay-200/60" />
-      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-        {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
-        {kicker && <Kicker className={breadcrumbs ? 'mt-6' : ''}>{kicker}</Kicker>}
-        <h1 className="mt-3 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl">
-          {title}
-        </h1>
-        {description && <p className="mt-3 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>}
-        {children}
-      </div>
-    </section>
+    <>
+      <section className={SECTION_CLASS}>
+        <BayPattern className="text-bay-200/60" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-4 pt-10 sm:px-6 sm:pt-12 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-6 lg:pb-14">{intro}</div>
+          <div className="self-end lg:col-span-6">
+            {/* Transparent cutout: the people sit in front of the header pattern. */}
+            <img
+              src={image.src}
+              alt={image.alt}
+              width={image.width}
+              height={image.height}
+              draggable="false"
+              className="relative mx-auto block max-h-64 w-auto select-none sm:max-h-80 lg:ml-auto lg:mr-0 lg:max-h-92"
+            />
+          </div>
+        </div>
+      </section>
+      {children && <div className="mx-auto max-w-6xl px-4 sm:px-6">{children}</div>}
+    </>
   )
 }

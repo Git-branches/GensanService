@@ -1,4 +1,5 @@
 import PageHeader from '../components/PageHeader'
+import staffImage from '../assets/page-agencies.webp'
 import AgencyRow from '../components/AgencyRow'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -21,6 +22,12 @@ export default function AgenciesPage() {
         kicker="Agency directory"
         title="Government agencies serving GenSan"
         description="Local and national offices whose services are covered in our guides."
+        image={{
+          src: staffImage,
+          alt: 'Three smiling public service workers',
+          width: 844,
+          height: 471,
+        }}
       />
 
       <section className="mx-auto max-w-6xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">

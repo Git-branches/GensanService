@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Search, X } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+import residentsImage from '../assets/page-services.webp'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -79,6 +80,12 @@ export default function ServicesPage() {
         kicker="Service guides"
         title="Find a government service guide"
         description="Search by keyword, then narrow down by category or agency."
+        image={{
+          src: residentsImage,
+          alt: 'A student, a senior citizen, and a mother carrying her child — residents preparing for government transactions',
+          width: 759,
+          height: 550,
+        }}
       >
         <form
           role="search"
