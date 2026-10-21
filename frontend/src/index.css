@@ -39,6 +39,22 @@
       transform: translateY(-8px);
     }
   }
+
+  --animate-fade-in: fade-in 150ms ease-out both;
+  --animate-modal-in: modal-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
 }
 
 @layer base {

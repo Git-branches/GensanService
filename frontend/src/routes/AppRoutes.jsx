@@ -1,5 +1,7 @@
+import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Layout from '../components/Layout'
+import { LoadingState } from '../components/StateMessage'
 import HomePage from '../pages/HomePage'
 import ServicesPage from '../pages/ServicesPage'
 import ServiceDetailPage from '../pages/ServiceDetailPage'
@@ -8,9 +10,20 @@ import AgencyDetailPage from '../pages/AgencyDetailPage'
 import OfficesPage from '../pages/OfficesPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
+// Loaded on demand so public visitors never download the admin code.
+const AdminApp = lazy(() => import('../admin/AdminApp'))
+
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route
+        path="admin/*"
+        element={
+          <Suspense fallback={<LoadingState label="Loading admin..." />}>
+            <AdminApp />
+          </Suspense>
+        }
+      />
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="services" element={<ServicesPage />} />

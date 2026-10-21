@@ -20,6 +20,9 @@ const ICON_MAP = {
   'id-card': IdCard,
 }
 
+// Must match the allowed icons in backend/app/Controllers/Admin/CategoryController.php.
+export const CATEGORY_ICON_NAMES = Object.keys(ICON_MAP)
+
 export function renderCategoryIcon(name, props) {
   return createElement(ICON_MAP[name] || FolderOpen, { 'aria-hidden': true, ...props })
 }
