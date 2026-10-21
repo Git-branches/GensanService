@@ -25,8 +25,8 @@ export default function AgenciesPage() {
         image={{
           src: staffImage,
           alt: 'Three smiling public service workers',
-          width: 844,
-          height: 471,
+          width: 800,
+          height: 496,
         }}
       />
 

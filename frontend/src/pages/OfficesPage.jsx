@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+import officeStaffImage from '../assets/page-offices.webp'
 import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -35,6 +36,12 @@ export default function OfficesPage() {
         kicker="Office directory"
         title="Where to go in General Santos"
         description="Agency branches and local offices with addresses, office hours, and directions."
+        image={{
+          src: officeStaffImage,
+          alt: 'Three smiling office staff ready to assist residents',
+          width: 732,
+          height: 489,
+        }}
       >
         <div className="mt-8 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-bay-900/5 sm:grid-cols-[1.6fr_1fr] sm:p-5">
           <div>
