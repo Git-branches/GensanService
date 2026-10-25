@@ -4,29 +4,35 @@ MySQL 8+ / MariaDB 10.4+ schema for Andam GenSan.
 
 ## Structure
 
-- `schema.sql` — full schema in one file (useful for quickly recreating the database).
-- `migrations/` — the same schema split into ordered, individually runnable files.
-- `seeders/` — starter data (categories, agencies, a default local admin account, one sample published service).
+- `schema.sql` creates the full, current schema in one step (use it for new installs).
+- `migrations/` holds the same schema as ordered steps. Run new ones on an existing database.
+- `seeders/` holds starter data: categories, agencies, a local admin account, and one sample guide.
 
-## Setup (XAMPP / MariaDB)
+## New install (XAMPP / MariaDB)
 
-1. Start MySQL from the XAMPP Control Panel.
-2. Create the database and apply the schema:
+```bash
+C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS gensan_service_navigator CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+C:\xampp\mysql\bin\mysql.exe -u root gensan_service_navigator < database/schema.sql
+```
 
-   ```bash
-   C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS gensan_service_navigator CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-   C:\xampp\mysql\bin\mysql.exe -u root gensan_service_navigator < database/schema.sql
-   ```
+To load the starter data (Git Bash):
 
-3. (Optional) Load starter data:
+```bash
+for f in database/seeders/*.sql; do
+  /c/xampp/mysql/bin/mysql.exe -u root gensan_service_navigator < "$f"
+done
+```
 
-   ```bash
-   for f in database/seeders/*.sql; do
-     C:\xampp\mysql\bin\mysql.exe -u root gensan_service_navigator < "$f"
-   done
-   ```
+Add `-p` if your MySQL user has a password.
 
-Adjust `-u root` and add `-p` if your local MySQL/MariaDB root account has a password.
+## Updating an existing database
+
+Run any migrations your database doesn't have yet, in order:
+
+| Migration | Adds |
+|---|---|
+| `015_create_login_attempts_table.sql` | Sign-in throttling for the admin panel |
+| `016_add_review_fields_to_content_reports.sql` | Reporter IP (for rate limiting) and admin notes on reports |
 
 ## Default local admin account
 
@@ -35,11 +41,12 @@ Created by `seeders/003_seed_admin.sql`:
 - Email: `admin@gensan-service-navigator.local`
 - Password: `ChangeMe123!`
 
-This account is for local development only. Change the password or remove the seeder before any shared or production use.
+This password is public. The admin panel shows a warning on every page until it is changed from **My account**. For production, change it immediately and create named accounts for each staff member.
 
 ## Notes
 
-- All tables use `InnoDB` with `utf8mb4` for full Unicode support.
-- Foreign keys cascade on delete for child/detail tables (requirements, steps, eligibility, sources) so deleting a service cleans up its related rows.
-- `services.status` (`draft` / `published` / `archived`) controls what the public frontend should display — only `published` services should be exposed by public API endpoints.
-- A `FULLTEXT` index on `services(title, summary, description)` supports the search feature described in the system requirements.
+- All tables use InnoDB and `utf8mb4`.
+- Deleting a service cascades to its requirements, steps, eligibility, sources, and reports. The admin panel archives guides instead of deleting them.
+- `services.status` (`draft`, `published`, `archived`) controls visibility. The public API returns only published guides.
+- A `FULLTEXT` index on `services(title, summary, description)` powers search.
+- The sample PSA office in `seeders/004_seed_sample_service.sql` has no address or hours and is left unverified on purpose. Fill in its real details from the admin panel.

@@ -1,239 +1,203 @@
 # Andam GenSan
 
-A web-based service information platform that helps residents of General Santos City find government service requirements, document checklists, application procedures, and official resources in one convenient place.
+**Be ready before you go.** Andam GenSan is a web guide that helps residents of General Santos City prepare for government transactions. For services from SSS, PhilHealth, Pag-IBIG, PSA, BIR, and the City Government, it lists the requirements, document checklists, step-by-step procedures, and offices to visit.
 
-## About the Project
+> **Important:** Andam GenSan is an independent community information platform. It is not an official government website and does not represent, replace, or process applications for any government agency.
 
-Andam GenSan is an independent community information platform designed to make government service information easier to understand and access.
+## Features
 
-Instead of searching across multiple websites, users can browse organized guides for services offered by agencies such as SSS, PhilHealth, Pag-IBIG, PSA, and verified local government offices.
+### For residents (no account needed)
 
-**Important:** This is an independent information platform. It is not an official government website and does not represent or replace any government agency.
+- Search and browse service guides by keyword, category, or agency.
+- Service guides with eligibility, a document checklist, application steps, fees, processing times, offices, and official sources.
+- A checklist with a progress bar that saves on the device and can be printed.
+- Directories of agencies and offices, with Google Maps and Waze links.
+- A "Report incorrect information" form on every guide. It is protected by a spam trap and a limit of 5 reports per hour per visitor.
+- A last-verified date and official source links on every guide.
 
-## Objectives
+### For administrators (`/admin`)
 
-- Provide accessible government service information for General Santos City residents.
-- Organize requirements and procedures into easy-to-follow guides.
-- Provide document checklists to help users prepare before visiting an office.
-- Link users to official government websites and resources.
-- Maintain accurate information through source references and verification dates.
-- Allow authorized administrators to manage and update published information.
+- **Dashboard:** published guides, guides needing re-verification (not checked in 6+ months), open reports, unverified offices, and recent activity.
+- **Service guides:** create, edit, publish, unpublish, archive, and restore guides. Editing a guide keeps residents' saved checklist ticks.
+- **Agencies, offices, and categories:** add and edit them through modal forms. Records are deactivated instead of deleted.
+- **Reports:** review corrections sent by residents, mark them as reviewing, resolved, or dismissed, and leave internal notes.
+- **Activity log:** every sign-in and change, with who made it, when, and from which IP address.
+- **Admin accounts (super admins only):** add staff, assign roles, deactivate accounts, and reset passwords.
+- **My account:** change your own password. Accounts still using the default password see a warning on every page until they change it.
 
-## Main Features
+| Role | Can do |
+|---|---|
+| Super admin | Everything, including managing admin accounts |
+| Editor | Create, edit, publish, and archive content; handle reports |
+| Reviewer | View content and handle reports |
 
-### Public Features
-- Homepage with service search.
-- Browse services by category or government agency.
-- Detailed service guides and requirements.
-- Step-by-step application instructions.
-- Document preparation checklists.
-- Agency and local office directory.
-- Official website links and contact information.
-- Mobile-responsive interface.
+## Technology
 
-### Optional User Features
-- User registration and login.
-- Save favorite services.
-- Save checklist progress.
-- View previously saved guides.
+- **Frontend:** React 19, Vite, Tailwind CSS 4, React Router, Lucide icons
+- **Backend:** PHP 8.2+ JSON API (no framework), PDO, Composer (`vlucas/phpdotenv`)
+- **Database:** MySQL 8+ or MariaDB 10.4+
 
-Public service information should remain accessible without requiring an account.
-
-### Administrator Features
-- Secure administrator login.
-- Create, edit, publish, and archive service guides.
-- Manage categories, agencies, and office branches.
-- Manage requirements and application steps.
-- Record source URLs and last-verified dates.
-- Review reported incorrect information.
-- Maintain administrator activity logs.
-
-## Technology Stack
-
-### Frontend
-- React
-- Vite
-- Tailwind CSS
-- React Router
-- Fetch API
-- Lucide React
-
-### Backend
-- PHP 8.2 or newer
-- REST API
-- PDO
-- Composer
-
-### Database
-- MySQL 8+ or a compatible MariaDB version
-
-### Development Tools
-- Visual Studio Code
-- XAMPP
-- Node.js LTS and npm
-- Git and GitHub
-
-## Project Structure
+## Project structure
 
 ```text
 gensan-service-navigator/
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   ├── contexts/
-│   │   ├── utils/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── vite.config.js
-│   └── package.json
-├── backend/
-│   ├── public/
-│   │   └── api/
-│   ├── routes/
+├── frontend/                 React app (public site + admin panel)
+│   ├── public/               Static files, including .htaccess for Apache hosting
+│   └── src/
+│       ├── admin/            Admin panel (loaded only when visiting /admin)
+│       ├── components/       Shared UI: header, footer, cards, modal, report form
+│       ├── pages/            Public pages
+│       ├── services/api.js   Public API client
+│       └── utils/
+├── backend/                  PHP API
 │   ├── app/
-│   │   ├── Controllers/
-│   │   ├── Services/
-│   │   ├── Models/
-│   │   ├── Middleware/
-│   │   └── Validators/
+│   │   ├── Controllers/      Public controllers; Admin/ for the admin API
+│   │   ├── Services/         Activity logging, login throttling, slugs
+│   │   ├── Validators/
+│   │   ├── Auth.php          Sessions, roles, CSRF
+│   │   └── Logger.php        Error log (storage/logs/app.log)
 │   ├── config/
-│   ├── storage/
-│   │   └── logs/
-│   └── composer.json
-├── database/
-│   ├── migrations/
-│   ├── seeders/
-│   └── schema.sql
-├── docs/
-│   └── system-requirements.md
-├── .gitignore
+│   ├── public/               Web root: index.php, router.php (dev server), .htaccess
+│   ├── routes/api.php        All API routes
+│   └── storage/logs/
+├── database/                 schema.sql, migrations/, seeders/ (see database/README.md)
+├── system-requirements.md
 └── README.md
 ```
 
-*Note: This is the planned structure. Some folders and files will be created as development progresses.*
-
-## Installation and Setup
+## Local development (Windows + XAMPP)
 
 ### Prerequisites
 
-Install the following:
-- Node.js LTS and npm
-- XAMPP with PHP and MySQL/MariaDB
+- XAMPP (PHP 8.2+ and MySQL/MariaDB)
 - Composer
+- Node.js LTS and npm
 - Git
-- Visual Studio Code
 
-### 1. Set Up the Frontend
+### 1. Database
 
-Open a terminal in the project directory.
-
-If you have not created the React project yet:
+Start MySQL from the XAMPP Control Panel, then from the project root:
 
 ```bash
-npm create vite@latest frontend -- --template react
+C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS gensan_service_navigator CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+C:\xampp\mysql\bin\mysql.exe -u root gensan_service_navigator < database/schema.sql
+```
+
+Load the starter data (categories, agencies, a sample guide, and a local admin account) by running each file in `database/seeders/` in order. See [database/README.md](database/README.md).
+
+**Updating a database created before October 2026?** Run `database/migrations/015_create_login_attempts_table.sql` and then `016_add_review_fields_to_content_reports.sql`.
+
+### 2. Backend
+
+```bash
+cd backend
+composer install
+copy .env.example .env
+```
+
+Edit `.env` if your MySQL user has a password. Then start the API from the `backend` folder:
+
+```bash
+C:\xampp\php\php.exe -S 127.0.0.1:8000 -t public public/router.php
+```
+
+Check it at <http://127.0.0.1:8000/api/health>. The `router.php` argument is required, because without it PHP's built-in server returns 404 for API routes.
+
+### 3. Frontend
+
+In another terminal:
+
+```bash
 cd frontend
 npm install
-npm install tailwindcss @tailwindcss/vite react-router-dom lucide-react
-```
-
-Choose **ESLint** when prompted to select a linter.
-
-Configure `vite.config.js` to use the React and Tailwind Vite plugins. During local development, configure the `/api` proxy to forward requests to the PHP server at `http://127.0.0.1:8000`.
-
-In `src/index.css`, add:
-
-```css
-@import "tailwindcss";
-```
-
-### 2. Set Up the Backend
-
-Create the backend folders shown in the project structure.
-
-Start the PHP development server from the project root on Windows:
-
-```bash
-C:\xampp\php\php.exe -S 127.0.0.1:8000 -t backend\public
-```
-
-Create a basic API health endpoint at:
-
-```text
-backend/public/api/health.php
-```
-
-Use it to verify that the PHP API is responding before connecting the frontend.
-
-### 3. Start the Frontend
-
-Open another terminal:
-
-```bash
-cd frontend
 npm run dev
 ```
 
-Open the local development URL displayed by Vite, usually:
+Open <http://localhost:5173>. Vite forwards `/api` requests to the PHP server on port 8000.
 
-```text
-http://localhost:5173
+### 4. Sign in to the admin panel
+
+Go to <http://localhost:5173/admin> and sign in with the seeded account:
+
+- Email: `admin@gensan-service-navigator.local`
+- Password: `ChangeMe123!`
+
+This password is published in this repository. Change it right away from **My account**. The panel shows a red warning until you do. Then add your staff from **Admin accounts**.
+
+### Checks
+
+```bash
+cd frontend
+npm run lint
+npm run build
 ```
 
-### 4. Configure the Database
+## Deployment (Apache + PHP + MySQL)
 
-1. Start MySQL using the XAMPP Control Panel.
-2. Create the project database.
-3. Add the database schema in `database/schema.sql`.
-4. Configure the database connection using environment-specific settings.
-5. Use PDO prepared statements for database queries.
+1. **Build the frontend:** run `npm run build` in `frontend/`. The site is in `frontend/dist/`, including an `.htaccess` file that makes client-side routes like `/services/...` and `/admin` work on reload.
+2. **Install the backend:** copy `backend/` to the server, outside the public web folder if possible, then run `composer install --no-dev --optimize-autoloader`.
+3. **Configure `backend/.env`:**
+   ```ini
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://your-domain
+   CORS_ALLOWED_ORIGIN=
+   DB_HOST=...
+   DB_DATABASE=...
+   DB_USERNAME=...
+   DB_PASSWORD=...
+   ```
+   With `APP_DEBUG=false`, visitors see a generic error message, and details are written to `backend/storage/logs/app.log`. That folder must be writable by the web server.
+4. **Serve both from one domain.** The frontend goes at `/`, and the API's `public/` folder goes at `/api`. Example Apache virtual host:
+   ```apache
+   <VirtualHost *:443>
+       ServerName your-domain
+       DocumentRoot /var/www/andam-gensan/frontend/dist
 
-Do not commit production passwords, API keys, or other secrets to GitHub.
+       Alias /api /var/www/andam-gensan/backend/public
+       <Directory /var/www/andam-gensan/backend/public>
+           AllowOverride All
+           Require all granted
+       </Directory>
+       <Directory /var/www/andam-gensan/frontend/dist>
+           AllowOverride All
+           Require all granted
+       </Directory>
 
-## Development Roadmap
+       SSLEngine on
+       # SSLCertificateFile / SSLCertificateKeyFile ...
+   </VirtualHost>
+   ```
+   `mod_rewrite` must be enabled, and `mod_headers` is recommended.
+5. **Use HTTPS.** In production, session cookies are marked Secure and the API sends an HSTS header.
+6. **Database:** create the database from `database/schema.sql`, run only the seeders you need, and back the database up regularly (for example, a nightly `mysqldump`).
+7. **Admin accounts:** sign in, change the default password, create accounts for your staff, and deactivate any you don't need.
 
-- [ ] Phase 1: Project setup and database design
-- [ ] Phase 2: Public homepage, search, and categories
-- [ ] Phase 3: Service guide pages and office directory
-- [ ] Phase 4: PHP REST API and database integration
-- [ ] Phase 5: Administrator content management
-- [ ] Phase 6: Optional user accounts and saved checklists
-- [ ] Phase 7: Security checks, testing, and deployment
-- [ ] Phase 8: Verify published service information and official links
+## Security
 
-## Information Accuracy
+- Passwords are hashed with `password_hash()`. Sign-in is blocked for 15 minutes after 5 failed attempts.
+- Admin sessions use HttpOnly, SameSite cookies, a new session ID at sign-in and after password changes, and a 2-hour idle timeout.
+- Every admin request that changes data needs a CSRF token. Roles are checked on the server for every request.
+- All input is validated on the server, and all queries use PDO prepared statements.
+- Reports are protected by a honeypot field and a per-IP rate limit.
+- Errors are logged instead of shown to visitors in production. The API sends `nosniff`, `X-Frame-Options`, and `Referrer-Policy` headers.
+- The site never asks for government account passwords or one-time PINs (OTPs).
 
-Every published service guide should include, where available:
+## Information accuracy
 
-- The government agency or office responsible.
-- Required documents and eligibility conditions.
-- Clear application steps.
-- Official source links.
-- Applicable fees and processing times only when verified.
-- A last-verified date.
+Every published guide should name the responsible agency and list the requirements, eligibility, and steps. It should include official source links, plus fees and processing times only when they are confirmed. Each guide shows a last-verified date. Guides older than 6 months are flagged for re-verification on the admin dashboard. Office details should be marked verified only after they are confirmed with the office.
 
-Requirements can change. Users should be encouraged to confirm important details with the responsible agency.
+## Roadmap
 
-## Security and Privacy
-
-- Use secure password hashing and verification.
-- Use PDO prepared statements.
-- Enforce authorization on the backend.
-- Validate and sanitize incoming data.
-- Use HTTPS in production.
-- Apply appropriate session, cookie, CSRF, and rate-limiting protections.
-- Collect only the personal information necessary for optional features.
-- Never request government account passwords or one-time passwords (OTPs).
-
-## Project Status
-
-**Status:** In Development
+- [x] Phase 1: Project setup and database design
+- [x] Phase 2: Public homepage, search, and categories
+- [x] Phase 3: Service guide pages and office directory
+- [x] Phase 4: PHP REST API and database integration
+- [x] Phase 5: Administrator content management, reports, and activity log
+- [ ] Phase 6: Optional resident accounts and saved checklists across devices
+- [x] Phase 7: Security hardening and deployment setup (automated tests still to come)
+- [ ] Phase 8: Add and verify real service guides and office details
 
 ## License
 
-A license has not yet been selected. Add a suitable license before publicly distributing the source code.
+A license has not been selected yet. Add one before distributing the source code publicly.
