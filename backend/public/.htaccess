@@ -1,0 +1,13 @@
+# Front controller for the PHP API. Served at /api (see "Deployment" in the README).
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+
+    # Never serve hidden files (e.g. .env if it were ever copied here).
+    RewriteRule (^|/)\. - [F,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
