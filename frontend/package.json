@@ -1,6 +1,7 @@
 {
   "name": "gensan-service-navigator",
   "private": true,
+  "description": "Independent guide to government service requirements, checklists, and offices in General Santos City.",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
