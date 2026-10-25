@@ -18,6 +18,7 @@ import PageHeader from '../components/PageHeader'
 import Checklist from '../components/Checklist'
 import OfficeCard from '../components/OfficeCard'
 import VerifiedBadge from '../components/VerifiedBadge'
+import ReportIssue from '../components/ReportIssue'
 import { ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -255,6 +256,7 @@ export default function ServiceDetailPage() {
             <div className="space-y-4 lg:hidden">
               <Sources sources={service.sources} />
               <Reminder agencyAcronym={service.agency_acronym} />
+              <ReportIssue slug={service.slug} serviceTitle={service.title} />
             </div>
           </div>
 
@@ -282,6 +284,7 @@ export default function ServiceDetailPage() {
 
               <Sources sources={service.sources} />
               <Reminder agencyAcronym={service.agency_acronym} />
+              <ReportIssue slug={service.slug} serviceTitle={service.title} />
             </div>
           </aside>
         </div>

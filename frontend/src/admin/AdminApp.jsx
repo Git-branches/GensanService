@@ -7,6 +7,11 @@ import AdminServiceEditorPage from './pages/AdminServiceEditorPage'
 import AdminAgenciesPage from './pages/AdminAgenciesPage'
 import AdminOfficesPage from './pages/AdminOfficesPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminReportsPage from './pages/AdminReportsPage'
+import AdminActivityPage from './pages/AdminActivityPage'
+import AdminUsersPage from './pages/AdminUsersPage'
+import AdminAccountPage from './pages/AdminAccountPage'
 
 // Remount the editor when moving between guides (or from "new" to the saved guide) so it starts fresh.
 function ServiceEditorRoute() {
@@ -20,7 +25,11 @@ export default function AdminApp() {
       <Routes>
         <Route path="login" element={<AdminLoginPage />} />
         <Route element={<RequireAdmin />}>
-          <Route index element={<Navigate to="services" replace />} />
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
+          <Route path="activity" element={<AdminActivityPage />} />
+          <Route path="admins" element={<AdminUsersPage />} />
+          <Route path="account" element={<AdminAccountPage />} />
           <Route path="services" element={<AdminServicesPage />} />
           <Route path="services/new" element={<ServiceEditorRoute />} />
           <Route path="services/:id" element={<ServiceEditorRoute />} />

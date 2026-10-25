@@ -248,9 +248,11 @@ CREATE TABLE IF NOT EXISTS content_reports (
     service_id INT UNSIGNED NOT NULL,
     reported_by_user_id INT UNSIGNED DEFAULT NULL,
     reporter_email VARCHAR(150) DEFAULT NULL,
+    reporter_ip VARCHAR(45) DEFAULT NULL,
     reason VARCHAR(100) NOT NULL,
     message TEXT DEFAULT NULL,
     status ENUM('pending', 'reviewing', 'resolved', 'dismissed') NOT NULL DEFAULT 'pending',
+    admin_note VARCHAR(1000) DEFAULT NULL,
     resolved_by INT UNSIGNED DEFAULT NULL,
     resolved_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -259,7 +261,8 @@ CREATE TABLE IF NOT EXISTS content_reports (
     CONSTRAINT fk_reports_user FOREIGN KEY (reported_by_user_id) REFERENCES users(id) ON DELETE SET NULL,
     CONSTRAINT fk_reports_resolved_by FOREIGN KEY (resolved_by) REFERENCES admins(id) ON DELETE SET NULL,
     KEY idx_reports_service (service_id),
-    KEY idx_reports_status (status)
+    KEY idx_reports_status (status),
+    KEY idx_reports_ip_time (reporter_ip, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------

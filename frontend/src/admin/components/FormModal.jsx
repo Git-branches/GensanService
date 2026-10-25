@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { AlertCircle } from 'lucide-react'
-import Modal from './Modal'
+import Modal from '../../components/Modal'
 import { Button } from './ui'
 
 // Mount it only while open (conditional render) so each opening starts from `initialValues`.

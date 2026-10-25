@@ -105,6 +105,22 @@ class Validator
         return $email;
     }
 
+    public function password(mixed $value, string $field): ?string
+    {
+        if (!is_string($value) || $value === '') {
+            $this->add($field, 'Enter a password.');
+            return null;
+        }
+        if (strlen($value) < 10) {
+            $this->add($field, 'Use at least 10 characters.');
+        } elseif (strlen($value) > 200) {
+            $this->add($field, 'Use 200 characters or fewer.');
+        } elseif (strtolower($value) === 'changeme123!' || !preg_match('/[A-Za-z]/', $value) || !preg_match('/[0-9\W]/', $value)) {
+            $this->add($field, 'Use a mix of letters and numbers or symbols, and avoid the default password.');
+        }
+        return $value;
+    }
+
     public function bool(mixed $value): int
     {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;

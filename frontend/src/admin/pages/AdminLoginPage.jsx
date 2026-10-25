@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
 
   if (status === 'signedIn') {
     const from = location.state?.from
-    return <Navigate to={from && from.startsWith('/admin') ? from : '/admin/services'} replace />
+    return <Navigate to={from && from.startsWith('/admin') ? from : '/admin'} replace />
   }
 
   async function handleSubmit(event) {

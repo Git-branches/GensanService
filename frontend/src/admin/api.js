@@ -59,6 +59,16 @@ export const adminApi = {
   updateService: (id, data) => request(`/services/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
   setServiceStatus: (id, status) =>
     request(`/services/${encodeURIComponent(id)}/status`, { method: 'POST', body: { status } }),
+  dashboard: () => request('/dashboard'),
+  activity: ({ page, type, adminId } = {}) => request(`/activity${query({ page: page > 1 ? String(page) : '', type, admin_id: adminId })}`),
+  reports: (status) => request(`/reports${query({ status })}`),
+  updateReport: (id, data) => request(`/reports/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
+  admins: () => request('/admins'),
+  createAdmin: (data) => request('/admins', { method: 'POST', body: data }),
+  updateAdmin: (id, data) => request(`/admins/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
+  resetAdminPassword: (id, password) => request(`/admins/${encodeURIComponent(id)}/password`, { method: 'POST', body: { password } }),
+  changePassword: (currentPassword, newPassword) =>
+    request('/account/password', { method: 'POST', body: { current_password: currentPassword, new_password: newPassword } }),
   // resource: 'agencies' | 'offices' | 'categories'
   list: (resource) => request(`/${resource}`),
   create: (resource, data) => request(`/${resource}`, { method: 'POST', body: data }),

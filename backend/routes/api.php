@@ -1,13 +1,18 @@
 <?php
 
+use App\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Controllers\Admin\AdminUserController;
 use App\Controllers\Admin\AgencyController as AdminAgencyController;
 use App\Controllers\Admin\AuthController as AdminAuthController;
 use App\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Controllers\Admin\OfficeController as AdminOfficeController;
+use App\Controllers\Admin\ReportController as AdminReportController;
 use App\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Controllers\AgencyController;
 use App\Controllers\CategoryController;
 use App\Controllers\OfficeController;
+use App\Controllers\ReportController;
 use App\Controllers\ServiceController;
 use App\Controllers\StatsController;
 use App\Response;
@@ -30,12 +35,27 @@ $router->get('/api/offices', [new OfficeController(), 'index']);
 
 $router->get('/api/services', [new ServiceController(), 'index']);
 $router->get('/api/services/{slug}', [new ServiceController(), 'show']);
+$router->post('/api/services/{slug}/reports', [new ReportController(), 'store']);
 
 // Administrator API — every handler enforces sign-in, role, and CSRF checks itself via Auth::requireAdmin().
 $adminAuth = new AdminAuthController();
 $router->post('/api/admin/login', [$adminAuth, 'login']);
 $router->post('/api/admin/logout', [$adminAuth, 'logout']);
 $router->get('/api/admin/me', [$adminAuth, 'me']);
+$router->post('/api/admin/account/password', [$adminAuth, 'changePassword']);
+
+$router->get('/api/admin/dashboard', [new AdminDashboardController(), 'index']);
+$router->get('/api/admin/activity', [new AdminActivityController(), 'index']);
+
+$adminReports = new AdminReportController();
+$router->get('/api/admin/reports', [$adminReports, 'index']);
+$router->put('/api/admin/reports/{id}', [$adminReports, 'update']);
+
+$adminUsers = new AdminUserController();
+$router->get('/api/admin/admins', [$adminUsers, 'index']);
+$router->post('/api/admin/admins', [$adminUsers, 'store']);
+$router->put('/api/admin/admins/{id}', [$adminUsers, 'update']);
+$router->post('/api/admin/admins/{id}/password', [$adminUsers, 'resetPassword']);
 
 $adminServices = new AdminServiceController();
 $router->get('/api/admin/lookups', [$adminServices, 'lookups']);

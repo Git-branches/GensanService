@@ -1,5 +1,5 @@
 import { AlertTriangle, HelpCircle } from 'lucide-react'
-import Modal from './Modal'
+import Modal from '../../components/Modal'
 import { Button } from './ui'
 
 export default function ConfirmDialog({ open, title, message, confirmLabel, tone = 'primary', busy = false, error, onConfirm, onCancel }) {

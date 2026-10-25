@@ -12,6 +12,10 @@ export const ROLE_LABELS = {
   reviewer: 'Reviewer',
 }
 
+export function isSuperAdmin(admin) {
+  return admin?.role === 'super_admin'
+}
+
 export function canEditContent(admin) {
   return admin?.role === 'super_admin' || admin?.role === 'editor'
 }

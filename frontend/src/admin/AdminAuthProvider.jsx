@@ -46,7 +46,14 @@ export default function AdminAuthProvider({ children }) {
     }
   }, [])
 
-  const value = useMemo(() => ({ ...state, login, logout }), [state, login, logout])
+  const changePassword = useCallback(async (currentPassword, newPassword) => {
+    const data = await adminApi.changePassword(currentPassword, newPassword)
+    // The server issues a new session (and CSRF token) after a password change.
+    setCsrfToken(data.csrf_token)
+    setState((current) => ({ ...current, admin: { ...current.admin, uses_default_password: false } }))
+  }, [])
+
+  const value = useMemo(() => ({ ...state, login, logout, changePassword }), [state, login, logout, changePassword])
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>
 }

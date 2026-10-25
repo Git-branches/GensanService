@@ -9,11 +9,17 @@ async function request(path, options = {}) {
   const body = await response.json().catch(() => null)
 
   if (!response.ok || !body?.success) {
-    const message = body?.error || `Request failed with status ${response.status}`
-    throw new Error(message)
+    const error = new Error(body?.error || `Request failed with status ${response.status}`)
+    error.status = response.status
+    error.details = body?.details || {}
+    throw error
   }
 
   return body.data
+}
+
+export function reportIssue(slug, data) {
+  return request(`/services/${encodeURIComponent(slug)}/reports`, { method: 'POST', body: JSON.stringify(data) })
 }
 
 export function getStats() {
