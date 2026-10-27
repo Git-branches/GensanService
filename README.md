@@ -50,6 +50,7 @@ For residents (no account needed):
 - A checklist with a progress bar that saves on the device and can be printed.
 - Agency and office directories with Google Maps and Waze links.
 - A "Report incorrect information" form on every guide.
+- Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
 
 For administrators (`/admin`):
 
@@ -68,6 +69,22 @@ For administrators (`/admin`):
 ### Information accuracy
 
 Every published guide should name the responsible agency and list the requirements, eligibility, and steps. It should include official source links, plus fees and processing times only when they are confirmed. Each guide shows a last-verified date. Office details should be marked verified only after they are confirmed with the office. See [system-requirements.md](system-requirements.md) for the full requirements.
+
+### Languages
+
+Visitors pick a language from the switcher at the top of every page, and the choice is saved on their device. The switcher translates the site's own text: menus, buttons, labels, and messages. Guide content from the database (titles, requirements, steps) and the admin panel stay in English.
+
+| Language | Status |
+|---|---|
+| English | Source text |
+| Bisaya (Cebuano), Filipino, Hiligaynon | Available. First drafts that still need review by native speakers |
+| Blaan, Maguindanaon, Maranao | Hidden until translated |
+
+Translations live in `frontend/src/i18n/locales/`, one file per language, with `en.js` as the source. Any text a language leaves out is shown in English. To translate:
+
+1. Copy keys from `en.js` into the language's file and replace the English text. Keep `{placeholders}` such as `{count}` and `{agency}` unchanged.
+2. Preview the language at `/?lang=<code>` (for example `/?lang=mdh`). This works for hidden languages too.
+3. When the translation is complete and reviewed, set `enabled: true` for it in `frontend/src/i18n/languages.js`.
 
 ### Built with
 
@@ -183,6 +200,9 @@ npm run build
 - [x] REST API and database integration
 - [x] Admin content management, reports, and activity log
 - [x] Security hardening and deployment setup
+- [x] Interface in Bisaya, Filipino, and Hiligaynon
+- [ ] Native-speaker review of the Bisaya, Filipino, and Hiligaynon text
+- [ ] Blaan, Maguindanaon, and Maranao translations
 - [ ] Automated API tests
 - [ ] Optional resident accounts to save checklists across devices
 - [ ] Add and verify real service guides and office details

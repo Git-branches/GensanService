@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import VerifiedBadge from './VerifiedBadge'
 import { renderCategoryIcon } from '../utils/icons'
+import { useI18n } from '../i18n/context'
 
 export default function ServiceCard({ service }) {
+  const { t } = useI18n()
+
   return (
     <Link
       to={`/services/${service.slug}`}
@@ -24,7 +27,7 @@ export default function ServiceCard({ service }) {
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <VerifiedBadge date={service.last_verified_at} />
           <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-bay-700">
-            View guide
+            {t('serviceCard.viewGuide')}
             <ChevronRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>

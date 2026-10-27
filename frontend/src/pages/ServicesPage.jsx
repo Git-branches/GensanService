@@ -7,7 +7,7 @@ import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMes
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { getAgencies, getCategories, getServices } from '../services/api'
-import { plural } from '../utils/format'
+import { useI18n } from '../i18n/context'
 
 const FIELD_CLASS =
   'w-full rounded-lg border border-stone-300 bg-white py-2.5 text-base focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20'
@@ -34,7 +34,8 @@ function SelectField({ id, label, value, onChange, children }) {
 }
 
 export default function ServicesPage() {
-  usePageTitle('Service guides')
+  const { t } = useI18n()
+  usePageTitle(t('services.pageTitle'))
 
   const [searchParams, setSearchParams] = useSearchParams()
   const q = searchParams.get('q') || ''
@@ -68,7 +69,7 @@ export default function ServicesPage() {
   const activeAgency = agencies?.find((agency) => agency.slug === agencySlug)
 
   const activeFilters = [
-    q && { key: 'q', label: `Keyword: ${q}` },
+    q && { key: 'q', label: t('services.keywordFilter', { q }) },
     categorySlug && { key: 'category', label: activeCategory?.name || categorySlug },
     agencySlug && { key: 'agency', label: activeAgency?.acronym || activeAgency?.name || agencySlug },
   ].filter(Boolean)
@@ -76,13 +77,13 @@ export default function ServicesPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'Service guides' }]}
-        kicker="Service guides"
-        title="Find a government service guide"
-        description="Search by keyword, then narrow down by category or agency."
+        breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('services.pageTitle') }]}
+        kicker={t('services.kicker')}
+        title={t('services.heading')}
+        description={t('services.description')}
         image={{
           src: residentsImage,
-          alt: 'A student, a senior citizen, and a mother carrying her child — residents preparing for government transactions',
+          alt: t('services.heroAlt'),
           width: 759,
           height: 550,
         }}
@@ -94,7 +95,7 @@ export default function ServicesPage() {
         >
           <div>
             <label htmlFor="services-q" className="text-sm font-semibold text-stone-700">
-              Keyword
+              {t('services.keyword')}
             </label>
             <div className="relative mt-1.5">
               <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -104,21 +105,21 @@ export default function ServicesPage() {
                 name="q"
                 type="search"
                 defaultValue={q}
-                placeholder="e.g. birth certificate"
+                placeholder={t('common.searchPlaceholder')}
                 className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-400`}
               />
             </div>
           </div>
-          <SelectField id="services-category" label="Category" value={categorySlug} onChange={(v) => setParam('category', v)}>
-            <option value="">All categories</option>
+          <SelectField id="services-category" label={t('common.category')} value={categorySlug} onChange={(v) => setParam('category', v)}>
+            <option value="">{t('common.allCategories')}</option>
             {categories?.map((category) => (
               <option key={category.id} value={category.slug}>
                 {category.name}
               </option>
             ))}
           </SelectField>
-          <SelectField id="services-agency" label="Agency" value={agencySlug} onChange={(v) => setParam('agency', v)}>
-            <option value="">All agencies</option>
+          <SelectField id="services-agency" label={t('common.agency')} value={agencySlug} onChange={(v) => setParam('agency', v)}>
+            <option value="">{t('common.allAgencies')}</option>
             {agencies?.map((agency) => (
               <option key={agency.id} value={agency.slug}>
                 {agency.acronym || agency.name}
@@ -129,7 +130,7 @@ export default function ServicesPage() {
             type="submit"
             className="rounded-lg bg-bay-700 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-bay-800"
           >
-            Search
+            {t('services.search')}
           </button>
         </form>
       </PageHeader>
@@ -137,7 +138,7 @@ export default function ServicesPage() {
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4">
           <p aria-live="polite" className="text-lg font-bold text-bay-950">
-            {loading ? 'Searching…' : services ? `${plural(services.length, 'guide')} found` : ''}
+            {loading ? t('services.searching') : services ? t('services.found', { count: services.length }) : ''}
           </p>
 
           {activeFilters.length > 0 && (
@@ -151,7 +152,7 @@ export default function ServicesPage() {
                 >
                   {filter.label}
                   <X size={14} aria-hidden="true" />
-                  <span className="sr-only">Remove filter</span>
+                  <span className="sr-only">{t('services.removeFilter')}</span>
                 </button>
               ))}
               <button
@@ -159,7 +160,7 @@ export default function ServicesPage() {
                 onClick={clearAll}
                 className="px-2 text-sm font-semibold text-stone-600 hover:text-bay-700 hover:underline"
               >
-                Clear all
+                {t('services.clearAll')}
               </button>
             </div>
           )}
@@ -167,15 +168,13 @@ export default function ServicesPage() {
 
         <div className="mt-6">
           {loading && <CardGridSkeleton />}
-          {error && <ErrorState message={error} />}
+          {error && <ErrorState message={t('common.loadError')} />}
 
           {services && services.length === 0 && (
             <EmptyState
-              title="No guides match yet"
+              title={t('services.emptyTitle')}
               message={
-                activeFilters.length
-                  ? 'Try a different keyword or remove a filter. New guides are added as they are verified.'
-                  : 'No service guides have been published yet.'
+                activeFilters.length ? t('services.emptyFiltered') : t('services.emptyNone')
               }
             >
               {activeFilters.length > 0 && (
@@ -184,11 +183,11 @@ export default function ServicesPage() {
                   onClick={clearAll}
                   className="mt-1 rounded-lg bg-bay-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-bay-800"
                 >
-                  Show all guides
+                  {t('services.showAll')}
                 </button>
               )}
               <Link to="/agencies" className="text-sm font-semibold text-bay-700 hover:underline">
-                Browse agencies instead
+                {t('services.browseAgenciesInstead')}
               </Link>
             </EmptyState>
           )}

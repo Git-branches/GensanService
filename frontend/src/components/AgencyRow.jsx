@@ -1,20 +1,23 @@
 import { Link } from 'react-router-dom'
 import { Building2, ChevronRight, Landmark } from 'lucide-react'
-import { plural } from '../utils/format'
+import { useI18n } from '../i18n/context'
 
 export function AgencyTypeBadge({ isLocal }) {
+  const { t } = useI18n()
+
   return (
     <span
       className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ring-1 ${
         isLocal ? 'bg-sun-50 text-sun-800 ring-sun-200' : 'bg-bay-50 text-bay-800 ring-bay-100'
       }`}
     >
-      {isLocal ? 'Local government' : 'National agency'}
+      {isLocal ? t('agencyType.local') : t('agencyType.national')}
     </span>
   )
 }
 
 export default function AgencyRow({ agency }) {
+  const { t } = useI18n()
   const isLocal = Boolean(agency.is_local_government)
 
   return (
@@ -33,9 +36,9 @@ export default function AgencyRow({ agency }) {
           </span>
           <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
             <AgencyTypeBadge isLocal={isLocal} />
-            <span>{plural(Number(agency.service_count ?? 0), 'guide')}</span>
+            <span>{t('common.guidesCount', { count: Number(agency.service_count ?? 0) })}</span>
             <span aria-hidden="true">·</span>
-            <span>{plural(Number(agency.office_count ?? 0), 'office')}</span>
+            <span>{t('common.officesCount', { count: Number(agency.office_count ?? 0) })}</span>
           </span>
         </span>
         <ChevronRight

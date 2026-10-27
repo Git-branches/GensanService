@@ -1,10 +1,13 @@
 import heroPeople from '../assets/hero-people.webp'
+import { useI18n } from '../i18n/context'
 
 export default function HeroPhoto() {
+  const { t } = useI18n()
+
   return (
     <img
       src={heroPeople}
-      alt="Three smiling Filipino residents — a young man, a woman holding a document folder, and a senior woman"
+      alt={t('home.heroAlt')}
       width="906"
       height="660"
       fetchPriority="high"

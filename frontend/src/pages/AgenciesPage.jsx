@@ -4,27 +4,29 @@ import AgencyRow from '../components/AgencyRow'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { useI18n } from '../i18n/context'
 import { getAgencies } from '../services/api'
 
 const GROUPS = [
-  { key: 'local', title: 'Local government', match: (agency) => Boolean(agency.is_local_government) },
-  { key: 'national', title: 'National government agencies', match: (agency) => !agency.is_local_government },
+  { key: 'local', title: 'agencies.groupLocal', match: (agency) => Boolean(agency.is_local_government) },
+  { key: 'national', title: 'agencies.groupNational', match: (agency) => !agency.is_local_government },
 ]
 
 export default function AgenciesPage() {
-  usePageTitle('Government agencies')
+  const { t } = useI18n()
+  usePageTitle(t('agencies.pageTitle'))
   const { data: agencies, error, loading } = useFetch(getAgencies, [])
 
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'Agencies' }]}
-        kicker="Agency directory"
-        title="Government agencies serving GenSan"
-        description="Local and national offices whose services are covered in our guides."
+        breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('nav.agencies') }]}
+        kicker={t('agencies.kicker')}
+        title={t('agencies.heading')}
+        description={t('agencies.description')}
         image={{
           src: staffImage,
-          alt: 'Three smiling public service workers',
+          alt: t('agencies.heroAlt'),
           width: 800,
           height: 496,
         }}
@@ -32,8 +34,8 @@ export default function AgenciesPage() {
 
       <section className="mx-auto max-w-6xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">
         {loading && <CardGridSkeleton count={3} />}
-        {error && <ErrorState message={error} />}
-        {agencies?.length === 0 && <EmptyState title="No agencies listed yet" />}
+        {error && <ErrorState message={t('common.loadError')} />}
+        {agencies?.length === 0 && <EmptyState title={t('agencies.empty')} />}
 
         {agencies?.length > 0 &&
           GROUPS.map((group) => {
@@ -42,7 +44,7 @@ export default function AgenciesPage() {
             return (
               <div key={group.key}>
                 <h2 className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-bay-950">
-                  {group.title}
+                  {t(group.title)}
                   <span className="rounded-md bg-stone-100 px-2 py-0.5 text-sm font-semibold text-stone-600">
                     {items.length}
                   </span>

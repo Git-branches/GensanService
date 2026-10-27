@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Clock, Info, Menu, Search, X } from 'lucide-react'
 import Logo from './Logo'
+import LanguageSwitcher from './LanguageSwitcher'
 import PhilippineTime from './PhilippineTime'
+import { useI18n } from '../i18n/context'
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/services', label: 'Service guides' },
-  { to: '/agencies', label: 'Agencies' },
-  { to: '/offices', label: 'Offices' },
+  { to: '/', label: 'common.home', end: true },
+  { to: '/services', label: 'nav.services' },
+  { to: '/agencies', label: 'nav.agencies' },
+  { to: '/offices', label: 'nav.offices' },
 ]
 
 function desktopLinkClass({ isActive }) {
@@ -18,6 +20,7 @@ function desktopLinkClass({ isActive }) {
 }
 
 export default function Header() {
+  const { t } = useI18n()
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
 
@@ -28,26 +31,29 @@ export default function Header() {
           <p className="flex items-center gap-1.5">
             <Info size={14} aria-hidden="true" className="shrink-0 text-bay-600" />
             <span>
-              Independent guide<span className="hidden sm:inline"> — not an official government website</span>
+              {t('topbar.independent')}<span className="hidden sm:inline">{t('topbar.notOfficial')}</span>
             </span>
           </p>
-          <p className="flex items-center gap-1.5 text-stone-700">
-            <Clock size={14} aria-hidden="true" className="shrink-0 text-bay-600" />
-            <PhilippineTime />
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="hidden items-center gap-1.5 text-stone-700 sm:flex">
+              <Clock size={14} aria-hidden="true" className="shrink-0 text-bay-600" />
+              <PhilippineTime />
+            </p>
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
 
       <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link to="/" onClick={closeMenu} aria-label="Andam GenSan home" className="py-3">
-            <Logo subtitle="Be ready before you go · General Santos City" />
+          <Link to="/" onClick={closeMenu} aria-label={t('nav.homeLink')} className="py-3">
+            <Logo subtitle={t('logo.subtitle')} />
           </Link>
 
-          <nav aria-label="Main" className="hidden items-center md:flex">
+          <nav aria-label={t('nav.main')} className="hidden items-center md:flex">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={desktopLinkClass}>
-                {link.label}
+                {t(link.label)}
               </NavLink>
             ))}
           </nav>
@@ -56,14 +62,14 @@ export default function Header() {
             to="/services"
             className="hidden items-center gap-2 rounded-lg border border-bay-200 px-4 py-2 text-sm font-semibold text-bay-700 transition-colors hover:border-bay-300 hover:bg-bay-50 lg:inline-flex"
           >
-            <Search size={16} aria-hidden="true" /> Search guides
+            <Search size={16} aria-hidden="true" /> {t('nav.searchGuides')}
           </Link>
 
           <button
             type="button"
             className="rounded-lg p-2 text-stone-700 hover:bg-stone-100 md:hidden"
             onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
           >
@@ -72,7 +78,7 @@ export default function Header() {
         </div>
 
         {menuOpen && (
-          <nav id="mobile-menu" aria-label="Main" className="border-t border-stone-200 bg-white px-4 py-3 md:hidden">
+          <nav id="mobile-menu" aria-label={t('nav.main')} className="border-t border-stone-200 bg-white px-4 py-3 md:hidden">
             <ul className="space-y-1">
               {NAV_LINKS.map((link) => (
                 <li key={link.to}>
@@ -88,7 +94,7 @@ export default function Header() {
                       }`
                     }
                   >
-                    {link.label}
+                    {t(link.label)}
                   </NavLink>
                 </li>
               ))}

@@ -7,6 +7,7 @@ import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { useI18n } from '../i18n/context'
 import { getAgency, getServices } from '../services/api'
 
 function SubHeading({ children, count }) {
@@ -19,16 +20,17 @@ function SubHeading({ children, count }) {
 }
 
 export default function AgencyDetailPage() {
+  const { t } = useI18n()
   const { slug } = useParams()
   const { data: agency, error, loading } = useFetch(() => getAgency(slug), [slug])
   const services = useFetch(() => getServices({ agency: slug }), [slug])
-  usePageTitle(agency?.name ?? 'Agency')
+  usePageTitle(agency?.name ?? t('agencyDetail.pageTitle'))
 
-  if (loading) return <LoadingState label="Loading agency..." />
+  if (loading) return <LoadingState label={t('agencyDetail.loading')} />
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <ErrorState message={error} action={{ to: '/agencies', label: 'Back to all agencies' }} />
+        <ErrorState message={t('agencyDetail.unavailable')} action={{ to: '/agencies', label: t('agencyDetail.back') }} />
       </div>
     )
   }
@@ -38,8 +40,8 @@ export default function AgencyDetailPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { to: '/', label: 'Home' },
-          { to: '/agencies', label: 'Agencies' },
+          { to: '/', label: t('common.home') },
+          { to: '/agencies', label: t('nav.agencies') },
           { label: agency.acronym || agency.name },
         ]}
         kicker={agency.acronym}
@@ -55,8 +57,8 @@ export default function AgencyDetailPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-bay-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
             >
-              Official website <ExternalLink size={15} aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
+              {t('agencyDetail.officialWebsite')} <ExternalLink size={15} aria-hidden="true" />
+              <span className="sr-only">{t('common.opensInNewTab')}</span>
             </a>
           )}
         </div>
@@ -64,14 +66,14 @@ export default function AgencyDetailPage() {
 
       <div className="mx-auto max-w-6xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">
         <section>
-          <SubHeading count={services.data?.length ?? 0}>Service guides</SubHeading>
+          <SubHeading count={services.data?.length ?? 0}>{t('agencyDetail.guides')}</SubHeading>
           <div className="mt-5">
             {services.loading && <CardGridSkeleton count={3} />}
-            {services.error && <ErrorState message={services.error} />}
+            {services.error && <ErrorState message={t('common.loadError')} />}
             {services.data?.length === 0 && (
               <EmptyState
-                title="No guides yet"
-                message={`Guides for ${agency.acronym || agency.name} will appear here once they are verified.`}
+                title={t('agencyDetail.noGuides')}
+                message={t('agencyDetail.noGuidesMessage', { agency: agency.acronym || agency.name })}
               />
             )}
             {services.data?.length > 0 && (
@@ -85,12 +87,12 @@ export default function AgencyDetailPage() {
         </section>
 
         <section>
-          <SubHeading count={agency.offices.length}>Offices in General Santos</SubHeading>
+          <SubHeading count={agency.offices.length}>{t('agencyDetail.offices')}</SubHeading>
           <div className="mt-5">
             {agency.offices.length === 0 ? (
               <EmptyState
-                title="No offices listed yet"
-                message="Office details are added only after their address and hours have been verified."
+                title={t('agencyDetail.noOffices')}
+                message={t('agencyDetail.noOfficesMessage')}
               />
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

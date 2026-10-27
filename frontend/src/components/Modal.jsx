@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { useI18n } from '../i18n/context'
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -12,6 +13,7 @@ const SIZES = {
 }
 
 export default function Modal({ open, onClose, title, description, size = 'md', busy = false, footer, children }) {
+  const { t } = useI18n()
   const titleId = useId()
   const descriptionId = useId()
   const panelRef = useRef(null)
@@ -97,7 +99,7 @@ export default function Modal({ open, onClose, title, description, size = 'md', 
             type="button"
             onClick={onClose}
             disabled={busy}
-            aria-label="Close dialog"
+            aria-label={t('common.closeDialog')}
             className="-mr-2 rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 disabled:opacity-40"
           >
             <X size={20} />

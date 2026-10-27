@@ -1,18 +1,23 @@
 import { Link } from 'react-router-dom'
 import { AlertCircle, Inbox, Loader2 } from 'lucide-react'
+import { useI18n } from '../i18n/context'
 
-export function LoadingState({ label = 'Loading...' }) {
+export function LoadingState({ label }) {
+  const { t } = useI18n()
+
   return (
     <div role="status" className="flex items-center justify-center gap-2 py-20 text-stone-500">
       <Loader2 className="animate-spin text-bay-600" size={20} aria-hidden="true" />
-      <span>{label}</span>
+      <span>{label ?? t('common.loading')}</span>
     </div>
   )
 }
 
 export function CardGridSkeleton({ count = 6, className = 'sm:grid-cols-2 lg:grid-cols-3' }) {
+  const { t } = useI18n()
+
   return (
-    <div role="status" aria-label="Loading" className={`grid grid-cols-1 gap-4 ${className}`}>
+    <div role="status" aria-label={t('common.loading')} className={`grid grid-cols-1 gap-4 ${className}`}>
       {Array.from({ length: count }, (_, index) => (
         <div key={index} className="animate-pulse overflow-hidden rounded-xl border border-stone-200 bg-white">
           <div className="h-9 bg-stone-50" />
@@ -28,11 +33,13 @@ export function CardGridSkeleton({ count = 6, className = 'sm:grid-cols-2 lg:gri
   )
 }
 
-export function ErrorState({ message = 'Something went wrong. Please try again.', action }) {
+export function ErrorState({ message, action }) {
+  const { t } = useI18n()
+
   return (
     <div role="alert" className="flex flex-col items-center gap-3 rounded-xl border border-red-200 bg-red-50/50 px-6 py-14 text-center">
       <AlertCircle className="text-red-600" size={28} aria-hidden="true" />
-      <p className="max-w-md text-stone-700">{message}</p>
+      <p className="max-w-md text-stone-700">{message ?? t('common.errorGeneric')}</p>
       {action && (
         <Link to={action.to} className="text-sm font-semibold text-bay-700 hover:underline">
           {action.label}
@@ -42,13 +49,15 @@ export function ErrorState({ message = 'Something went wrong. Please try again.'
   )
 }
 
-export function EmptyState({ title = 'Nothing to show yet', message, children }) {
+export function EmptyState({ title, message, children }) {
+  const { t } = useI18n()
+
   return (
     <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed border-stone-200 bg-white px-6 py-14 text-center">
       <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-bay-50 text-bay-600">
         <Inbox size={22} aria-hidden="true" />
       </span>
-      <p className="text-lg font-bold text-bay-950">{title}</p>
+      <p className="text-lg font-bold text-bay-950">{title ?? t('common.emptyDefault')}</p>
       {message && <p className="max-w-md text-sm text-stone-600">{message}</p>}
       {children}
     </div>

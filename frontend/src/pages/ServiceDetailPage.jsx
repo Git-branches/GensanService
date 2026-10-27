@@ -22,6 +22,7 @@ import ReportIssue from '../components/ReportIssue'
 import { ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { useI18n } from '../i18n/context'
 import { getService } from '../services/api'
 import { formatDate } from '../utils/format'
 
@@ -58,32 +59,34 @@ function Fact({ icon: Icon, label, children }) {
 }
 
 function AtAGlance({ service }) {
+  const { t } = useI18n()
+
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-      <h2 className="border-b-4 border-sun-400 bg-bay-900 px-5 py-3 text-base font-bold text-white">At a glance</h2>
+      <h2 className="border-b-4 border-sun-400 bg-bay-900 px-5 py-3 text-base font-bold text-white">{t('detail.atAGlance')}</h2>
       <dl className="divide-y divide-stone-100 px-5">
-        <Fact icon={Landmark} label="Agency">
+        <Fact icon={Landmark} label={t('detail.agency')}>
           <Link to={`/agencies/${service.agency_slug}`} className="font-semibold text-bay-700 hover:underline">
             {service.agency_name}
           </Link>
         </Fact>
-        <Fact icon={LayoutGrid} label="Category">
+        <Fact icon={LayoutGrid} label={t('detail.category')}>
           <Link to={`/services?category=${service.category_slug}`} className="font-semibold text-bay-700 hover:underline">
             {service.category_name}
           </Link>
         </Fact>
         {service.fee_description && (
-          <Fact icon={Receipt} label="Fee">
+          <Fact icon={Receipt} label={t('detail.fee')}>
             {service.fee_description}
           </Fact>
         )}
         {service.processing_time_description && (
-          <Fact icon={Clock} label="Processing time">
+          <Fact icon={Clock} label={t('detail.processing')}>
             {service.processing_time_description}
           </Fact>
         )}
         {service.last_verified_at && (
-          <Fact icon={BadgeCheck} label="Last verified">
+          <Fact icon={BadgeCheck} label={t('detail.lastVerified')}>
             {formatDate(service.last_verified_at, { year: 'numeric', month: 'long', day: 'numeric' })}
           </Fact>
         )}
@@ -96,8 +99,8 @@ function AtAGlance({ service }) {
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 rounded-lg bg-bay-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
           >
-            Official {service.agency_acronym || 'agency'} website <ExternalLink size={15} aria-hidden="true" />
-            <span className="sr-only">(opens in a new tab)</span>
+            {t('detail.officialWebsite', { agency: service.agency_acronym || t('detail.agencyFallback') })} <ExternalLink size={15} aria-hidden="true" />
+            <span className="sr-only">{t('common.opensInNewTab')}</span>
           </a>
         </div>
       )}
@@ -106,11 +109,12 @@ function AtAGlance({ service }) {
 }
 
 function Sources({ sources }) {
+  const { t } = useI18n()
   if (!sources?.length) return null
 
   return (
     <div className="rounded-xl border border-stone-200 bg-white p-5">
-      <h2 className="text-base font-bold text-bay-950">Official sources</h2>
+      <h2 className="text-base font-bold text-bay-950">{t('detail.sources')}</h2>
       <ul className="mt-3 space-y-3">
         {sources.map((source) => (
           <li key={source.url}>
@@ -121,10 +125,10 @@ function Sources({ sources }) {
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline"
             >
               {source.label || source.url} <ExternalLink size={13} aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
+              <span className="sr-only">{t('common.opensInNewTab')}</span>
             </a>
             {source.verified_at && (
-              <span className="block text-xs text-stone-500">Checked {formatDate(source.verified_at)}</span>
+              <span className="block text-xs text-stone-500">{t('detail.checked', { date: formatDate(source.verified_at) })}</span>
             )}
           </li>
         ))}
@@ -134,48 +138,50 @@ function Sources({ sources }) {
 }
 
 function Reminder({ agencyAcronym }) {
+  const { t } = useI18n()
+
   return (
     <div className="rounded-xl border border-sun-200 border-l-[6px] border-l-sun-400 bg-sun-50 p-5 text-sm text-stone-700">
       <p className="flex items-center gap-2 font-bold text-bay-950">
-        <AlertTriangle size={17} aria-hidden="true" className="text-sun-700" /> Please double-check
+        <AlertTriangle size={17} aria-hidden="true" className="text-sun-700" /> {t('detail.doubleCheck')}
       </p>
       <p className="mt-2 leading-relaxed">
-        This is an independent guide, not an official government website. Fees and requirements can change —
-        confirm with {agencyAcronym || 'the agency'} before your visit. Never share your passwords or OTPs.
+        {t('detail.doubleCheckText', { agency: agencyAcronym || t('detail.theAgency') })}
       </p>
     </div>
   )
 }
 
 export default function ServiceDetailPage() {
+  const { t } = useI18n()
   const { slug } = useParams()
   const { data: service, error, loading } = useFetch(() => getService(slug), [slug])
-  usePageTitle(service?.title ?? 'Service guide')
+  usePageTitle(service?.title ?? t('detail.pageTitle'))
 
-  if (loading) return <LoadingState label="Loading service guide..." />
+  if (loading) return <LoadingState label={t('detail.loading')} />
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <ErrorState message={error} action={{ to: '/services', label: 'Back to all service guides' }} />
+        <ErrorState message={t('detail.unavailable')} action={{ to: '/services', label: t('detail.back') }} />
       </div>
     )
   }
   if (!service) return null
 
   const sections = [
-    service.description && { id: 'about', label: 'About this service' },
-    service.eligibility?.length && { id: 'eligibility', label: 'Who can apply' },
-    service.requirements?.length && { id: 'checklist', label: 'Document checklist' },
-    service.steps?.length && { id: 'steps', label: 'Step-by-step' },
-    service.offices?.length && { id: 'offices', label: 'Where to go' },
+    service.description && { id: 'about', label: t('detail.about') },
+    service.eligibility?.length && { id: 'eligibility', label: t('detail.eligibility') },
+    service.requirements?.length && { id: 'checklist', label: t('detail.checklist') },
+    service.steps?.length && { id: 'steps', label: t('detail.steps') },
+    service.offices?.length && { id: 'offices', label: t('detail.whereToGo') },
   ].filter(Boolean)
 
   return (
     <>
       <PageHeader
         breadcrumbs={[
-          { to: '/', label: 'Home' },
-          { to: '/services', label: 'Service guides' },
+          { to: '/', label: t('common.home') },
+          { to: '/services', label: t('nav.services') },
           { to: `/services?category=${service.category_slug}`, label: service.category_name },
         ]}
         kicker={[service.agency_acronym, service.agency_name].filter(Boolean).join(' — ')}
@@ -186,7 +192,7 @@ export default function ServiceDetailPage() {
           <span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-semibold text-stone-700 ring-1 ring-stone-200">
             {service.category_name}
           </span>
-          <VerifiedBadge date={service.last_verified_at} label="Last verified" />
+          <VerifiedBadge date={service.last_verified_at} label={t('detail.lastVerified')} />
         </div>
       </PageHeader>
 
@@ -198,13 +204,13 @@ export default function ServiceDetailPage() {
             </div>
 
             {service.description && (
-              <DetailSection id="about" icon={Info} title="About this service">
+              <DetailSection id="about" icon={Info} title={t('detail.about')}>
                 <p className="leading-relaxed text-stone-700">{service.description}</p>
               </DetailSection>
             )}
 
             {service.eligibility?.length > 0 && (
-              <DetailSection id="eligibility" icon={UserCheck} title="Who can apply">
+              <DetailSection id="eligibility" icon={UserCheck} title={t('detail.eligibility')}>
                 <ul className="space-y-3">
                   {service.eligibility.map((condition) => (
                     <li key={condition} className="flex gap-3 text-stone-700">
@@ -217,13 +223,13 @@ export default function ServiceDetailPage() {
             )}
 
             {service.requirements?.length > 0 && (
-              <DetailSection id="checklist" icon={ListChecks} title="Document checklist">
+              <DetailSection id="checklist" icon={ListChecks} title={t('detail.checklist')}>
                 <Checklist key={service.slug} slug={service.slug} requirements={service.requirements} />
               </DetailSection>
             )}
 
             {service.steps?.length > 0 && (
-              <DetailSection id="steps" icon={ListOrdered} title="Step-by-step">
+              <DetailSection id="steps" icon={ListOrdered} title={t('detail.steps')}>
                 <ol className="space-y-6">
                   {service.steps.map((step, index) => (
                     <li key={step.step_number} className="relative flex gap-4">
@@ -244,7 +250,7 @@ export default function ServiceDetailPage() {
             )}
 
             {service.offices?.length > 0 && (
-              <DetailSection id="offices" icon={MapPin} title="Where to go">
+              <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')}>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {service.offices.map((office) => (
                     <OfficeCard key={office.id} office={office} showAgency={false} />
@@ -265,8 +271,8 @@ export default function ServiceDetailPage() {
               <AtAGlance service={service} />
 
               {sections.length > 1 && (
-                <nav aria-label="On this page" className="rounded-xl border border-stone-200 bg-white p-5 print:hidden">
-                  <p className="text-xs font-bold uppercase tracking-wide text-stone-500">On this page</p>
+                <nav aria-label={t('detail.onThisPage')} className="rounded-xl border border-stone-200 bg-white p-5 print:hidden">
+                  <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{t('detail.onThisPage')}</p>
                   <ul className="mt-2 space-y-0.5 border-l-2 border-stone-100">
                     {sections.map((section) => (
                       <li key={section.id}>

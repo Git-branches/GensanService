@@ -21,28 +21,16 @@ import AgencyRow from '../components/AgencyRow'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
+import { useI18n } from '../i18n/context'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { getAgencies, getCategories, getServices, getStats } from '../services/api'
 
-const STEPS = [
-  { title: 'Find your service', text: 'Search by keyword, or browse guides by category or agency.' },
-  { title: 'Prepare your documents', text: 'Tick off the checklist so nothing is missing on the day.' },
-  { title: 'Visit the right office', text: 'Follow the steps, check office hours, and get directions.' },
-]
-
-const ACCURACY_POINTS = [
-  { icon: Link2, title: 'Official sources linked', text: 'Each guide points back to the agency’s own website or published rules.' },
-  { icon: BadgeCheck, title: 'Dated verification', text: 'Every guide shows when its information was last checked.' },
-  { icon: BookOpenText, title: 'Simple, ordered steps', text: 'Requirements and procedures written in plain language.' },
-]
-
-const REMINDERS = [
-  { icon: ShieldAlert, text: 'This is an independent guide, not an official government website. We do not process applications.' },
-  { icon: RefreshCw, text: 'Requirements, fees, and office hours can change. Confirm with the agency before you go.' },
-  { icon: KeyRound, text: 'Never share your government account passwords or one-time PINs (OTPs) with anyone.' },
-]
+// Icons for home.accuracy.points and home.reminders.items, in the same order as the messages.
+const ACCURACY_ICONS = [Link2, BadgeCheck, BookOpenText]
+const REMINDER_ICONS = [ShieldAlert, RefreshCw, KeyRound]
 
 function GuideSearch({ categories, quickPicks }) {
+  const { t } = useI18n()
   const navigate = useNavigate()
 
   function handleSubmit(event) {
@@ -66,7 +54,7 @@ function GuideSearch({ categories, quickPicks }) {
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end md:grid-cols-[1.6fr_1fr_auto]">
         <div className="sm:col-span-2 md:col-span-1">
           <label htmlFor="hero-q" className="text-sm font-semibold text-stone-700">
-            What do you need?
+            {t('home.directory.whatDoYouNeed')}
           </label>
           <div className="relative mt-1.5">
             <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -74,14 +62,14 @@ function GuideSearch({ categories, quickPicks }) {
               id="hero-q"
               name="q"
               type="search"
-              placeholder="e.g. birth certificate"
+              placeholder={t('common.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-300 bg-white py-3 pl-10 pr-3 text-base placeholder:text-stone-400 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
             />
           </div>
         </div>
         <div>
           <label htmlFor="hero-category" className="text-sm font-semibold text-stone-700">
-            Category
+            {t('common.category')}
           </label>
           <div className="relative mt-1.5">
             <select
@@ -90,7 +78,7 @@ function GuideSearch({ categories, quickPicks }) {
               defaultValue=""
               className="w-full cursor-pointer appearance-none rounded-lg border border-stone-300 bg-white py-3 pl-3 pr-9 text-base focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
             >
-              <option value="">All categories</option>
+              <option value="">{t('common.allCategories')}</option>
               {categories?.map((category) => (
                 <option key={category.id} value={category.slug}>
                   {category.name}
@@ -104,13 +92,13 @@ function GuideSearch({ categories, quickPicks }) {
           type="submit"
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800"
         >
-          Search guides
+          {t('home.directory.searchGuides')}
         </button>
       </div>
 
       {quickPicks.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-100 pt-4 text-sm">
-          <span className="font-medium text-stone-500">Popular agencies:</span>
+          <span className="font-medium text-stone-500">{t('home.directory.popularAgencies')}</span>
           {quickPicks.map((agency) => (
             <Link
               key={agency.id}
@@ -127,20 +115,23 @@ function GuideSearch({ categories, quickPicks }) {
 }
 
 function HowItWorks() {
+  const { t } = useI18n()
+  const steps = t('home.how.steps')
+
   return (
     <section className="relative overflow-hidden bg-bay-900 py-14 text-white sm:py-16">
       <BayPattern className="text-bay-700/60" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           tone="dark"
-          kicker="How it works"
-          title="Be ready in three steps"
-          description="A smoother trip to the office starts with knowing exactly what to bring."
+          kicker={t('home.how.kicker')}
+          title={t('home.how.title')}
+          description={t('home.how.description')}
         />
         <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
-          {STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <li key={step.title} className="relative flex gap-4 md:flex-col">
-              {index < STEPS.length - 1 && (
+              {index < steps.length - 1 && (
                 <span
                   aria-hidden="true"
                   className="absolute left-14 right-0 top-5 hidden border-t-2 border-dashed border-bay-600 md:block"
@@ -160,7 +151,7 @@ function HowItWorks() {
           to="/services"
           className="mt-10 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-bold text-bay-800 transition-colors hover:bg-sun-100"
         >
-          Start browsing guides <ArrowRight size={16} aria-hidden="true" />
+          {t('home.how.startBrowsing')} <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </div>
     </section>
@@ -168,15 +159,16 @@ function HowItWorks() {
 }
 
 function BrowseTabs({ categories, agencies, loading, error }) {
+  const { t } = useI18n()
   const [tab, setTab] = useState('category')
   const tabs = [
-    { id: 'category', label: 'By category' },
-    { id: 'agency', label: 'By agency' },
+    { id: 'category', label: t('home.directory.byCategory') },
+    { id: 'agency', label: t('home.directory.byAgency') },
   ]
 
   return (
     <div className="mt-5">
-      <div role="tablist" aria-label="Browse guides" className="flex gap-1 border-b border-stone-200">
+      <div role="tablist" aria-label={t('home.directory.browseLabel')} className="flex gap-1 border-b border-stone-200">
         {tabs.map((item) => (
           <button
             key={item.id}
@@ -199,7 +191,7 @@ function BrowseTabs({ categories, agencies, loading, error }) {
 
       <div className="mt-6">
         {loading && <CardGridSkeleton count={3} />}
-        {error && <ErrorState message={error} />}
+        {error && <ErrorState message={t('common.loadError')} />}
 
         {tab === 'category' && categories && (
           <div id="panel-category" role="tabpanel" aria-labelledby="tab-category" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -224,6 +216,7 @@ function BrowseTabs({ categories, agencies, loading, error }) {
 }
 
 export default function HomePage() {
+  const { t } = useI18n()
   usePageTitle(null)
 
   const categories = useFetch(getCategories, [])
@@ -238,9 +231,9 @@ export default function HomePage() {
 
   const statItems = stats
     ? [
-        { value: stats.services, label: 'Service guides' },
-        { value: stats.agencies, label: 'Agencies' },
-        { value: stats.offices, label: 'Offices listed' },
+        { value: stats.services, label: t('home.directory.statGuides') },
+        { value: stats.agencies, label: t('home.directory.statAgencies') },
+        { value: stats.offices, label: t('home.directory.statOffices') },
       ]
     : []
 
@@ -252,19 +245,18 @@ export default function HomePage() {
           <div className="lg:col-span-5">
             <p className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-stone-600 ring-1 ring-stone-200">
               <Info size={14} aria-hidden="true" className="text-bay-600" />
-              Independent guide for residents of General Santos City
+              {t('home.badge')}
             </p>
             <h1 className="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight text-bay-950 sm:text-5xl">
-              Know the requirements{' '}
+              {t('home.titleStart')}{' '}
               <span className="relative whitespace-nowrap text-bay-600">
-                before you go
+                {t('home.titleHighlight')}
                 <span aria-hidden="true" className="absolute inset-x-0 -bottom-1 h-1.5 rounded-full bg-sun-400" />
               </span>{' '}
-              to the office.
+              {t('home.titleEnd')}
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-stone-600">
-              Clear guides for SSS, PhilHealth, Pag-IBIG, PSA, and city government services — what to bring,
-              where to go, and what to expect.
+              {t('home.intro')}
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -272,19 +264,19 @@ export default function HomePage() {
                 href="#find-a-guide"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800 lg:px-5 xl:px-6"
               >
-                <Search size={18} aria-hidden="true" /> Find a guide
+                <Search size={18} aria-hidden="true" /> {t('home.findGuide')}
               </a>
               <Link
                 to="/agencies"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-700 transition-colors hover:bg-stone-50 lg:px-5 xl:px-6"
               >
-                Browse agencies <ArrowRight size={16} aria-hidden="true" />
+                {t('home.browseAgencies')} <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
 
             <p className="mt-6 flex items-center gap-2 text-sm text-stone-600">
               <BadgeCheck size={17} aria-hidden="true" className="shrink-0 text-emerald-600" />
-              Every guide links to official sources and shows when it was last verified.
+              {t('home.verifiedNote')}
             </p>
           </div>
 
@@ -302,14 +294,14 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-9">
-              <Kicker>Service directory</Kicker>
+              <Kicker>{t('home.directory.kicker')}</Kicker>
               <h2
                 id="find-a-guide-title"
                 className="mt-2 text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl"
               >
-                What do you need to process?
+                {t('home.directory.title')}
               </h2>
-              <p className="mt-2 text-stone-600">Search for a service, or browse guides by category or agency below.</p>
+              <p className="mt-2 text-stone-600">{t('home.directory.description')}</p>
               <div className="mt-6">
                 <GuideSearch categories={categories.data} quickPicks={quickPicks} />
               </div>
@@ -328,12 +320,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-14 flex flex-wrap items-end justify-between gap-4 border-t border-stone-200 pt-10">
-            <h3 className="text-xl font-extrabold tracking-tight text-bay-950">Or browse guides</h3>
+            <h3 className="text-xl font-extrabold tracking-tight text-bay-950">{t('home.directory.orBrowse')}</h3>
             <Link
               to="/agencies"
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:text-bay-800 hover:underline"
             >
-              All agencies
+              {t('home.directory.allAgencies')}
               <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -349,15 +341,15 @@ export default function HomePage() {
       <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionHeading
-            kicker="Latest updates"
-            title="Recently verified guides"
-            description="Guides whose details were checked against official sources most recently."
-            action={{ to: '/services', label: 'All service guides' }}
+            kicker={t('home.recent.kicker')}
+            title={t('home.recent.title')}
+            description={t('home.recent.description')}
+            action={{ to: '/services', label: t('home.recent.allGuides') }}
           />
           <div className="mt-8">
             {recent.loading && <CardGridSkeleton count={3} />}
-            {recent.error && <ErrorState message={recent.error} />}
-            {recent.data?.length === 0 && <EmptyState title="No guides published yet" />}
+            {recent.error && <ErrorState message={t('common.loadError')} />}
+            {recent.data?.length === 0 && <EmptyState title={t('home.recent.empty')} />}
             {recent.data?.length > 0 && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {recent.data.map((service) => (
@@ -372,9 +364,11 @@ export default function HomePage() {
       <section className="border-t border-stone-200 bg-white py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
           <div>
-            <SectionHeading kicker="Our approach" title="How we keep guides accurate" />
+            <SectionHeading kicker={t('home.accuracy.kicker')} title={t('home.accuracy.title')} />
             <ul className="mt-8 space-y-6">
-              {ACCURACY_POINTS.map(({ icon: Icon, title, text }) => (
+              {t('home.accuracy.points').map(({ title, text }, index) => {
+                const Icon = ACCURACY_ICONS[index]
+                return (
                 <li key={title} className="flex gap-4">
                   <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bay-50 text-bay-700 ring-1 ring-bay-100">
                     <Icon size={21} aria-hidden="true" />
@@ -384,19 +378,23 @@ export default function HomePage() {
                     <span className="mt-0.5 block text-stone-600">{text}</span>
                   </span>
                 </li>
-              ))}
+                )
+              })}
             </ul>
           </div>
 
           <aside className="self-start rounded-xl border border-sun-200 border-l-[6px] border-l-sun-400 bg-sun-50 p-6 sm:p-8">
-            <h2 className="text-xl font-extrabold text-bay-950">Before you visit an office</h2>
+            <h2 className="text-xl font-extrabold text-bay-950">{t('home.reminders.title')}</h2>
             <ul className="mt-5 space-y-4">
-              {REMINDERS.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex gap-3 text-stone-700">
-                  <Icon size={19} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-700" />
-                  <span className="leading-relaxed">{text}</span>
-                </li>
-              ))}
+              {t('home.reminders.items').map((text, index) => {
+                const Icon = REMINDER_ICONS[index]
+                return (
+                  <li key={text} className="flex gap-3 text-stone-700">
+                    <Icon size={19} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-700" />
+                    <span className="leading-relaxed">{text}</span>
+                  </li>
+                )
+              })}
             </ul>
           </aside>
         </div>

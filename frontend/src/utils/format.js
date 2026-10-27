@@ -5,10 +5,6 @@ export function formatDate(value, options = { year: 'numeric', month: 'short', d
   return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-PH', options)
 }
 
-export function plural(count, singular, pluralForm = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : pluralForm}`
-}
-
 function placeQuery(office) {
   return [office.name, office.address, office.barangay, office.city || 'General Santos City']
     .filter(Boolean)

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Check, Printer, RotateCcw } from 'lucide-react'
+import { useI18n } from '../i18n/context'
 
 const storageKey = (slug) => `gsn:checklist:${slug}`
 
@@ -20,6 +21,7 @@ function save(slug, value) {
 }
 
 export default function Checklist({ slug, requirements }) {
+  const { t } = useI18n()
   const [checked, setChecked] = useState(() => readSaved(slug))
 
   const readyCount = requirements.filter((item) => checked[item.id]).length
@@ -36,13 +38,13 @@ export default function Checklist({ slug, requirements }) {
       <div className={`rounded-lg border p-4 print:hidden ${done ? 'border-emerald-200 bg-emerald-50' : 'border-bay-100 bg-bay-50'}`}>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span className="font-bold text-bay-950">
-            {done ? 'All set — you have everything on the list' : `${readyCount} of ${requirements.length} documents ready`}
+            {done ? t('checklist.allSet') : t('checklist.ready', { ready: readyCount, total: requirements.length })}
           </span>
           <span className="font-semibold tabular-nums text-stone-600">{percent}%</span>
         </div>
         <div
           role="progressbar"
-          aria-label="Checklist progress"
+          aria-label={t('checklist.progress')}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
@@ -85,7 +87,7 @@ export default function Checklist({ slug, requirements }) {
                   </span>
                   {Boolean(item.is_optional) && (
                     <span className="ml-2 rounded bg-sun-50 px-1.5 py-0.5 text-xs font-semibold text-sun-800 ring-1 ring-sun-200">
-                      If applicable
+                      {t('checklist.ifApplicable')}
                     </span>
                   )}
                   {item.notes && <span className="mt-1 block text-sm text-stone-600">{item.notes}</span>}
@@ -102,7 +104,7 @@ export default function Checklist({ slug, requirements }) {
           onClick={() => window.print()}
           className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
-          <Printer size={16} aria-hidden="true" /> Print checklist
+          <Printer size={16} aria-hidden="true" /> {t('checklist.print')}
         </button>
         {readyCount > 0 && (
           <button
@@ -110,14 +112,13 @@ export default function Checklist({ slug, requirements }) {
             onClick={() => update({})}
             className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-100"
           >
-            <RotateCcw size={16} aria-hidden="true" /> Reset
+            <RotateCcw size={16} aria-hidden="true" /> {t('checklist.reset')}
           </button>
         )}
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-stone-500">
-        Your progress is saved only on this device. Completing this checklist does not guarantee that your
-        application will be approved — the agency makes the final decision.
+        {t('checklist.note')}
       </p>
     </div>
   )

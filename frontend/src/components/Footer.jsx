@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom'
 import { ExternalLink, KeyRound, RefreshCw, ShieldAlert } from 'lucide-react'
 import Logo from './Logo'
 import TunaBadge from './TunaBadge'
+import { useI18n } from '../i18n/context'
 
 const EXPLORE_LINKS = [
-  { to: '/services', label: 'Service guides' },
-  { to: '/agencies', label: 'Government agencies' },
-  { to: '/offices', label: 'Office directory' },
+  { to: '/services', label: 'nav.services' },
+  { to: '/agencies', label: 'footer.governmentAgencies' },
+  { to: '/offices', label: 'footer.officeDirectory' },
 ]
 
 const OFFICIAL_PORTALS = [
@@ -15,28 +16,26 @@ const OFFICIAL_PORTALS = [
   { href: 'https://www.gov.ph', label: 'GOV.PH' },
 ]
 
-const REMINDERS = [
-  { icon: ShieldAlert, text: 'This is not an official government website. Information is for guidance only.' },
-  { icon: RefreshCw, text: 'Requirements can change. Confirm with the responsible agency.' },
-  { icon: KeyRound, text: 'We never ask for your government account passwords or OTPs.' },
-]
+// Icons for the footer.reminders messages, in the same order.
+const REMINDER_ICONS = [ShieldAlert, RefreshCw, KeyRound]
 
 function ColumnTitle({ children }) {
   return <h2 className="text-sm font-bold text-bay-950">{children}</h2>
 }
 
 export default function Footer() {
+  const { t } = useI18n()
+
   return (
     <footer className="mt-auto border-t-4 border-sun-400 bg-stone-100 print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Link to="/" aria-label="Andam GenSan home" className="inline-block">
+            <Link to="/" aria-label={t('nav.homeLink')} className="inline-block">
               <Logo size="lg" />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-stone-600">
-              An independent community guide to government requirements, checklists, and offices for residents
-              of General Santos City.
+              {t('footer.about')}
             </p>
             <div className="mt-6">
               <TunaBadge />
@@ -44,12 +43,12 @@ export default function Footer() {
           </div>
 
           <div className="lg:col-span-2">
-            <ColumnTitle>Explore</ColumnTitle>
+            <ColumnTitle>{t('footer.explore')}</ColumnTitle>
             <ul className="mt-4 space-y-2.5 text-sm">
               {EXPLORE_LINKS.map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-stone-600 hover:text-bay-700 hover:underline">
-                    {link.label}
+                    {t(link.label)}
                   </Link>
                 </li>
               ))}
@@ -57,7 +56,7 @@ export default function Footer() {
           </div>
 
           <div className="lg:col-span-3">
-            <ColumnTitle>Official portals</ColumnTitle>
+            <ColumnTitle>{t('footer.officialPortals')}</ColumnTitle>
             <ul className="mt-4 space-y-2.5 text-sm">
               {OFFICIAL_PORTALS.map((portal) => (
                 <li key={portal.href}>
@@ -69,7 +68,7 @@ export default function Footer() {
                   >
                     {portal.label}{' '}
                     <ExternalLink size={13} aria-hidden="true" className="inline align-[-1px]" />
-                    <span className="sr-only">(opens in a new tab)</span>
+                    <span className="sr-only">{t('common.opensInNewTab')}</span>
                   </a>
                 </li>
               ))}
@@ -77,14 +76,17 @@ export default function Footer() {
           </div>
 
           <div className="lg:col-span-3">
-            <ColumnTitle>Good to know</ColumnTitle>
+            <ColumnTitle>{t('footer.goodToKnow')}</ColumnTitle>
             <ul className="mt-4 space-y-3 text-sm text-stone-600">
-              {REMINDERS.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex gap-2.5">
-                  <Icon size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-600" />
-                  <span>{text}</span>
-                </li>
-              ))}
+              {t('footer.reminders').map((text, index) => {
+                const Icon = REMINDER_ICONS[index]
+                return (
+                  <li key={text} className="flex gap-2.5">
+                    <Icon size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-600" />
+                    <span>{text}</span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>
@@ -92,8 +94,8 @@ export default function Footer() {
 
       <div className="bg-bay-900 text-bay-100">
         <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>&copy; {new Date().getFullYear()} Andam GenSan — independent community project.</p>
-          <p>Not affiliated with any government agency.</p>
+          <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+          <p>{t('footer.notAffiliated')}</p>
         </div>
       </div>
     </footer>

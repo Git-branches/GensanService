@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/context'
+
 function TunaArt({ className }) {
   return (
     <svg viewBox="0 -4 120 88" fill="none" aria-hidden="true" className={className}>
@@ -25,13 +27,15 @@ function TunaArt({ className }) {
 }
 
 export default function TunaBadge() {
+  const { t } = useI18n()
+
   return (
     <div className="inline-flex items-center gap-4 rounded-2xl border border-stone-200 bg-white py-3 pl-3 pr-5">
       <TunaArt className="h-auto w-24 shrink-0" />
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-sun-700">Made for GenSan</p>
-        <p className="mt-0.5 text-sm font-extrabold text-bay-950">The Tuna Capital of the Philippines</p>
-        <p className="mt-1 text-xs text-stone-600">Prepare · Know · Go</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-sun-700">{t('tuna.madeFor')}</p>
+        <p className="mt-0.5 text-sm font-extrabold text-bay-950">{t('tuna.capital')}</p>
+        <p className="mt-1 text-xs text-stone-600">{t('tuna.tagline')}</p>
       </div>
     </div>
   )

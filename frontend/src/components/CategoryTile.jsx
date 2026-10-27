@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { renderCategoryIcon } from '../utils/icons'
-import { plural } from '../utils/format'
+import { useI18n } from '../i18n/context'
 
 const TINTS = [
   'bg-bay-50 text-bay-700 ring-bay-100',
@@ -13,6 +13,7 @@ const TINTS = [
 ]
 
 export default function CategoryTile({ category, index = 0, compact = false }) {
+  const { t } = useI18n()
   const count = Number(category.service_count ?? 0)
 
   return (
@@ -30,7 +31,7 @@ export default function CategoryTile({ category, index = 0, compact = false }) {
       <span className="min-w-0">
         <span className="block font-bold leading-snug text-bay-950 group-hover:text-bay-700">{category.name}</span>
         <span className="mt-0.5 block text-xs font-medium text-stone-500">
-          {count > 0 ? plural(count, 'guide') : 'Guides coming soon'}
+          {count > 0 ? t('common.guidesCount', { count }) : t('categoryTile.comingSoon')}
         </span>
       </span>
     </Link>

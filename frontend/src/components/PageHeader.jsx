@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import BayPattern from './BayPattern'
+import { useI18n } from '../i18n/context'
 
 export function Breadcrumbs({ items }) {
+  const { t } = useI18n()
+
   return (
-    <nav aria-label="Breadcrumb" className="text-sm text-stone-600">
+    <nav aria-label={t('common.breadcrumb')} className="text-sm text-stone-600">
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((item, index) => (
           <li key={item.label} className="flex items-center gap-1.5">
