@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="border-b border-stone-200 bg-white text-xs text-stone-600 print:hidden">
+      <div className="border-t-[3px] border-b border-t-sun-400 border-b-stone-200 bg-white text-xs text-stone-600 print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6">
           <p className="flex items-center gap-1.5">
             <Info size={14} aria-hidden="true" className="shrink-0 text-bay-600" />
