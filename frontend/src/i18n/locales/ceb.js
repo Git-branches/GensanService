@@ -2,7 +2,7 @@
 // First draft: have a native speaker review it before relying on it.
 export default {
   common: {
-    skipToContent: 'Adto dayon sa sulod sa panid',
+    skipToContent: 'Adto dayon sa sulod',
     opensInNewTab: '(maabli sa bag-ong tab)',
     loading: 'Naga-load...',
     loadError: 'Dili ma-load. Susiha ang imong koneksyon ug sulayi pag-usab.',
@@ -25,7 +25,7 @@ export default {
   },
   nav: {
     main: 'Panguna',
-    homeLink: 'Panguna nga panid sa Andam GenSan',
+    homeLink: 'Panguna nga gabay sa Andam GenSan',
     services: 'Mga giya sa serbisyo',
     agencies: 'Mga ahensya',
     offices: 'Mga opisina',
