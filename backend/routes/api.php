@@ -65,8 +65,11 @@ $router->get('/api/admin/services/{id}', [$adminServices, 'show']);
 $router->put('/api/admin/services/{id}', [$adminServices, 'update']);
 $router->post('/api/admin/services/{id}/status', [$adminServices, 'setStatus']);
 
-foreach (['agencies' => new AdminAgencyController(), 'offices' => new AdminOfficeController(), 'categories' => new AdminCategoryController()] as $resource => $controller) {
+$adminAgencies = new AdminAgencyController();
+foreach (['agencies' => $adminAgencies, 'offices' => new AdminOfficeController(), 'categories' => new AdminCategoryController()] as $resource => $controller) {
     $router->get("/api/admin/{$resource}", [$controller, 'index']);
     $router->post("/api/admin/{$resource}", [$controller, 'store']);
     $router->put("/api/admin/{$resource}/{id}", [$controller, 'update']);
 }
+$router->post('/api/admin/agencies/{id}/logo', [$adminAgencies, 'uploadLogo']);
+$router->delete('/api/admin/agencies/{id}/logo', [$adminAgencies, 'removeLogo']);

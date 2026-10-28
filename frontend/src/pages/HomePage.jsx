@@ -17,7 +17,7 @@ import HeroPhoto from '../components/HeroPhoto'
 import SectionHeading from '../components/SectionHeading'
 import { Kicker } from '../components/PageHeader'
 import CategoryTile from '../components/CategoryTile'
-import AgencyRow from '../components/AgencyRow'
+import AgencyCard from '../components/AgencyCard'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -203,9 +203,11 @@ function BrowseTabs({ categories, agencies, loading, error }) {
 
         {tab === 'agency' && agencies && (
           <div id="panel-agency" role="tabpanel" aria-labelledby="tab-agency">
-            <ul className="divide-y divide-stone-100 overflow-hidden rounded-xl border border-stone-200 bg-white">
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {agencies.map((agency) => (
-                <AgencyRow key={agency.id} agency={agency} />
+                <li key={agency.id}>
+                  <AgencyCard agency={agency} />
+                </li>
               ))}
             </ul>
           </div>

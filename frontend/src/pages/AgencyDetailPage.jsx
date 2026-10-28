@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { ExternalLink } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import { AgencyTypeBadge } from '../components/AgencyRow'
+import { AgencyTypeBadge } from '../components/AgencyCard'
 import ServiceCard from '../components/ServiceCard'
 import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState, LoadingState } from '../components/StateMessage'

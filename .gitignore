@@ -27,4 +27,6 @@ dist-ssr
 backend/vendor
 backend/.env
 backend/storage/logs/*
+backend/public/uploads/*
+!backend/public/uploads/.htaccess
 !backend/storage/logs/.gitkeep

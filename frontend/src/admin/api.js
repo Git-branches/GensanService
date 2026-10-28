@@ -18,15 +18,16 @@ export class ApiError extends Error {
 }
 
 async function request(path, { method = 'GET', body } = {}) {
+  const isUpload = body instanceof FormData
   const headers = { Accept: 'application/json' }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (body !== undefined && !isUpload) headers['Content-Type'] = 'application/json'
   if (method !== 'GET' && csrfToken) headers['X-CSRF-Token'] = csrfToken
 
   const response = await fetch(`/api/admin${path}`, {
     method,
     headers,
     credentials: 'same-origin',
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined || isUpload ? body : JSON.stringify(body),
   })
   const json = await response.json().catch(() => null)
 
@@ -73,4 +74,10 @@ export const adminApi = {
   list: (resource) => request(`/${resource}`),
   create: (resource, data) => request(`/${resource}`, { method: 'POST', body: data }),
   update: (resource, id, data) => request(`/${resource}/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
+  uploadAgencyLogo: (id, file) => {
+    const body = new FormData()
+    body.append('logo', file)
+    return request(`/agencies/${encodeURIComponent(id)}/logo`, { method: 'POST', body })
+  },
+  removeAgencyLogo: (id) => request(`/agencies/${encodeURIComponent(id)}/logo`, { method: 'DELETE' }),
 }

@@ -1,6 +1,6 @@
 import PageHeader from '../components/PageHeader'
 import staffImage from '../assets/page-agencies.webp'
-import AgencyRow from '../components/AgencyRow'
+import AgencyCard from '../components/AgencyCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -49,9 +49,11 @@ export default function AgenciesPage() {
                     {items.length}
                   </span>
                 </h2>
-                <ul className="mt-4 divide-y divide-stone-100 overflow-hidden rounded-xl border border-stone-200 bg-white">
+                <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {items.map((agency) => (
-                    <AgencyRow key={agency.id} agency={agency} />
+                    <li key={agency.id}>
+                      <AgencyCard agency={agency} />
+                    </li>
                   ))}
                 </ul>
               </div>

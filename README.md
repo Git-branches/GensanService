@@ -56,7 +56,7 @@ For administrators (`/admin`):
 
 - A dashboard of guides needing re-verification (not checked in 6+ months), open reports, drafts, and recent activity.
 - Create, edit, publish, unpublish, archive, and restore service guides.
-- Manage agencies, offices, and categories. Records are deactivated, never deleted.
+- Manage agencies (with logos), offices, and categories. Records are deactivated, never deleted.
 - Review residents' reports, and see an activity log of every sign-in and change.
 - Manage admin accounts and roles (super admins only), and change your own password.
 
@@ -166,7 +166,7 @@ npm run build
 
 1. Build the frontend with `npm run build` in `frontend/`. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
 2. Copy `backend/` to the server, outside the public web folder if possible, and run `composer install --no-dev --optimize-autoloader`.
-3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. Make `backend/storage/logs/` writable by the web server.
+3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. Make `backend/storage/logs/` and `backend/public/uploads/` writable by the web server. Uploaded agency logos are saved in `uploads/`, whose `.htaccess` blocks scripts from running there.
 4. Serve both from one HTTPS domain: the frontend at `/` and the API's `public/` folder at `/api`. Enable `mod_rewrite` (`mod_headers` is recommended):
 
    ```apache
@@ -243,6 +243,7 @@ All admin endpoints require a signed-in session. Every request except `GET` must
 | POST | `/api/admin/services/{id}/status` | Set `draft`, `published`, or `archived` |
 | GET, POST | `/api/admin/agencies`, `/api/admin/offices`, `/api/admin/categories` | List or create |
 | PUT | `/api/admin/agencies/{id}`, `/api/admin/offices/{id}`, `/api/admin/categories/{id}` | Update |
+| POST, DELETE | `/api/admin/agencies/{id}/logo` | Upload (multipart field `logo`: PNG, JPG, or WebP up to 2 MB, saved as a 256px WebP) or remove an agency logo |
 | GET | `/api/admin/reports` | Reports. Query: `status` (`open`, `pending`, `reviewing`, `resolved`, `dismissed`) |
 | PUT | `/api/admin/reports/{id}` | Set a report's `status` and `admin_note` (any role) |
 | GET, POST | `/api/admin/admins` | List or create admin accounts (super admins only) |

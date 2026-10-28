@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react'
-import { ExternalLink, Pencil, Plus } from 'lucide-react'
+import { useCallback, useId, useState } from 'react'
+import { ExternalLink, Pencil, Plus, Upload } from 'lucide-react'
+import AgencyLogo from '../../components/AgencyLogo'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { adminApi } from '../api'
 import { canEditContent, useAdminAuth } from '../auth'
@@ -24,7 +25,67 @@ function toForm(agency) {
   }
 }
 
-function AgencyFormModal({ agency, readOnly, onClose, onSaved }) {
+// Logo changes save immediately, separately from the form, so they need an existing agency.
+function LogoField({ agency, readOnly, onChange }) {
+  const inputId = useId()
+  const [logoUrl, setLogoUrl] = useState(agency.logo_url)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  async function run(action) {
+    setBusy(true)
+    setError('')
+    try {
+      const result = await action()
+      setLogoUrl(result.logo_url)
+      onChange()
+    } catch (err) {
+      setError(err.details?.logo || err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function handleFile(event) {
+    const file = event.target.files[0]
+    event.target.value = ''
+    if (file) run(() => adminApi.uploadAgencyLogo(agency.id, file))
+  }
+
+  return (
+    <div>
+      <p className="text-sm font-semibold text-stone-700">Logo</p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-4">
+        <AgencyLogo agency={{ ...agency, logo_url: logoUrl }} />
+        {!readOnly && (
+          <div className="flex flex-wrap gap-2">
+            <label
+              htmlFor={inputId}
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-bay-500 ${busy ? 'pointer-events-none opacity-60' : ''}`}
+            >
+              <Upload size={15} aria-hidden="true" /> {logoUrl ? 'Replace logo' : 'Upload logo'}
+              <input id={inputId} type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={handleFile} className="sr-only" />
+            </label>
+            {logoUrl && (
+              <Button variant="danger" disabled={busy} onClick={() => run(() => adminApi.removeAgencyLogo(agency.id))}>
+                Remove
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+      {!readOnly && (
+        <p className="mt-1.5 text-xs text-stone-500">
+          PNG, JPG, or WebP up to 2 MB; square images look best. Use the logo from the agency's official website.
+          Logo changes are saved right away.
+        </p>
+      )}
+      {error && <p className="mt-1 text-xs font-medium text-red-600">{error}</p>}
+    </div>
+  )
+}
+
+function AgencyFormModal({ agency, readOnly, onClose, onSaved, onLogoChange }) {
   return (
     <FormModal
       title={agency ? `Edit ${agency.acronym || agency.name}` : 'Add agency'}
@@ -38,6 +99,12 @@ function AgencyFormModal({ agency, readOnly, onClose, onSaved }) {
     >
       {(values, set, errors) => (
         <>
+          {agency ? (
+            <LogoField agency={agency} readOnly={readOnly} onChange={onLogoChange} />
+          ) : (
+            <p className="rounded-lg bg-stone-50 px-3 py-2.5 text-xs text-stone-600">You can add the agency's logo after saving it.</p>
+          )}
+
           <div className="grid gap-4 sm:grid-cols-[1fr_10rem]">
             <Field id="agency-name" label="Agency name" required error={errors.name}>
               <input id="agency-name" data-autofocus value={values.name} maxLength={150} aria-invalid={Boolean(errors.name)} onChange={(e) => set({ name: e.target.value })} className={inputClass} placeholder="e.g. Social Security System" />
@@ -117,15 +184,18 @@ export default function AdminAgenciesPage() {
       key: 'name',
       label: 'Agency',
       render: (a) => (
-        <>
-          <span className="font-semibold text-bay-900">{a.name}</span>
-          {a.acronym && <span className="ml-1.5 text-stone-500">({a.acronym})</span>}
-          {a.official_website && (
-            <a href={a.official_website} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex items-center gap-1 text-xs text-stone-500 hover:text-bay-700">
-              {a.official_website.replace(/^https?:\/\//, '')} <ExternalLink size={11} aria-hidden="true" />
-            </a>
-          )}
-        </>
+        <div className="flex items-center gap-3">
+          <AgencyLogo agency={a} size="sm" />
+          <div className="min-w-0">
+            <span className="font-semibold text-bay-900">{a.name}</span>
+            {a.acronym && <span className="ml-1.5 text-stone-500">({a.acronym})</span>}
+            {a.official_website && (
+              <a href={a.official_website} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex items-center gap-1 text-xs text-stone-500 hover:text-bay-700">
+                {a.official_website.replace(/^https?:\/\//, '')} <ExternalLink size={11} aria-hidden="true" />
+              </a>
+            )}
+          </div>
+        </div>
       ),
     },
     { key: 'type', label: 'Type', hideBelow: 'xl', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.is_local_government ? 'Local government' : 'National'}</span> },
@@ -175,6 +245,7 @@ export default function AdminAgenciesPage() {
           agency={editing === 'new' ? null : editing}
           readOnly={!canEdit}
           onClose={() => setEditing(null)}
+          onLogoChange={reload}
           onSaved={(message) => {
             setEditing(null)
             setToast(message)
