@@ -1,17 +1,14 @@
+import logoMark from '../assets/andam-logo-mark.png'
+
+// Transparent cutout of the Andam GenSan pin (source: assets/gensan-logo.jpg), 154 × 192.
 export function LogoMark({ className = 'h-10 w-10' }) {
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true" className={`shrink-0 ${className}`}>
-      <rect width="48" height="48" rx="11" fill="#15576F" />
-      <path d="M11 38 20.5 10h7L37 38h-5.8L24 15.8 16.8 38Z" fill="#fff" />
-      {/* Teal underlay cuts a gap where the check crosses the A. */}
-      <path d="M20.4 28 23.2 31.6 36 17.4" fill="none" stroke="#15576F" strokeWidth="7.6" />
-      <path d="M20.4 28 23.2 31.6 36 17.4" fill="none" stroke="#F7BD16" strokeWidth="4.2" />
-    </svg>
-  )
+  return <img src={logoMark} alt="" width="154" height="192" draggable="false" className={`shrink-0 object-contain ${className}`} />
 }
 
-export default function Logo({ subtitle, size = 'md' }) {
-  const markSize = size === 'lg' ? 'h-11 w-11' : 'h-10 w-10'
+// tone="dark" is for the navy header: white "Andam", light blue "GenSan", soft tagline.
+export default function Logo({ subtitle, size = 'md', tone = 'light' }) {
+  const dark = tone === 'dark'
+  const markSize = size === 'lg' ? 'h-12 w-10' : 'h-11 w-9'
   const wordSize = size === 'lg' ? 'text-xl' : 'text-base sm:text-lg'
 
   return (
@@ -19,9 +16,14 @@ export default function Logo({ subtitle, size = 'md' }) {
       <LogoMark className={markSize} />
       <span className="leading-tight">
         <span className={`block font-extrabold tracking-tight ${wordSize}`}>
-          <span className="text-bay-950">Andam</span> <span className="text-bay-600">GenSan</span>
+          <span className={dark ? 'text-white' : 'text-bay-950'}>Andam</span>{' '}
+          <span className={dark ? 'text-navy-accent' : 'text-bay-600'}>GenSan</span>
         </span>
-        {subtitle && <span className="hidden text-xs font-medium text-stone-500 sm:block">{subtitle}</span>}
+        {subtitle && (
+          <span className={`hidden text-xs font-medium sm:block ${dark ? 'text-navy-muted' : 'text-stone-500'}`}>
+            {subtitle}
+          </span>
+        )}
       </span>
     </span>
   )

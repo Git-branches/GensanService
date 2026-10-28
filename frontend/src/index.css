@@ -28,6 +28,16 @@
   --color-sun-800: #784d0d;
   --color-sun-900: #663f10;
 
+  /* Header — navy bar paired with the logo's blue and gold */
+  --color-navy: #102f54;
+  --color-navy-accent: #55c7f2;
+  --color-navy-muted: #d5e2ef;
+  --color-navy-active: #f5c451;
+  --color-gold-line: #f5b301;
+  --color-mist: #f3f8fb;
+  --color-ink: #334155;
+  --color-line: #d9e3ec;
+
   --animate-float: float 6s ease-in-out infinite;
 
   @keyframes float {
