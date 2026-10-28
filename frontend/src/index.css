@@ -3,25 +3,25 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  /* Bay — deep Sarangani Bay teal-blue (primary) */
-  --color-bay-50: #eef8fb;
-  --color-bay-100: #d4eef5;
-  --color-bay-200: #aedde9;
-  --color-bay-300: #78c3d8;
-  --color-bay-400: #3fa2bf;
-  --color-bay-500: #2385a4;
-  --color-bay-600: #176b88;
-  --color-bay-700: #15576f;
-  --color-bay-800: #16485c;
-  --color-bay-900: #163d4e;
-  --color-bay-950: #0a2633;
+  /* Bay — navy blue (primary), anchored on the navbar's #102f54 at 900 */
+  --color-bay-50: #eef5fb;
+  --color-bay-100: #d9e8f5;
+  --color-bay-200: #b5d2ec;
+  --color-bay-300: #85b5dd;
+  --color-bay-400: #5291c8;
+  --color-bay-500: #2f72b0;
+  --color-bay-600: #1f5c98;
+  --color-bay-700: #194b80;
+  --color-bay-800: #153d69;
+  --color-bay-900: #102f54;
+  --color-bay-950: #0a1f3a;
 
-  /* Sun — warm gold accent */
+  /* Sun — gold accent; 300 and 400 match the navbar's active link and accent line */
   --color-sun-50: #fffaeb;
   --color-sun-100: #fff1c2;
   --color-sun-200: #ffe285;
-  --color-sun-300: #ffd23f;
-  --color-sun-400: #f7bd16;
+  --color-sun-300: #f5c451;
+  --color-sun-400: #f5b301;
   --color-sun-500: #e0a106;
   --color-sun-600: #b97d04;
   --color-sun-700: #925f08;

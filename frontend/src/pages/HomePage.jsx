@@ -119,9 +119,8 @@ function HowItWorks() {
   const steps = t('home.how.steps')
 
   return (
-    <section className="relative overflow-hidden bg-bay-900 py-14 text-white sm:py-16">
-      <BayPattern className="text-bay-700/60" />
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+    <section className="bg-bay-900 py-14 text-white sm:py-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           tone="dark"
           kicker={t('home.how.kicker')}
@@ -130,14 +129,8 @@ function HowItWorks() {
         />
         <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
           {steps.map((step, index) => (
-            <li key={step.title} className="relative flex gap-4 md:flex-col">
-              {index < steps.length - 1 && (
-                <span
-                  aria-hidden="true"
-                  className="absolute left-14 right-0 top-5 hidden border-t-2 border-dashed border-bay-600 md:block"
-                />
-              )}
-              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sun-400 text-lg font-extrabold text-bay-950">
+            <li key={step.title} className="flex gap-4 md:flex-col">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sun-400 text-lg font-extrabold text-bay-950">
                 {index + 1}
               </span>
               <span>
