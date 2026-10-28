@@ -115,10 +115,10 @@ export default {
     },
     reminders: {
       title: 'Antes ka magkadto sa opisina',
-      items: [
-        'Independiente nga giya ini, indi opisyal nga website sang gobyerno. Wala kami nagaproseso sang mga aplikasyon.',
-        'Mahimo magbag-o ang mga kinahanglanon, bayad, kag oras sang opisina. Kumpirmaha sa ahensya antes ka magkadto.',
-        'Indi gid pagpaambit sa bisan sin-o ang password ukon one-time PIN (OTP) sang imo mga account sa gobyerno.',
+items: [
+        { lead: 'Independiente nga giya:', text: 'Indi ini opisyal nga website sang gobyerno. Wala kami nagaproseso sang mga aplikasyon.' },
+        { lead: 'Mahimo magbag-o:', text: 'Nagabag-o ang mga kinahanglanon, bayad, kag oras sang opisina. Kumpirmaha sa ahensya antes ka magkadto.' },
+        { lead: 'Protektahi ang imo account:', text: 'Indi gid pagpaambit sa bisan sin-o ang password ukon one-time PIN (OTP) sang imo mga account sa gobyerno.' },
       ],
     },
   },

@@ -6,11 +6,10 @@ import {
   BookOpenText,
   ChevronDown,
   Info,
-  KeyRound,
   Link2,
+  Lock,
   RefreshCw,
   Search,
-  ShieldAlert,
 } from 'lucide-react'
 import BayPattern from '../components/BayPattern'
 import HeroPhoto from '../components/HeroPhoto'
@@ -27,7 +26,10 @@ import { getAgencies, getCategories, getServices, getStats } from '../services/a
 
 // Icons for home.accuracy.points and home.reminders.items, in the same order as the messages.
 const ACCURACY_ICONS = [Link2, BadgeCheck, BookOpenText]
-const REMINDER_ICONS = [ShieldAlert, RefreshCw, KeyRound]
+const REMINDER_ICONS = [Info, RefreshCw, Lock]
+
+// Same tile for both columns of the "Our approach" section; each column adds its own tint.
+const ICON_TILE = 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1'
 
 function GuideSearch({ categories, quickPicks }) {
   const { t } = useI18n()
@@ -364,13 +366,13 @@ export default function HomePage() {
               {t('home.accuracy.points').map(({ title, text }, index) => {
                 const Icon = ACCURACY_ICONS[index]
                 return (
-                <li key={title} className="flex gap-4">
-                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bay-50 text-bay-700 ring-1 ring-bay-100">
-                    <Icon size={21} aria-hidden="true" />
+                <li key={title} className="flex items-start gap-4">
+                  <span className={`${ICON_TILE} bg-bay-50 text-bay-700 ring-bay-100`}>
+                    <Icon size={20} aria-hidden="true" />
                   </span>
-                  <span>
+                  <span className="pt-0.5">
                     <span className="block font-bold text-bay-950">{title}</span>
-                    <span className="mt-0.5 block text-stone-600">{text}</span>
+                    <span className="mt-0.5 block leading-relaxed text-stone-600">{text}</span>
                   </span>
                 </li>
                 )
@@ -378,15 +380,19 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <aside className="self-start rounded-xl border border-sun-200 border-l-[6px] border-l-sun-400 bg-sun-50 p-6 sm:p-8">
+          <aside className="self-start rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-6 sm:p-8">
             <h2 className="text-xl font-extrabold text-bay-950">{t('home.reminders.title')}</h2>
-            <ul className="mt-5 space-y-4">
-              {t('home.reminders.items').map((text, index) => {
+            <ul className="mt-6 space-y-5">
+              {t('home.reminders.items').map(({ lead, text }, index) => {
                 const Icon = REMINDER_ICONS[index]
                 return (
-                  <li key={text} className="flex gap-3 text-stone-700">
-                    <Icon size={19} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-700" />
-                    <span className="leading-relaxed">{text}</span>
+                  <li key={lead} className="flex items-start gap-4">
+                    <span className={`${ICON_TILE} bg-white text-sun-700 ring-sun-200`}>
+                      <Icon size={20} aria-hidden="true" />
+                    </span>
+                    <p className="pt-0.5 leading-relaxed text-stone-700">
+                      <strong className="font-bold text-bay-950">{lead}</strong> {text}
+                    </p>
                   </li>
                 )
               })}

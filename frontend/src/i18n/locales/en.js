@@ -115,10 +115,10 @@ export default {
     },
     reminders: {
       title: 'Before you visit an office',
-      items: [
-        'This is an independent guide, not an official government website. We do not process applications.',
-        'Requirements, fees, and office hours can change. Confirm with the agency before you go.',
-        'Never share your government account passwords or one-time PINs (OTPs) with anyone.',
+items: [
+        { lead: 'Independent guide:', text: 'This is not an official government website, and we do not process applications.' },
+        { lead: 'Details can change:', text: 'Requirements, fees, and office hours change. Confirm with the agency before you go.' },
+        { lead: 'Protect your accounts:', text: 'Never share your government account passwords or one-time PINs (OTPs) with anyone.' },
       ],
     },
   },

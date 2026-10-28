@@ -115,10 +115,10 @@ export default {
     },
     reminders: {
       title: 'Bago ka pumunta sa opisina',
-      items: [
-        'Ito ay independiyenteng gabay, hindi opisyal na website ng gobyerno. Hindi kami nagpoproseso ng mga aplikasyon.',
-        'Maaaring magbago ang mga kinakailangan, bayarin, at oras ng opisina. Kumpirmahin sa ahensya bago ka pumunta.',
-        'Huwag kailanman ibahagi kahit kanino ang password o one-time PIN (OTP) ng iyong mga account sa gobyerno.',
+items: [
+        { lead: 'Independiyenteng gabay:', text: 'Hindi ito opisyal na website ng gobyerno. Hindi kami nagpoproseso ng mga aplikasyon.' },
+        { lead: 'Maaaring magbago:', text: 'Nagbabago ang mga kinakailangan, bayarin, at oras ng opisina. Kumpirmahin sa ahensya bago ka pumunta.' },
+        { lead: 'Protektahan ang iyong account:', text: 'Huwag kailanman ibahagi kahit kanino ang password o one-time PIN (OTP) ng iyong mga account sa gobyerno.' },
       ],
     },
   },

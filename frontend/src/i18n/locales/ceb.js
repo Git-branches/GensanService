@@ -115,10 +115,10 @@ export default {
     },
     reminders: {
       title: 'Sa dili pa ka moadto sa opisina',
-      items: [
-        'Independenteng giya kini, dili opisyal nga website sa gobyerno. Wala mi nagproseso og mga aplikasyon.',
-        'Mahimong mausab ang mga kinahanglanon, bayad, ug oras sa opisina. Kumpirmaha sa ahensya sa dili pa ka moadto.',
-        'Ayaw gyud ihatag kang bisan kinsa ang password o one-time PIN (OTP) sa imong mga account sa gobyerno.',
+items: [
+        { lead: 'Independenteng giya:', text: 'Dili kini opisyal nga website sa gobyerno. Wala mi nagproseso og mga aplikasyon.' },
+        { lead: 'Mausab ang detalye:', text: 'Mahimong mausab ang mga kinahanglanon, bayad, ug oras sa opisina. Kumpirmaha sa ahensya sa dili pa ka moadto.' },
+        { lead: 'Panalipdi ang imong account:', text: 'Ayaw gyud ihatag kang bisan kinsa ang password o one-time PIN (OTP) sa imong mga account sa gobyerno.' },
       ],
     },
   },
