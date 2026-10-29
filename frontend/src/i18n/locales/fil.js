@@ -172,6 +172,9 @@ items: [
     noGuidesMessage: 'Lalabas dito ang mga gabay para sa {agency} kapag na-verify na ang mga ito.',
     offices: 'Mga opisina sa General Santos',
     noOffices: 'Wala pang nakalistang opisina',
+    hotline: 'Hotline',
+    email: 'Email',
+    facebook: 'Facebook page',
     noOfficesMessage: 'Idinadagdag lang ang detalye ng opisina kapag na-verify na ang address at oras nito.',
   },
   offices: {
@@ -227,6 +230,7 @@ items: [
     ready: '{ready} sa {total} dokumento ang handa na',
     allSet: 'Handa na — nasa iyo na ang lahat ng nasa listahan',
     progress: 'Progreso ng checklist',
+    howToGet: 'Paano ito makukuha',
     ifApplicable: 'Kung naaangkop',
     reset: 'I-reset',
     note: 'Sa device na ito lang naka-save ang iyong progreso. Hindi garantiya ang pagkumpleto ng checklist na ito na maaaprubahan ang iyong aplikasyon — ang ahensya ang magpapasya.',

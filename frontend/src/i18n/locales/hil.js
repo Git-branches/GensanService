@@ -172,6 +172,9 @@ items: [
     noGuidesMessage: 'Makita diri ang mga giya para sa {agency} kon na-verify na ini.',
     offices: 'Mga opisina sa General Santos',
     noOffices: 'Wala pa sing opisina nga nalista',
+    hotline: 'Hotline',
+    email: 'Email',
+    facebook: 'Facebook page',
     noOfficesMessage: 'Ginadugang lang ang detalye sang opisina kon na-verify na ang address kag oras sini.',
   },
   offices: {
@@ -227,6 +230,7 @@ items: [
     ready: '{ready} sa {total} ka dokumento ang handa na',
     allSet: 'Kompleto na — yara na sa imo ang tanan sa listahan',
     progress: 'Progreso sang checklist',
+    howToGet: 'Paano ini makuha',
     ifApplicable: 'Kon kinahanglan',
     reset: 'I-reset',
     note: 'Sa sini lang nga device ginatipigan ang imo progreso. Ang pagkompleto sini nga checklist indi garantiya nga maaprobahan ang imo aplikasyon — ang ahensya ang magadesisyon.',

@@ -54,7 +54,7 @@ function fromService(service) {
     last_verified_at: service.last_verified_at ?? '',
     eligibility: service.eligibility.map((text) => withKey({ text })),
     requirements: service.requirements.map((item) =>
-      withKey({ id: item.id, requirement_text: item.requirement_text, notes: item.notes ?? '', is_optional: item.is_optional })
+      withKey({ id: item.id, requirement_text: item.requirement_text, notes: item.notes ?? '', is_optional: item.is_optional, linked_service_id: item.linked_service_id ?? null })
     ),
     steps: service.steps.map((step) => withKey({ title: step.title, instructions: step.instructions ?? '' })),
     sources: service.sources.map((source) =>
@@ -114,7 +114,7 @@ export default function AdminServiceEditorPage() {
 
   const [loadError, setLoadError] = useState('')
   const [ready, setReady] = useState(false)
-  const [lookups, setLookups] = useState({ categories: [], agencies: [], offices: [] })
+  const [lookups, setLookups] = useState({ categories: [], agencies: [], offices: [], services: [] })
   const [service, setService] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [dirty, setDirty] = useState(false)
@@ -404,7 +404,7 @@ export default function AdminServiceEditorPage() {
             <ListEditor
               items={form.requirements}
               onChange={(requirements) => update({ requirements })}
-              newItem={() => ({ requirement_text: '', notes: '', is_optional: false })}
+              newItem={() => ({ requirement_text: '', notes: '', is_optional: false, linked_service_id: null })}
               addLabel="Add requirement"
               itemName="requirement"
               emptyText="No requirements yet."
@@ -419,6 +419,26 @@ export default function AdminServiceEditorPage() {
                     <input type="checkbox" checked={item.is_optional} onChange={(e) => patch({ is_optional: e.target.checked })} className="h-4 w-4 accent-bay-700" />
                     Only needed in some cases (shown as "If applicable")
                   </label>
+                  <label htmlFor={`req-link-${item._key}`} className="block text-xs font-semibold text-stone-600">
+                    Guide that explains how to get this document (optional)
+                  </label>
+                  <select
+                    id={`req-link-${item._key}`}
+                    value={item.linked_service_id ?? ''}
+                    aria-invalid={Boolean(errors[`requirements.${index}.linked_service_id`])}
+                    onChange={(e) => patch({ linked_service_id: e.target.value ? Number(e.target.value) : null })}
+                    className={inputClass}
+                  >
+                    <option value="">No linked guide</option>
+                    {lookups.services
+                      .filter((other) => String(other.id) !== String(id))
+                      .map((other) => (
+                        <option key={other.id} value={other.id}>
+                          {other.title}{other.status === 'draft' ? ' (draft: link appears once published)' : ''}
+                        </option>
+                      ))}
+                  </select>
+                  <InlineError message={errors[`requirements.${index}.linked_service_id`]} />
                 </>
               )}
             />

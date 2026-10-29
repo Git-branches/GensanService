@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS agencies (
     description TEXT DEFAULT NULL,
     logo_url VARCHAR(255) DEFAULT NULL,
     official_website VARCHAR(255) DEFAULT NULL,
+    hotline VARCHAR(100) DEFAULT NULL,
+    email VARCHAR(150) DEFAULT NULL,
+    facebook_url VARCHAR(255) DEFAULT NULL,
     is_local_government TINYINT(1) NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -143,11 +146,13 @@ CREATE TABLE IF NOT EXISTS service_requirements (
     service_id INT UNSIGNED NOT NULL,
     requirement_text VARCHAR(255) NOT NULL,
     notes VARCHAR(500) DEFAULT NULL,
+    linked_service_id INT UNSIGNED DEFAULT NULL,
     is_optional TINYINT(1) NOT NULL DEFAULT 0,
     display_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_requirements_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
+    CONSTRAINT fk_requirements_linked_service FOREIGN KEY (linked_service_id) REFERENCES services(id) ON DELETE SET NULL,
     KEY idx_requirements_service (service_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

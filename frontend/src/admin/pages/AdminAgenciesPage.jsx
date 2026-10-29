@@ -10,7 +10,7 @@ import ResourceTable from '../components/ResourceTable'
 import Toast from '../components/Toast'
 import { ActiveBadge, Button, Field, IconAction, PageTitle, Switch, inputClass } from '../components/ui'
 
-const EMPTY = { name: '', acronym: '', slug: '', description: '', official_website: '', is_local_government: false, is_active: true }
+const EMPTY = { name: '', acronym: '', slug: '', description: '', official_website: '', hotline: '', email: '', facebook_url: '', is_local_government: false, is_active: true }
 
 function toForm(agency) {
   if (!agency) return EMPTY
@@ -20,6 +20,9 @@ function toForm(agency) {
     slug: agency.slug,
     description: agency.description ?? '',
     official_website: agency.official_website ?? '',
+    hotline: agency.hotline ?? '',
+    email: agency.email ?? '',
+    facebook_url: agency.facebook_url ?? '',
     is_local_government: Boolean(agency.is_local_government),
     is_active: Boolean(agency.is_active),
   }
@@ -146,6 +149,19 @@ function AgencyFormModal({ agency, readOnly, onClose, onSaved, onLogoChange }) {
 
           <Field id="agency-website" label="Official website" error={errors.official_website}>
             <input id="agency-website" type="url" value={values.official_website} maxLength={255} aria-invalid={Boolean(errors.official_website)} onChange={(e) => set({ official_website: e.target.value })} className={inputClass} placeholder="https://" />
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field id="agency-hotline" label="Hotline" error={errors.hotline} hint="Shown on the agency page. Separate numbers with a slash.">
+              <input id="agency-hotline" value={values.hotline} maxLength={100} aria-invalid={Boolean(errors.hotline)} onChange={(e) => set({ hotline: e.target.value })} className={inputClass} placeholder="e.g. 1455" />
+            </Field>
+            <Field id="agency-email" label="Public email" error={errors.email}>
+              <input id="agency-email" type="email" value={values.email} maxLength={150} aria-invalid={Boolean(errors.email)} onChange={(e) => set({ email: e.target.value })} className={inputClass} placeholder="e.g. info@agency.gov.ph" />
+            </Field>
+          </div>
+
+          <Field id="agency-facebook" label="Official Facebook page" error={errors.facebook_url}>
+            <input id="agency-facebook" type="url" value={values.facebook_url} maxLength={255} aria-invalid={Boolean(errors.facebook_url)} onChange={(e) => set({ facebook_url: e.target.value })} className={inputClass} placeholder="https://www.facebook.com/..." />
           </Field>
 
           <Field id="agency-description" label="Description" error={errors.description}>

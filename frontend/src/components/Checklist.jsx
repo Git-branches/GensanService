@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Check, RotateCcw } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Check, ChevronRight, RotateCcw } from 'lucide-react'
 import { useI18n } from '../i18n/context'
 
 const storageKey = (slug) => `gsn:checklist:${slug}`
@@ -91,6 +92,16 @@ export default function Checklist({ slug, requirements }) {
                     </span>
                   )}
                   {item.notes && <span className="mt-1 block text-sm text-stone-600">{item.notes}</span>}
+                  {item.linked_slug && (
+                    <Link
+                      to={`/services/${item.linked_slug}`}
+                      className="mt-1.5 inline-flex items-center gap-0.5 text-sm font-semibold text-bay-700 hover:underline"
+                    >
+                      {t('checklist.howToGet')}
+                      <span className="sr-only">: {item.linked_title}</span>
+                      <ChevronRight size={15} aria-hidden="true" />
+                    </Link>
+                  )}
                 </span>
               </label>
             </li>

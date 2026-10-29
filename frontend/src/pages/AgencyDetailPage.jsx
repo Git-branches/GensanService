@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Mail, MessageCircle, Phone } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import { AgencyTypeBadge } from '../components/AgencyCard'
 import ServiceCard from '../components/ServiceCard'
@@ -9,6 +9,27 @@ import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { useI18n } from '../i18n/context'
 import { getAgency, getServices } from '../services/api'
+
+const CONTACT_LINK = 'inline-flex items-center gap-1.5 font-semibold text-bay-700 hover:underline'
+
+// A tel: link only works for one number; "8920-6446 / 8917-8000" stays plain text.
+function Hotline({ value, label }) {
+  const single = !/[/,;]/.test(value)
+  const content = (
+    <>
+      <Phone size={15} aria-hidden="true" />
+      <span className="sr-only">{label}: </span>
+      {value}
+    </>
+  )
+  return single ? (
+    <a href={`tel:${value.replace(/[^\d+]/g, '')}`} className={CONTACT_LINK}>
+      {content}
+    </a>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 font-semibold text-stone-700">{content}</span>
+  )
+}
 
 function SubHeading({ children, count }) {
   return (
@@ -62,6 +83,33 @@ export default function AgencyDetailPage() {
             </a>
           )}
         </div>
+        {(agency.hotline || agency.email || agency.facebook_url) && (
+          <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {agency.hotline && (
+              <li>
+                <Hotline value={agency.hotline} label={t('agencyDetail.hotline')} />
+              </li>
+            )}
+            {agency.email && (
+              <li>
+                <a href={`mailto:${agency.email}`} className={`${CONTACT_LINK} break-all`}>
+                  <Mail size={15} aria-hidden="true" />
+                  <span className="sr-only">{t('agencyDetail.email')}: </span>
+                  {agency.email}
+                </a>
+              </li>
+            )}
+            {agency.facebook_url && (
+              <li>
+                <a href={agency.facebook_url} target="_blank" rel="noopener noreferrer" className={CONTACT_LINK}>
+                  <MessageCircle size={15} aria-hidden="true" />
+                  {t('agencyDetail.facebook')}
+                  <span className="sr-only">{t('common.opensInNewTab')}</span>
+                </a>
+              </li>
+            )}
+          </ul>
+        )}
       </PageHeader>
 
       <div className="mx-auto max-w-6xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">

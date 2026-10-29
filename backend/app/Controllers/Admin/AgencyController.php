@@ -25,7 +25,8 @@ class AgencyController
     {
         Auth::requireAdmin();
         $rows = Database::connection()->query(
-            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.is_local_government, a.is_active,
+            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.hotline, a.email, a.facebook_url,
+                    a.is_local_government, a.is_active,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id) AS service_count,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id AND s.status = 'published') AS published_count,
                     (SELECT COUNT(*) FROM offices o WHERE o.agency_id = a.id) AS office_count
@@ -43,8 +44,8 @@ class AgencyController
 
         $pdo = Database::connection();
         $pdo->prepare(
-            'INSERT INTO agencies (name, slug, acronym, description, official_website, is_local_government, is_active)
-             VALUES (:name, :slug, :acronym, :description, :website, :local, :active)'
+            'INSERT INTO agencies (name, slug, acronym, description, official_website, hotline, email, facebook_url, is_local_government, is_active)
+             VALUES (:name, :slug, :acronym, :description, :website, :hotline, :email, :facebook, :local, :active)'
         )->execute($data);
         $id = (int) $pdo->lastInsertId();
 
@@ -61,7 +62,8 @@ class AgencyController
 
         Database::connection()->prepare(
             'UPDATE agencies SET name = :name, slug = :slug, acronym = :acronym, description = :description,
-                    official_website = :website, is_local_government = :local, is_active = :active
+                    official_website = :website, hotline = :hotline, email = :email, facebook_url = :facebook,
+                    is_local_government = :local, is_active = :active
              WHERE id = :id'
         )->execute($data + ['id' => $id]);
 
@@ -181,6 +183,9 @@ class AgencyController
             'acronym' => $v->string($body['acronym'] ?? null, 'acronym', 20),
             'description' => $v->string($body['description'] ?? null, 'description', 2000),
             'website' => $v->optionalUrl($body['official_website'] ?? null, 'official_website'),
+            'hotline' => $v->string($body['hotline'] ?? null, 'hotline', 100),
+            'email' => $v->email($body['email'] ?? null, 'email'),
+            'facebook' => $v->optionalUrl($body['facebook_url'] ?? null, 'facebook_url'),
             'local' => $v->bool($body['is_local_government'] ?? false),
             'active' => $v->bool($body['is_active'] ?? true),
         ];

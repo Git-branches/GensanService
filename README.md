@@ -45,10 +45,11 @@ Requirements for government services in the Philippines are scattered across age
 
 For residents (no account needed):
 
-- Search and browse service guides by keyword, category, or agency.
+- Search and browse service guides by keyword, category, or agency. Search also understands common local words and old names, such as "sedula", "pulis", "lisensya", and "NSO".
 - Service guides with eligibility, a document checklist, application steps, fees, processing times, offices, and official sources.
 - A document checklist with a progress bar that saves on the device.
-- Agency and office directories with Google Maps and Waze links.
+- Agency and office directories with hotlines, emails, Facebook pages, and Google Maps and Waze links.
+- Checklist items can link to the guide that explains how to get that document.
 - A "Report incorrect information" form on every guide.
 - Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
 
@@ -134,7 +135,7 @@ npm install
 
 To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql` and then `016_add_review_fields_to_content_reports.sql`.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, and `017_add_agency_contacts_and_linked_requirements.sql`, in that order.
 
 ## Usage
 

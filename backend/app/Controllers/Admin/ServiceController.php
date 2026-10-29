@@ -71,6 +71,8 @@ class ServiceController
         Response::success([
             'categories' => $pdo->query('SELECT id, name FROM categories WHERE is_active = 1 ORDER BY display_order, name')->fetchAll(),
             'agencies' => $pdo->query('SELECT id, name, acronym FROM agencies WHERE is_active = 1 ORDER BY name')->fetchAll(),
+            // For linking a requirement to the guide that explains how to get it.
+            'services' => $pdo->query("SELECT id, title, status FROM services WHERE status <> 'archived' ORDER BY title")->fetchAll(),
             'offices' => $pdo->query(
                 'SELECT o.id, o.name, o.agency_id, a.acronym AS agency_acronym
                  FROM offices o JOIN agencies a ON a.id = o.agency_id
@@ -200,8 +202,14 @@ class ServiceController
             'condition_text'
         );
         $service['requirements'] = array_map(
-            fn ($r) => ['id' => (int) $r['id'], 'requirement_text' => $r['requirement_text'], 'notes' => $r['notes'], 'is_optional' => (bool) $r['is_optional']],
-            $fetch('SELECT id, requirement_text, notes, is_optional FROM service_requirements WHERE service_id = :id ORDER BY display_order, id')
+            fn ($r) => [
+                'id' => (int) $r['id'],
+                'requirement_text' => $r['requirement_text'],
+                'notes' => $r['notes'],
+                'is_optional' => (bool) $r['is_optional'],
+                'linked_service_id' => $r['linked_service_id'] === null ? null : (int) $r['linked_service_id'],
+            ],
+            $fetch('SELECT id, requirement_text, notes, is_optional, linked_service_id FROM service_requirements WHERE service_id = :id ORDER BY display_order, id')
         );
         $service['steps'] = $fetch('SELECT title, instructions FROM service_steps WHERE service_id = :id ORDER BY step_number');
         $service['sources'] = $fetch('SELECT label, url, verified_at FROM service_sources WHERE service_id = :id ORDER BY id');
@@ -251,11 +259,16 @@ class ServiceController
         $data['requirements'] = [];
         foreach ($v->list($body['requirements'] ?? null, 'requirements', 50) as $i => $item) {
             $item = is_array($item) ? $item : [];
+            $linked = $v->id($item['linked_service_id'] ?? null, "requirements.$i.linked_service_id", false);
+            if ($linked !== null && ($linked === $serviceId || !$this->exists($pdo, 'services', $linked))) {
+                $v->add("requirements.$i.linked_service_id", 'Choose a different guide to link to.');
+            }
             $data['requirements'][] = [
                 'id' => $v->id($item['id'] ?? null, "requirements.$i.id", false),
                 'requirement_text' => $v->string($item['requirement_text'] ?? null, "requirements.$i.requirement_text", 255, true),
                 'notes' => $v->string($item['notes'] ?? null, "requirements.$i.notes", 500),
                 'is_optional' => !empty($item['is_optional']) ? 1 : 0,
+                'linked_service_id' => $linked,
             ];
         }
 
@@ -323,15 +336,19 @@ class ServiceController
         $existingIds = array_map('intval', $existing->fetchAll(PDO::FETCH_COLUMN));
         $keptIds = [];
         $update = $pdo->prepare(
-            'UPDATE service_requirements SET requirement_text = :text, notes = :notes, is_optional = :optional, display_order = :order
+            'UPDATE service_requirements SET requirement_text = :text, notes = :notes, linked_service_id = :linked,
+                    is_optional = :optional, display_order = :order
              WHERE id = :rid AND service_id = :id'
         );
         $insert = $pdo->prepare(
-            'INSERT INTO service_requirements (service_id, requirement_text, notes, is_optional, display_order)
-             VALUES (:id, :text, :notes, :optional, :order)'
+            'INSERT INTO service_requirements (service_id, requirement_text, notes, linked_service_id, is_optional, display_order)
+             VALUES (:id, :text, :notes, :linked, :optional, :order)'
         );
         foreach ($data['requirements'] as $i => $req) {
-            $values = ['id' => $serviceId, 'text' => $req['requirement_text'], 'notes' => $req['notes'], 'optional' => $req['is_optional'], 'order' => $i + 1];
+            $values = [
+                'id' => $serviceId, 'text' => $req['requirement_text'], 'notes' => $req['notes'],
+                'linked' => $req['linked_service_id'], 'optional' => $req['is_optional'], 'order' => $i + 1,
+            ];
             if ($req['id'] !== null && in_array($req['id'], $existingIds, true)) {
                 $update->execute($values + ['rid' => $req['id']]);
                 $keptIds[] = $req['id'];

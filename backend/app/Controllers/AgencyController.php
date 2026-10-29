@@ -30,6 +30,7 @@ class AgencyController
 
         $stmt = $pdo->prepare(
             'SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website,
+                    a.hotline, a.email, a.facebook_url,
                     a.is_local_government, ' . self::COUNT_COLUMNS . '
              FROM agencies a
              WHERE a.slug = :slug AND a.is_active = 1'

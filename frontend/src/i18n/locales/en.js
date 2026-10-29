@@ -172,6 +172,9 @@ items: [
     noGuidesMessage: 'Guides for {agency} will appear here once they are verified.',
     offices: 'Offices in General Santos',
     noOffices: 'No offices listed yet',
+    hotline: 'Hotline',
+    email: 'Email',
+    facebook: 'Facebook page',
     noOfficesMessage: 'Office details are added only after their address and hours have been verified.',
   },
   offices: {
@@ -229,6 +232,7 @@ items: [
     ready: '{ready} of {total} documents ready',
     allSet: 'All set — you have everything on the list',
     progress: 'Checklist progress',
+    howToGet: 'How to get this',
     ifApplicable: 'If applicable',
     reset: 'Reset',
     note: 'Your progress is saved only on this device. Completing this checklist does not guarantee that your application will be approved — the agency makes the final decision.',

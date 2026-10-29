@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Database;
 use App\Response;
+use App\Services\SearchTerms;
 
 class ServiceController
 {
@@ -23,18 +24,19 @@ class ServiceController
         $bindings = [];
 
         if ($search !== '') {
-            // Native prepares can't reuse a named placeholder, so each LIKE gets its own.
-            $like = '%' . addcslashes($search, '%_\\') . '%';
-            $conditions[] = '(MATCH(s.title, s.summary, s.description) AGAINST (:search IN NATURAL LANGUAGE MODE)
-                OR s.title LIKE :like_title
-                OR a.name LIKE :like_agency
-                OR a.acronym LIKE :like_acronym
-                OR c.name LIKE :like_category)';
-            $bindings['search'] = $search;
-            $bindings['like_title'] = $like;
-            $bindings['like_agency'] = $like;
-            $bindings['like_acronym'] = $like;
-            $bindings['like_category'] = $like;
+            // The query plus any official terms for local words in it ("sedula" also finds "cedula").
+            $terms = SearchTerms::expand($search);
+            $matches = ['MATCH(s.title, s.summary, s.description) AGAINST (:search IN NATURAL LANGUAGE MODE)'];
+            $bindings['search'] = implode(' ', $terms);
+            foreach ($terms as $i => $term) {
+                // Native prepares can't reuse a named placeholder, so each LIKE gets its own.
+                $like = '%' . addcslashes($term, '%_\\') . '%';
+                foreach (['title' => 's.title', 'agency' => 'a.name', 'acronym' => 'a.acronym', 'category' => 'c.name'] as $name => $column) {
+                    $matches[] = "{$column} LIKE :like_{$name}_{$i}";
+                    $bindings["like_{$name}_{$i}"] = $like;
+                }
+            }
+            $conditions[] = '(' . implode(' OR ', $matches) . ')';
         }
 
         if ($categorySlug !== '') {
@@ -96,8 +98,11 @@ class ServiceController
         $service['eligibility'] = array_column($eligibilityStmt->fetchAll(), 'condition_text');
 
         $requirementsStmt = $pdo->prepare(
-            'SELECT id, requirement_text, notes, is_optional
-             FROM service_requirements WHERE service_id = :id ORDER BY display_order ASC'
+            'SELECT r.id, r.requirement_text, r.notes, r.is_optional,
+                    ls.slug AS linked_slug, ls.title AS linked_title
+             FROM service_requirements r
+             LEFT JOIN services ls ON ls.id = r.linked_service_id AND ls.status = "published"
+             WHERE r.service_id = :id ORDER BY r.display_order ASC'
         );
         $requirementsStmt->execute(['id' => $serviceId]);
         $service['requirements'] = $requirementsStmt->fetchAll();
