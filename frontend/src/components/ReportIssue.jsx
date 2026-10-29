@@ -186,7 +186,7 @@ export default function ReportIssue({ slug, serviceTitle }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-stone-700 ring-1 ring-stone-200 transition-colors hover:bg-stone-50 hover:text-bay-700 print:hidden"
+        className="inline-flex items-center gap-2 rounded-md py-1 text-sm font-semibold text-bay-700 underline-offset-4 transition-colors hover:text-bay-900 hover:underline print:hidden"
       >
         <Flag size={16} aria-hidden="true" /> {t('report.button')}
       </button>

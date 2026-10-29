@@ -210,7 +210,11 @@ items: [
     sources: 'Mga opisyal na sanggunian',
     checked: 'Sinuri noong {date}',
     doubleCheck: 'Pakisuring muli',
-    doubleCheckText: 'Ito ay independiyenteng gabay, hindi opisyal na website ng gobyerno. Maaaring magbago ang bayad at mga kinakailangan — kumpirmahin sa {agency} bago ka pumunta. Huwag kailanman ibahagi ang iyong password o OTP.',
+    reminders: [
+      { lead: 'Independiyenteng gabay:', text: 'Hindi ito opisyal na website ng gobyerno.' },
+      { lead: 'Maaaring magbago:', text: 'Nagbabago ang bayad at mga kinakailangan. Kumpirmahin sa {agency} bago ka pumunta.' },
+      { lead: 'Protektahan ang iyong account:', text: 'Huwag kailanman ibahagi ang iyong password o OTP.' },
+    ],
     theAgency: 'ahensya',
     about: 'Tungkol sa serbisyong ito',
     eligibility: 'Sino ang maaaring mag-apply',

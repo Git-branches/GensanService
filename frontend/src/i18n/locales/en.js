@@ -212,7 +212,11 @@ items: [
     sources: 'Official sources',
     checked: 'Checked {date}',
     doubleCheck: 'Please double-check',
-    doubleCheckText: 'This is an independent guide, not an official government website. Fees and requirements can change — confirm with {agency} before your visit. Never share your passwords or OTPs.',
+    reminders: [
+      { lead: 'Independent guide:', text: 'This is not an official government website.' },
+      { lead: 'Details can change:', text: 'Fees and requirements change. Confirm with {agency} before your visit.' },
+      { lead: 'Protect your accounts:', text: 'Never share your passwords or OTPs.' },
+    ],
     theAgency: 'the agency',
     about: 'About this service',
     eligibility: 'Who can apply',

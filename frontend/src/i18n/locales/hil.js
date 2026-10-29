@@ -210,7 +210,11 @@ items: [
     sources: 'Mga opisyal nga ginhalinan',
     checked: 'Ginsusi {date}',
     doubleCheck: 'Palihog susiha liwat',
-    doubleCheckText: 'Independiente nga giya ini, indi opisyal nga website sang gobyerno. Mahimo magbag-o ang bayad kag mga kinahanglanon — kumpirmaha sa {agency} antes ka magkadto. Indi gid pagpaambit ang imo password ukon OTP.',
+    reminders: [
+      { lead: 'Independiente nga giya:', text: 'Indi ini opisyal nga website sang gobyerno.' },
+      { lead: 'Mahimo magbag-o:', text: 'Nagabag-o ang bayad kag mga kinahanglanon. Kumpirmaha sa {agency} antes ka magkadto.' },
+      { lead: 'Protektahi ang imo account:', text: 'Indi gid pagpaambit ang imo password ukon OTP.' },
+    ],
     theAgency: 'ahensya',
     about: 'Parte sa sini nga serbisyo',
     eligibility: 'Sin-o ang pwede mag-apply',

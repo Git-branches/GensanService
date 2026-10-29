@@ -1,6 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
 import {
-  AlertTriangle,
   BadgeCheck,
   CircleCheck,
   Clock,
@@ -10,8 +9,10 @@ import {
   LayoutGrid,
   ListChecks,
   ListOrdered,
+  Lock,
   MapPin,
   Receipt,
+  RefreshCw,
   UserCheck,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -137,18 +138,32 @@ function Sources({ sources }) {
   )
 }
 
+// Icons for detail.reminders, in the same order: disclaimer, changing details, account safety.
+const REMINDER_ICONS = [Info, RefreshCw, Lock]
+
 function Reminder({ agencyAcronym }) {
   const { t } = useI18n()
+  const items = t('detail.reminders', { agency: agencyAcronym || t('detail.theAgency') })
 
   return (
-    <div className="rounded-xl border border-sun-200 border-l-[6px] border-l-sun-400 bg-sun-50 p-5 text-sm text-stone-700">
-      <p className="flex items-center gap-2 font-bold text-bay-950">
-        <AlertTriangle size={17} aria-hidden="true" className="text-sun-700" /> {t('detail.doubleCheck')}
-      </p>
-      <p className="mt-2 leading-relaxed">
-        {t('detail.doubleCheckText', { agency: agencyAcronym || t('detail.theAgency') })}
-      </p>
-    </div>
+    <aside className="rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-5">
+      <h2 className="text-base font-bold text-bay-950">{t('detail.doubleCheck')}</h2>
+      <ul className="mt-4 space-y-3.5">
+        {items.map(({ lead, text }, index) => {
+          const Icon = REMINDER_ICONS[index]
+          return (
+            <li key={lead} className="flex items-start gap-3">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sun-700 ring-1 ring-sun-200">
+                <Icon size={16} aria-hidden="true" />
+              </span>
+              <p className="pt-1 text-sm leading-relaxed text-stone-700">
+                <strong className="font-bold text-bay-950">{lead}</strong> {text}
+              </p>
+            </li>
+          )
+        })}
+      </ul>
+    </aside>
   )
 }
 

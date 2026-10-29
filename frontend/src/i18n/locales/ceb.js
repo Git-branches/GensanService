@@ -210,7 +210,11 @@ items: [
     sources: 'Opisyal nga mga tinubdan',
     checked: 'Gisusi {date}',
     doubleCheck: 'Palihug susiha pag-usab',
-    doubleCheckText: 'Independenteng giya kini, dili opisyal nga website sa gobyerno. Mahimong mausab ang bayad ug mga kinahanglanon — kumpirmaha sa {agency} sa dili pa ka moadto. Ayaw gyud ihatag ang imong password o OTP.',
+    reminders: [
+      { lead: 'Independenteng giya:', text: 'Dili kini opisyal nga website sa gobyerno.' },
+      { lead: 'Mausab ang detalye:', text: 'Mahimong mausab ang bayad ug mga kinahanglanon. Kumpirmaha sa {agency} sa dili pa ka moadto.' },
+      { lead: 'Panalipdi ang imong account:', text: 'Ayaw gyud ihatag ang imong password o OTP.' },
+    ],
     theAgency: 'ahensya',
     about: 'Bahin niining serbisyo',
     eligibility: 'Kinsa ang pwede mo-apply',
