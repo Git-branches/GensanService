@@ -199,7 +199,7 @@ items: [
     loading: 'Nilo-load ang gabay...',
     unavailable: 'Hindi ma-load ang gabay na ito. Maaaring inilipat o hindi na nakalathala.',
     back: 'Bumalik sa lahat ng gabay sa serbisyo',
-    atAGlance: 'Sa isang tingin',
+    atAGlance: 'Serbisyo ng Gobyerno',
     agency: 'Ahensya',
     category: 'Kategorya',
     fee: 'Bayad',

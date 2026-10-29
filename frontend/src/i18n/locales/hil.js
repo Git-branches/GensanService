@@ -199,7 +199,7 @@ items: [
     loading: 'Ginakarga ang giya...',
     unavailable: 'Indi ma-load ini nga giya. Basi ginsaylo ukon wala na ginapublikar.',
     back: 'Balik sa tanan nga giya sa serbisyo',
-    atAGlance: 'Sa isa ka tan-aw',
+    atAGlance: 'Serbisyo sang Gobyerno',
     agency: 'Ahensya',
     category: 'Kategorya',
     fee: 'Bayad',

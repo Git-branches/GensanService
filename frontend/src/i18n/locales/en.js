@@ -201,7 +201,7 @@ items: [
     loading: 'Loading service guide...',
     unavailable: "This guide couldn't be loaded. It may have been moved or is no longer published.",
     back: 'Back to all service guides',
-    atAGlance: 'At a glance',
+    atAGlance: 'Government Services',
     agency: 'Agency',
     category: 'Category',
     fee: 'Fee',
