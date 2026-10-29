@@ -267,7 +267,7 @@ export default function ServiceDetailPage() {
           </div>
 
           <aside className="hidden lg:col-span-4 lg:block">
-            <div className="space-y-4 lg:sticky lg:top-24">
+            <div className="space-y-4">
               <AtAGlance service={service} />
 
               {sections.length > 1 && (
