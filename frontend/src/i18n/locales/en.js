@@ -226,7 +226,6 @@ items: [
     allSet: 'All set — you have everything on the list',
     progress: 'Checklist progress',
     ifApplicable: 'If applicable',
-    print: 'Print checklist',
     reset: 'Reset',
     note: 'Your progress is saved only on this device. Completing this checklist does not guarantee that your application will be approved — the agency makes the final decision.',
   },

@@ -224,7 +224,6 @@ items: [
     allSet: 'Kompleto na — yara na sa imo ang tanan sa listahan',
     progress: 'Progreso sang checklist',
     ifApplicable: 'Kon kinahanglan',
-    print: 'I-print ang checklist',
     reset: 'I-reset',
     note: 'Sa sini lang nga device ginatipigan ang imo progreso. Ang pagkompleto sini nga checklist indi garantiya nga maaprobahan ang imo aplikasyon — ang ahensya ang magadesisyon.',
   },

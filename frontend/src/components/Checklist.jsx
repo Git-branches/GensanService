@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Printer, RotateCcw } from 'lucide-react'
+import { Check, RotateCcw } from 'lucide-react'
 import { useI18n } from '../i18n/context'
 
 const storageKey = (slug) => `gsn:checklist:${slug}`
@@ -98,15 +98,8 @@ export default function Checklist({ slug, requirements }) {
         })}
       </ul>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-        >
-          <Printer size={16} aria-hidden="true" /> {t('checklist.print')}
-        </button>
-        {readyCount > 0 && (
+      {readyCount > 0 && (
+        <div className="mt-4 print:hidden">
           <button
             type="button"
             onClick={() => update({})}
@@ -114,8 +107,8 @@ export default function Checklist({ slug, requirements }) {
           >
             <RotateCcw size={16} aria-hidden="true" /> {t('checklist.reset')}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <p className="mt-4 text-xs leading-relaxed text-stone-500">
         {t('checklist.note')}

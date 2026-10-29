@@ -224,7 +224,6 @@ items: [
     allSet: 'Handa na — nasa iyo na ang lahat ng nasa listahan',
     progress: 'Progreso ng checklist',
     ifApplicable: 'Kung naaangkop',
-    print: 'I-print ang checklist',
     reset: 'I-reset',
     note: 'Sa device na ito lang naka-save ang iyong progreso. Hindi garantiya ang pagkumpleto ng checklist na ito na maaaprubahan ang iyong aplikasyon — ang ahensya ang magpapasya.',
   },

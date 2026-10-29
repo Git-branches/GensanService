@@ -39,7 +39,7 @@ Do not open a public issue for security problems. Email the maintainer instead (
 
 ## Background
 
-Requirements for government services in the Philippines are scattered across agency websites, Facebook pages, and word of mouth. Residents often find out what's missing only after waiting in line. Andam GenSan collects this information in one place, in plain language, with a printable checklist and a link to the official source for every guide.
+Requirements for government services in the Philippines are scattered across agency websites, Facebook pages, and word of mouth. Residents often find out what's missing only after waiting in line. Andam GenSan collects this information in one place, in plain language, with a checklist and a link to the official source for every guide.
 
 ### Features
 
@@ -47,7 +47,7 @@ For residents (no account needed):
 
 - Search and browse service guides by keyword, category, or agency.
 - Service guides with eligibility, a document checklist, application steps, fees, processing times, offices, and official sources.
-- A checklist with a progress bar that saves on the device and can be printed.
+- A document checklist with a progress bar that saves on the device.
 - Agency and office directories with Google Maps and Waze links.
 - A "Report incorrect information" form on every guide.
 - Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
