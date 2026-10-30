@@ -18,6 +18,7 @@ const EMPTY_FORM = {
   category_id: '',
   summary: '',
   description: '',
+  search_keywords: '',
   fee_description: '',
   processing_time_description: '',
   eligibility: [],
@@ -25,6 +26,7 @@ const EMPTY_FORM = {
   steps: [],
   sources: [],
   office_ids: [],
+  related_ids: [],
 }
 
 const SUCCESS_MESSAGES = {
@@ -51,6 +53,7 @@ function fromService(service) {
     category_id: String(service.category_id ?? ''),
     summary: service.summary ?? '',
     description: service.description ?? '',
+    search_keywords: service.search_keywords ?? '',
     fee_description: service.fee_description ?? '',
     processing_time_description: service.processing_time_description ?? '',
     eligibility: service.eligibility.map((text) => withKey({ text })),
@@ -62,6 +65,7 @@ function fromService(service) {
       withKey({ label: source.label ?? '', url: source.url, verified_at: source.verified_at ?? '' })
     ),
     office_ids: service.office_ids,
+    related_ids: service.related_ids,
   }
 }
 
@@ -79,6 +83,7 @@ function toPayload(form) {
     category_id: form.category_id ? Number(form.category_id) : null,
     summary: form.summary,
     description: form.description,
+    search_keywords: form.search_keywords,
     fee_description: form.fee_description,
     processing_time_description: form.processing_time_description,
     eligibility: form.eligibility.map((item) => item.text),
@@ -86,6 +91,7 @@ function toPayload(form) {
     steps: form.steps.map(stripKey),
     sources: form.sources.map((source) => ({ ...stripKey(source), verified_at: source.verified_at || null })),
     office_ids: form.office_ids,
+    related_ids: form.related_ids,
   }
 }
 
@@ -167,6 +173,14 @@ export default function AdminServiceEditorPage() {
 
   function handleTitle(value) {
     update(service || slugEdited ? { title: value } : { title: value, slug: slugify(value) })
+  }
+
+  function toggleRelated(relatedId) {
+    update({
+      related_ids: form.related_ids.includes(relatedId)
+        ? form.related_ids.filter((value) => value !== relatedId)
+        : [...form.related_ids, relatedId],
+    })
   }
 
   function toggleOffice(officeId) {
@@ -260,6 +274,7 @@ export default function AdminServiceEditorPage() {
   const status = service?.status ?? 'draft'
   // Editors change drafts only, so nothing reaches residents without review.
   const readOnly = !canEdit || status === 'archived' || (!isSuper && status !== 'draft')
+  const relatedOptions = lookups.services.filter((other) => String(other.id) !== String(id))
   const sortedOffices = [...lookups.offices].sort(
     (a, b) => (String(b.agency_id) === form.agency_id) - (String(a.agency_id) === form.agency_id)
   )
@@ -372,6 +387,12 @@ export default function AdminServiceEditorPage() {
 
             <Field id="description" label="About this service" error={errors.description}>
               <textarea id="description" rows={5} value={form.description} onChange={(e) => update({ description: e.target.value })} className={inputClass} />
+            </Field>
+          </Card>
+
+          <Card title="Search" description="Other words residents might use for this service.">
+            <Field id="search_keywords" label="Search keywords" error={errors.search_keywords} hint="Separate with commas, e.g. cedula, sedula, community tax. Not shown on the guide.">
+              <TextInput id="search_keywords" value={form.search_keywords} error={errors.search_keywords} maxLength={500} onChange={(e) => update({ search_keywords: e.target.value })} />
             </Field>
           </Card>
 
@@ -514,6 +535,23 @@ export default function AdminServiceEditorPage() {
                         <span className="font-medium text-stone-900">{office.name}</span>
                         <span className="ml-1.5 text-xs text-stone-500">{office.agency_acronym}</span>
                       </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+          <Card title="Related guides" description="Shown at the end of the guide. If none are chosen, residents see other guides in the same category.">
+            {errors.related_ids && <InlineError message={errors.related_ids} />}
+            {relatedOptions.length === 0 ? (
+              <p className="text-sm text-stone-500">No other guides yet.</p>
+            ) : (
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {relatedOptions.map((other) => (
+                  <li key={other.id}>
+                    <label className="flex items-center gap-2 rounded-lg bg-stone-50 px-3 py-2 text-sm transition-colors hover:bg-stone-100">
+                      <input type="checkbox" checked={form.related_ids.includes(other.id)} onChange={() => toggleRelated(other.id)} className="h-4 w-4 accent-bay-700" />
+                      <span className="font-medium text-stone-900">{other.title}</span>
                     </label>
                   </li>
                 ))}

@@ -13,6 +13,7 @@ use App\Validators\Validator;
 class AgencyController
 {
     private const EDITORS = ['super_admin', 'editor'];
+    private const PRESENCE = ['physical_office', 'online_only', 'unconfirmed'];
 
     // Logos are re-encoded as small WebP files in public/uploads, served at /api/uploads like the API.
     private const LOGO_DIR = __DIR__ . '/../../../public/uploads/agencies';
@@ -25,7 +26,7 @@ class AgencyController
     {
         Auth::requireAdmin();
         $rows = Database::connection()->query(
-            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.hotline, a.email, a.facebook_url,
+            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.hotline, a.email, a.facebook_url, a.presence,
                     a.is_local_government, a.is_active,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id) AS service_count,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id AND s.status = 'published') AS published_count,
@@ -44,8 +45,8 @@ class AgencyController
 
         $pdo = Database::connection();
         $pdo->prepare(
-            'INSERT INTO agencies (name, slug, acronym, description, official_website, hotline, email, facebook_url, is_local_government, is_active)
-             VALUES (:name, :slug, :acronym, :description, :website, :hotline, :email, :facebook, :local, :active)'
+            'INSERT INTO agencies (name, slug, acronym, description, official_website, hotline, email, facebook_url, presence, is_local_government, is_active)
+             VALUES (:name, :slug, :acronym, :description, :website, :hotline, :email, :facebook, :presence, :local, :active)'
         )->execute($data);
         $id = (int) $pdo->lastInsertId();
 
@@ -62,7 +63,7 @@ class AgencyController
 
         Database::connection()->prepare(
             'UPDATE agencies SET name = :name, slug = :slug, acronym = :acronym, description = :description,
-                    official_website = :website, hotline = :hotline, email = :email, facebook_url = :facebook,
+                    official_website = :website, hotline = :hotline, email = :email, facebook_url = :facebook, presence = :presence,
                     is_local_government = :local, is_active = :active
              WHERE id = :id'
         )->execute($data + ['id' => $id]);
@@ -186,6 +187,7 @@ class AgencyController
             'hotline' => $v->string($body['hotline'] ?? null, 'hotline', 100),
             'email' => $v->email($body['email'] ?? null, 'email'),
             'facebook' => $v->optionalUrl($body['facebook_url'] ?? null, 'facebook_url'),
+            'presence' => in_array($body['presence'] ?? null, self::PRESENCE, true) ? $body['presence'] : 'unconfirmed',
             'local' => $v->bool($body['is_local_government'] ?? false),
             'active' => $v->bool($body['is_active'] ?? true),
         ];

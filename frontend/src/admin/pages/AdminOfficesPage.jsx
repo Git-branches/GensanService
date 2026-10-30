@@ -13,6 +13,8 @@ import { ActiveBadge, Button, Field, IconAction, PageTitle, Switch, inputClass }
 const EMPTY = {
   agency_id: '',
   name: '',
+  branch_type: '',
+  description: '',
   address: '',
   barangay: '',
   city: 'General Santos City',
@@ -96,6 +98,18 @@ function OfficeFormModal({ office, agencies, readOnly, onClose, onSaved }) {
             {text(values, set, errors, 'latitude', 'Latitude', { hint: 'Optional — for an exact map pin.', input: { inputMode: 'decimal', placeholder: 'e.g. 6.1164' } })}
             {text(values, set, errors, 'longitude', 'Longitude', { hint: 'Enter both or neither.', input: { inputMode: 'decimal', placeholder: 'e.g. 125.1716' } })}
           </div>
+
+          <Field id="office-branch_type" label="Branch type" error={errors.branch_type}>
+            <select id="office-branch_type" value={values.branch_type} onChange={(e) => set({ branch_type: e.target.value })} className={`${inputClass} sm:max-w-xs`}>
+              <option value="">Not stated</option>
+              <option value="main">Main office</option>
+              <option value="satellite">Satellite branch</option>
+            </select>
+          </Field>
+
+          <Field id="office-description" label="Description" error={errors.description} hint="Optional. What this office handles, or how to find it.">
+            <textarea id="office-description" rows={2} maxLength={500} value={values.description} onChange={(e) => set({ description: e.target.value })} className={inputClass} />
+          </Field>
 
           <div className="space-y-3 rounded-lg bg-stone-50 p-4">
             <label className="flex items-start gap-2.5 text-sm">

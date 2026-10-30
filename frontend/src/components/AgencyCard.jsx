@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, FileText, MapPin } from 'lucide-react'
+import { ChevronRight, CircleHelp, FileText, Globe, MapPin } from 'lucide-react'
 import AgencyLogo from './AgencyLogo'
 import { useI18n } from '../i18n/context'
 
@@ -13,6 +13,21 @@ export function AgencyTypeBadge({ isLocal }) {
       }`}
     >
       {isLocal ? t('agencyType.local') : t('agencyType.national')}
+    </span>
+  )
+}
+
+const PRESENCE_ICONS = { physical_office: MapPin, online_only: Globe, unconfirmed: CircleHelp }
+
+// Not every national agency has an office here, so the label says what is confirmed.
+export function AgencyPresence({ presence }) {
+  const { t } = useI18n()
+  const Icon = PRESENCE_ICONS[presence] ?? CircleHelp
+
+  return (
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-stone-600">
+      <Icon size={13} aria-hidden="true" className="shrink-0" />
+      {t(`agencyPresence.${PRESENCE_ICONS[presence] ? presence : 'unconfirmed'}`)}
     </span>
   )
 }
@@ -32,8 +47,9 @@ export default function AgencyCard({ agency }) {
             <p className="text-xs font-bold uppercase tracking-wide text-sun-700">{agency.acronym}</p>
           )}
           <h3 className="mt-0.5 font-bold leading-snug text-bay-950 group-hover:text-bay-700">{agency.name}</h3>
-          <div className="mt-2">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
             <AgencyTypeBadge isLocal={Boolean(agency.is_local_government)} />
+            <AgencyPresence presence={agency.presence} />
           </div>
         </div>
       </div>

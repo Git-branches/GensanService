@@ -1,18 +1,23 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   BadgeCheck,
   CircleCheck,
   Clock,
+  Copy,
   ExternalLink,
   Info,
   Landmark,
   LayoutGrid,
+  Link2,
   ListChecks,
   ListOrdered,
   Lock,
   MapPin,
+  Printer,
   Receipt,
   RefreshCw,
+  Share2,
   UserCheck,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -20,11 +25,13 @@ import Checklist from '../components/Checklist'
 import OfficeCard from '../components/OfficeCard'
 import VerificationBadge from '../components/VerificationBadge'
 import ReportIssue from '../components/ReportIssue'
+import ServiceCard from '../components/ServiceCard'
 import { ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { useI18n } from '../i18n/context'
-import { getService } from '../services/api'
+import { getService, recordView } from '../services/api'
+import { addRecentlyViewed, isFirstViewThisVisit } from '../utils/deviceHistory'
 import { formatDate } from '../utils/format'
 
 function DetailSection({ id, icon: Icon, title, children }) {
@@ -109,8 +116,58 @@ function AtAGlance({ service }) {
   )
 }
 
+const ACTION_BUTTON = 'inline-flex items-center gap-1.5 rounded-md py-1 text-sm font-semibold text-bay-700 underline-offset-4 hover:underline'
+
+function useCopy() {
+  const { t } = useI18n()
+  const [notice, setNotice] = useState('')
+
+  async function copy(text, success) {
+    try {
+      await navigator.clipboard.writeText(text)
+      setNotice(success)
+    } catch {
+      setNotice(t('detail.copyFailed'))
+    }
+  }
+
+  return [notice, copy]
+}
+
+function GuideActions({ title }) {
+  const { t } = useI18n()
+  const [notice, copy] = useCopy()
+  const url = window.location.href.split('?')[0]
+
+  async function share() {
+    try {
+      await navigator.share({ title, url })
+    } catch {
+      // The person closed the share sheet.
+    }
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 print:hidden">
+      {typeof navigator.share === 'function' && (
+        <button type="button" onClick={share} className={ACTION_BUTTON}>
+          <Share2 size={15} aria-hidden="true" /> {t('detail.share')}
+        </button>
+      )}
+      <button type="button" onClick={() => copy(url, t('detail.linkCopied'))} className={ACTION_BUTTON}>
+        <Link2 size={15} aria-hidden="true" /> {t('detail.copyLink')}
+      </button>
+      <button type="button" onClick={() => window.print()} className={ACTION_BUTTON}>
+        <Printer size={15} aria-hidden="true" /> {t('detail.print')}
+      </button>
+      <span role="status" className="text-sm text-stone-600">{notice}</span>
+    </div>
+  )
+}
+
 function Sources({ sources }) {
   const { t } = useI18n()
+  const [notice, copy] = useCopy()
   if (!sources?.length) return null
 
   return (
@@ -134,6 +191,14 @@ function Sources({ sources }) {
           </li>
         ))}
       </ul>
+      <button
+        type="button"
+        onClick={() => copy(sources.map((source) => source.url).join('\n'), t('detail.sourcesCopied'))}
+        className={`${ACTION_BUTTON} mt-3 print:hidden`}
+      >
+        <Copy size={14} aria-hidden="true" /> {t('detail.copySources')}
+      </button>
+      <span role="status" className="ml-3 text-sm text-stone-600">{notice}</span>
     </div>
   )
 }
@@ -172,6 +237,12 @@ export default function ServiceDetailPage() {
   const { slug } = useParams()
   const { data: service, error, loading } = useFetch(() => getService(slug), [slug])
   usePageTitle(service?.title ?? t('detail.pageTitle'))
+
+  useEffect(() => {
+    if (!service) return
+    addRecentlyViewed({ slug: service.slug, title: service.title })
+    if (isFirstViewThisVisit(service.slug)) recordView(service.slug).catch(() => {})
+  }, [service])
 
   if (loading) return <LoadingState label={t('detail.loading')} />
   if (error) {
@@ -212,6 +283,7 @@ export default function ServiceDetailPage() {
         {service.verification_status !== 'verified' && (
           <p className="mt-3 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
         )}
+        <GuideActions title={service.title} />
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
@@ -312,6 +384,17 @@ export default function ServiceDetailPage() {
             </div>
           </aside>
         </div>
+
+        {service.related?.length > 0 && (
+          <section aria-labelledby="related-title" className="mt-12 print:hidden">
+            <h2 id="related-title" className="text-xl font-extrabold tracking-tight text-bay-950">{t('detail.related')}</h2>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {service.related.map((guide) => (
+                <ServiceCard key={guide.slug} service={guide} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </>
   )

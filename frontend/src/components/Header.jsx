@@ -11,13 +11,14 @@ const NAV_LINKS = [
   { to: '/services', label: 'nav.services' },
   { to: '/agencies', label: 'nav.agencies' },
   { to: '/offices', label: 'nav.offices' },
+  { to: '/faq', label: 'nav.faq' },
 ]
 
 // Gold outline for keyboard focus on the navy bar.
 const FOCUS_RING = 'focus-visible:outline-2 focus-visible:outline-navy-active'
 
 function desktopLinkClass({ isActive }) {
-  return `relative px-3 py-5 text-sm font-semibold transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-full focus-visible:outline-offset-[-4px] ${FOCUS_RING} ${
+  return `relative whitespace-nowrap px-3 py-5 text-sm font-semibold transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-t-full focus-visible:outline-offset-[-4px] ${FOCUS_RING} ${
     isActive ? 'text-navy-active after:bg-navy-active' : 'text-white/85 after:bg-transparent hover:text-white'
   }`
 }
@@ -58,7 +59,7 @@ export default function Header() {
             <Logo subtitle={t('logo.subtitle')} tone="dark" />
           </Link>
 
-          <nav aria-label={t('nav.main')} className="hidden items-center md:flex">
+          <nav aria-label={t('nav.main')} className="hidden shrink-0 items-center md:flex">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={desktopLinkClass}>
                 {t(link.label)}
@@ -68,7 +69,7 @@ export default function Header() {
 
           <Link
             to="/services"
-            className={`hidden items-center gap-2 rounded-lg border border-white/30 bg-transparent px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-navy-active hover:text-navy-active focus-visible:outline-offset-2 lg:inline-flex ${FOCUS_RING}`}
+            className={`hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-white/30 bg-transparent px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-navy-active hover:text-navy-active focus-visible:outline-offset-2 lg:inline-flex ${FOCUS_RING}`}
           >
             <Search size={16} aria-hidden="true" /> {t('nav.searchGuides')}
           </Link>

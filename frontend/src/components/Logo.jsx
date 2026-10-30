@@ -20,7 +20,7 @@ export default function Logo({ subtitle, size = 'md', tone = 'light' }) {
           <span className={dark ? 'text-navy-accent' : 'text-bay-600'}>GenSan</span>
         </span>
         {subtitle && (
-          <span className={`hidden text-xs font-medium sm:block ${dark ? 'text-navy-muted' : 'text-stone-500'}`}>
+          <span className={`hidden text-xs font-medium sm:block ${dark ? 'text-navy-muted md:hidden xl:block' : 'text-stone-500'}`}>
             {subtitle}
           </span>
         )}

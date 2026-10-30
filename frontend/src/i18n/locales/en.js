@@ -29,6 +29,7 @@ export default {
     services: 'Service guides',
     agencies: 'Agencies',
     offices: 'Offices',
+    faq: 'FAQ',
     searchGuides: 'Search guides',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
@@ -38,7 +39,7 @@ export default {
     notOfficial: ' — not an official government website',
   },
   logo: {
-    subtitle: 'Be ready before you go · General Santos City',
+    subtitle: 'Prepare Today. Transact with Confidence.',
   },
   footer: {
     about: 'An independent community guide to government requirements, checklists, and offices for residents of General Santos City.',
@@ -53,6 +54,8 @@ export default {
       'We never ask for your government account passwords or OTPs.',
     ],
     copyright: '© {year} Andam GenSan — independent community project.',
+    faq: 'Frequently asked questions',
+    privacy: 'Privacy policy',
     notAffiliated: 'Not affiliated with any government agency.',
   },
   tuna: {
@@ -97,6 +100,19 @@ export default {
       byCategory: 'By category',
       byAgency: 'By agency',
     },
+    popular: {
+      kicker: 'Most viewed',
+      title: 'Popular guides',
+      description: 'The guides residents opened most in the last 30 days.',
+    },
+    viewed: {
+      title: 'Recently viewed on this device',
+    },
+    faq: {
+      kicker: 'Help',
+      title: 'Frequently asked questions',
+      all: 'See all questions',
+    },
     recent: {
       kicker: 'Latest updates',
       title: 'Recently updated guides',
@@ -138,6 +154,9 @@ items: [
     emptyTitle: 'No guides match yet',
     emptyFiltered: 'Try a different keyword or remove a filter. New guides are added as they are verified.',
     emptyNone: 'No service guides have been published yet.',
+    tryThese: 'Try one of these guides',
+    matchingAgencies: 'Matching agencies',
+    matchingOffices: 'Matching offices',
     showAll: 'Show all guides',
     browseAgenciesInstead: 'Browse agencies instead',
   },
@@ -195,6 +214,9 @@ items: [
     hours: 'Office hours',
     phone: 'Phone',
     email: 'Email',
+    main: 'Main office',
+    satellite: 'Satellite branch',
+    guidesHere: 'Guides for this office',
     notVerified: 'Details not yet verified',
     maps: 'Google Maps',
     waze: 'Waze',
@@ -206,6 +228,14 @@ items: [
     back: 'Back to all service guides',
     verificationNote: 'This guide is not fully confirmed yet. Check the official sources or ask the agency before you go.',
     lastChecked: 'Last checked',
+    share: 'Share',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied',
+    copyFailed: 'Could not copy. Please copy from the address bar.',
+    print: 'Print',
+    copySources: 'Copy official links',
+    sourcesCopied: 'Official links copied',
+    related: 'Related guides',
     atAGlance: 'Government Services',
     agency: 'Agency',
     category: 'Category',
@@ -256,6 +286,7 @@ items: [
     email: 'Your email',
     optional: '(optional)',
     emailHint: 'Only used if our editors need to ask you a follow-up question.',
+    privacyLink: 'Read our privacy policy',
     privacyNote: "Please don't include personal details such as ID numbers, passwords, or OTPs.",
     send: 'Send report',
     reasons: {
@@ -273,6 +304,80 @@ items: [
       email: 'Please enter a valid email address.',
       rateLimit: 'You have sent several reports recently. Please try again in an hour.',
     },
+  },
+  search: {
+    suggestions: 'Search suggestions',
+    guides: 'Guides',
+    agencies: 'Agencies',
+    offices: 'Offices',
+    categories: 'Categories',
+    recent: 'Recent searches',
+    clearRecent: 'Clear recent searches',
+    noMatches: 'No suggestions. Press Enter to search all guides.',
+  },
+  agencyPresence: {
+    physical_office: 'Has an office in GenSan',
+    online_only: 'Online services only',
+    unconfirmed: 'GenSan office not confirmed',
+  },
+  faq: {
+    pageTitle: 'Frequently asked questions',
+    kicker: 'Help',
+    description: 'Answers about using Andam GenSan.',
+    search: 'Search questions',
+    filter: 'Filter questions',
+    all: 'All',
+    empty: 'No questions match your search',
+    categories: {
+      about: 'About',
+      guides: 'Using guides',
+      directory: 'Agencies and offices',
+      accuracy: 'Accuracy and reports',
+    },
+  },
+  privacy: {
+    pageTitle: 'Privacy policy',
+    updated: 'Last updated October 30, 2026',
+    intro: 'Andam GenSan does not need an account, and we collect as little as we can. This page explains what we collect and why.',
+    sections: [
+      {
+        heading: 'What stays on your device',
+        paragraphs: [
+          'Your checklist ticks, language choice, recent searches, and recently viewed guides are saved in your own browser. They are not sent to us. Clearing your browser data removes them.',
+        ],
+      },
+      {
+        heading: 'What we count',
+        paragraphs: [
+          'When a guide is opened, we add one to that guide\'s total for the day. We use these totals to show popular guides. They do not include your IP address or anything that identifies you, and we do not use advertising or tracking cookies.',
+        ],
+      },
+      {
+        heading: 'If you send a report',
+        paragraphs: [
+          'The "Report incorrect information" form saves the reason you chose, your message, your email if you give one, and your IP address. We use the IP address only to limit spam, and we use your email only if our editors need to ask you a follow-up question.',
+          'Please do not include ID numbers, passwords, OTPs, or other sensitive details. Reports are visible only to our admin team. We do not yet have a fixed schedule for deleting them.',
+        ],
+      },
+      {
+        heading: 'What we never ask for',
+        paragraphs: [
+          'We never ask for government account passwords, OTPs, or payments. Andam GenSan does not process applications. If someone claiming to be from Andam GenSan asks for these, do not give them.',
+        ],
+      },
+      {
+        heading: 'Links to other websites',
+        paragraphs: [
+          'Guides link to government websites and map services. Those sites have their own privacy policies.',
+        ],
+      },
+      {
+        heading: 'Your rights',
+        paragraphs: [
+          'Under the Data Privacy Act of 2012, you can ask what we hold about you and ask us to correct or delete it. To make a request, send a report from any guide and start your message with the word "Privacy".',
+        ],
+      },
+    ],
   },
   notFound: {
     pageTitle: 'Page not found',

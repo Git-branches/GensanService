@@ -46,6 +46,10 @@ export default function OfficeCard({ office, showAgency = true }) {
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="text-lg font-bold leading-snug text-bay-950">{office.name}</h3>
+        {office.branch_type && (
+          <p className="mt-0.5 text-xs font-semibold text-stone-500">{t(`officeCard.${office.branch_type}`)}</p>
+        )}
+        {office.description && <p className="mt-2 text-sm leading-relaxed text-stone-600">{office.description}</p>}
 
         <div className="mt-4 space-y-2.5 text-sm text-stone-700">
           {address && (
@@ -71,6 +75,21 @@ export default function OfficeCard({ office, showAgency = true }) {
             </InfoRow>
           )}
         </div>
+
+        {office.services?.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{t('officeCard.guidesHere')}</p>
+            <ul className="mt-1 space-y-0.5 text-sm">
+              {office.services.map((guide) => (
+                <li key={guide.slug}>
+                  <Link to={`/services/${guide.slug}`} className="font-medium text-bay-700 hover:underline">
+                    {guide.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mt-auto grid grid-cols-2 gap-2 pt-5">
           <a

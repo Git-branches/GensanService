@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS agencies (
     hotline VARCHAR(100) DEFAULT NULL,
     email VARCHAR(150) DEFAULT NULL,
     facebook_url VARCHAR(255) DEFAULT NULL,
+    presence ENUM('physical_office', 'online_only', 'unconfirmed') NOT NULL DEFAULT 'unconfirmed',
     is_local_government TINYINT(1) NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,6 +34,8 @@ CREATE TABLE IF NOT EXISTS offices (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     agency_id INT UNSIGNED NOT NULL,
     name VARCHAR(150) NOT NULL,
+    branch_type ENUM('main', 'satellite') DEFAULT NULL,
+    description VARCHAR(500) DEFAULT NULL,
     address VARCHAR(255) DEFAULT NULL,
     barangay VARCHAR(100) DEFAULT NULL,
     city VARCHAR(100) NOT NULL DEFAULT 'General Santos City',
@@ -94,6 +97,7 @@ CREATE TABLE IF NOT EXISTS services (
     slug VARCHAR(220) NOT NULL,
     summary VARCHAR(500) DEFAULT NULL,
     description TEXT DEFAULT NULL,
+    search_keywords VARCHAR(500) DEFAULT NULL,
     fee_description VARCHAR(255) DEFAULT NULL,
     processing_time_description VARCHAR(255) DEFAULT NULL,
     status ENUM('draft', 'for_review', 'approved', 'published', 'archived') NOT NULL DEFAULT 'draft',
@@ -138,6 +142,34 @@ CREATE TABLE IF NOT EXISTS service_related (
     PRIMARY KEY (service_id, related_service_id),
     CONSTRAINT fk_related_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
     CONSTRAINT fk_related_target FOREIGN KEY (related_service_id) REFERENCES services(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS service_daily_views (
+    service_id INT UNSIGNED NOT NULL,
+    view_date DATE NOT NULL,
+    views INT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (service_id, view_date),
+    CONSTRAINT fk_daily_views_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE,
+    KEY idx_daily_views_date (view_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS faqs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(30) NOT NULL,
+    display_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_faqs_active (is_active, display_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS faq_translations (
+    faq_id INT UNSIGNED NOT NULL,
+    locale VARCHAR(10) NOT NULL,
+    question VARCHAR(255) NOT NULL,
+    answer TEXT NOT NULL,
+    PRIMARY KEY (faq_id, locale),
+    CONSTRAINT fk_faq_translations_faq FOREIGN KEY (faq_id) REFERENCES faqs(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS service_offices (

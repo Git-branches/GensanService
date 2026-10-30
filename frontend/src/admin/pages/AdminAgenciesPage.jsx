@@ -10,7 +10,7 @@ import ResourceTable from '../components/ResourceTable'
 import Toast from '../components/Toast'
 import { ActiveBadge, Button, Field, IconAction, PageTitle, Switch, inputClass } from '../components/ui'
 
-const EMPTY = { name: '', acronym: '', slug: '', description: '', official_website: '', hotline: '', email: '', facebook_url: '', is_local_government: false, is_active: true }
+const EMPTY = { name: '', acronym: '', slug: '', description: '', official_website: '', hotline: '', email: '', facebook_url: '', presence: 'unconfirmed', is_local_government: false, is_active: true }
 
 function toForm(agency) {
   if (!agency) return EMPTY
@@ -23,6 +23,7 @@ function toForm(agency) {
     hotline: agency.hotline ?? '',
     email: agency.email ?? '',
     facebook_url: agency.facebook_url ?? '',
+    presence: agency.presence ?? 'unconfirmed',
     is_local_government: Boolean(agency.is_local_government),
     is_active: Boolean(agency.is_active),
   }
@@ -162,6 +163,14 @@ function AgencyFormModal({ agency, readOnly, onClose, onSaved, onLogoChange }) {
 
           <Field id="agency-facebook" label="Official Facebook page" error={errors.facebook_url}>
             <input id="agency-facebook" type="url" value={values.facebook_url} maxLength={255} aria-invalid={Boolean(errors.facebook_url)} onChange={(e) => set({ facebook_url: e.target.value })} className={inputClass} placeholder="https://www.facebook.com/..." />
+          </Field>
+
+          <Field id="agency-presence" label="Office in General Santos City" error={errors.presence} hint="Choose 'Has an office' only after confirming it. Shown to residents.">
+            <select id="agency-presence" value={values.presence} onChange={(e) => set({ presence: e.target.value })} className={inputClass}>
+              <option value="unconfirmed">Not confirmed</option>
+              <option value="physical_office">Has an office in GenSan</option>
+              <option value="online_only">Online services only</option>
+            </select>
           </Field>
 
           <Field id="agency-description" label="Description" error={errors.description}>

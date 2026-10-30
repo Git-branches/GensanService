@@ -8,6 +8,8 @@ import ServiceDetailPage from '../pages/ServiceDetailPage'
 import AgenciesPage from '../pages/AgenciesPage'
 import AgencyDetailPage from '../pages/AgencyDetailPage'
 import OfficesPage from '../pages/OfficesPage'
+import FaqPage from '../pages/FaqPage'
+import PrivacyPage from '../pages/PrivacyPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 // Loaded on demand so public visitors never download the admin code.
@@ -31,6 +33,8 @@ export default function AppRoutes() {
         <Route path="agencies" element={<AgenciesPage />} />
         <Route path="agencies/:slug" element={<AgencyDetailPage />} />
         <Route path="offices" element={<OfficesPage />} />
+        <Route path="faq" element={<FaqPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

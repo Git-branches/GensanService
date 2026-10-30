@@ -2,11 +2,13 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Search, X } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import residentsImage from '../assets/page-services.webp'
+import SearchBox from '../components/SearchBox'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
-import { getAgencies, getCategories, getServices } from '../services/api'
+import { getAgencies, getCategories, getServices, search } from '../services/api'
+import { addRecentSearch } from '../utils/deviceHistory'
 import { useI18n } from '../i18n/context'
 
 const FIELD_CLASS =
@@ -48,6 +50,8 @@ export default function ServicesPage() {
     () => getServices({ q, category: categorySlug, agency: agencySlug }),
     [q, categorySlug, agencySlug]
   )
+  const { data: matches } = useFetch(() => (q ? search(q) : Promise.resolve(null)), [q])
+  const { data: suggestions } = useFetch(() => getServices({ sort: 'recent', limit: 4 }), [])
 
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams)
@@ -62,7 +66,9 @@ export default function ServicesPage() {
 
   function handleSearch(event) {
     event.preventDefault()
-    setParam('q', String(new FormData(event.currentTarget).get('q') || '').trim())
+    const text = String(new FormData(event.currentTarget).get('q') || '').trim()
+    addRecentSearch(text)
+    setParam('q', text)
   }
 
   const activeCategory = categories?.find((category) => category.slug === categorySlug)
@@ -99,11 +105,9 @@ export default function ServicesPage() {
             </label>
             <div className="relative mt-1.5">
               <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-              <input
-                id="services-q"
+              <SearchBox
                 key={q}
-                name="q"
-                type="search"
+                id="services-q"
                 defaultValue={q}
                 placeholder={t('common.searchPlaceholder')}
                 className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-400`}
@@ -166,6 +170,35 @@ export default function ServicesPage() {
           )}
         </div>
 
+        {(matches?.agencies.length > 0 || matches?.offices.length > 0) && (
+          <div className="mt-5 flex flex-wrap gap-x-8 gap-y-3 text-sm">
+            {matches.agencies.length > 0 && (
+              <div>
+                <p className="font-semibold text-stone-600">{t('services.matchingAgencies')}</p>
+                <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  {matches.agencies.map((agency) => (
+                    <li key={agency.slug}>
+                      <Link to={`/agencies/${agency.slug}`} className="font-semibold text-bay-700 hover:underline">{agency.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {matches.offices.length > 0 && (
+              <div>
+                <p className="font-semibold text-stone-600">{t('services.matchingOffices')}</p>
+                <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  {matches.offices.map((office) => (
+                    <li key={office.id}>
+                      <Link to={`/agencies/${office.agency_slug}`} className="font-semibold text-bay-700 hover:underline">{office.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="mt-6">
           {loading && <CardGridSkeleton />}
           {error && <ErrorState message={t('common.loadError')} />}
@@ -189,6 +222,18 @@ export default function ServicesPage() {
               <Link to="/agencies" className="text-sm font-semibold text-bay-700 hover:underline">
                 {t('services.browseAgenciesInstead')}
               </Link>
+              {suggestions?.length > 0 && (
+                <div className="mt-4 text-sm">
+                  <p className="font-semibold text-stone-600">{t('services.tryThese')}</p>
+                  <ul className="mt-1 space-y-1">
+                    {suggestions.map((guide) => (
+                      <li key={guide.id}>
+                        <Link to={`/services/${guide.slug}`} className="font-medium text-bay-700 hover:underline">{guide.title}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </EmptyState>
           )}
 

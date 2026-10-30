@@ -22,6 +22,18 @@ export function reportIssue(slug, data) {
   return request(`/services/${encodeURIComponent(slug)}/reports`, { method: 'POST', body: JSON.stringify(data) })
 }
 
+export function search(q) {
+  return request(`/search?q=${encodeURIComponent(q)}`)
+}
+
+export function getFaqs(lang) {
+  return request(`/faqs?lang=${encodeURIComponent(lang)}`)
+}
+
+export function recordView(slug) {
+  return request(`/services/${encodeURIComponent(slug)}/view`, { method: 'POST' })
+}
+
 export function getStats() {
   return request('/stats')
 }

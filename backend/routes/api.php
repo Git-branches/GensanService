@@ -11,8 +11,10 @@ use App\Controllers\Admin\ReportController as AdminReportController;
 use App\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Controllers\AgencyController;
 use App\Controllers\CategoryController;
+use App\Controllers\FaqController;
 use App\Controllers\OfficeController;
 use App\Controllers\ReportController;
+use App\Controllers\SearchController;
 use App\Controllers\ServiceController;
 use App\Controllers\StatsController;
 use App\Response;
@@ -36,6 +38,9 @@ $router->get('/api/offices', [new OfficeController(), 'index']);
 $router->get('/api/services', [new ServiceController(), 'index']);
 $router->get('/api/services/{slug}', [new ServiceController(), 'show']);
 $router->post('/api/services/{slug}/reports', [new ReportController(), 'store']);
+$router->post('/api/services/{slug}/view', [new ServiceController(), 'recordView']);
+$router->get('/api/search', [new SearchController(), 'index']);
+$router->get('/api/faqs', [new FaqController(), 'index']);
 
 // Administrator API — every handler enforces sign-in, role, and CSRF checks itself via Auth::requireAdmin().
 $adminAuth = new AdminAuthController();

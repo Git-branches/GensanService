@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { ExternalLink, Mail, MessageCircle, Phone } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import { AgencyTypeBadge } from '../components/AgencyCard'
+import { AgencyPresence, AgencyTypeBadge } from '../components/AgencyCard'
 import ServiceCard from '../components/ServiceCard'
 import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState, LoadingState } from '../components/StateMessage'
@@ -71,6 +71,7 @@ export default function AgencyDetailPage() {
       >
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <AgencyTypeBadge isLocal={Boolean(agency.is_local_government)} />
+          <AgencyPresence presence={agency.presence} />
           {agency.official_website && (
             <a
               href={agency.official_website}

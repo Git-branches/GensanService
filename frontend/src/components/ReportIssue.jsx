@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AlertCircle, CheckCircle2, Flag, Loader2 } from 'lucide-react'
 import Modal from './Modal'
 import { reportIssue } from '../services/api'
@@ -171,7 +172,12 @@ function ReportForm({ slug, serviceTitle, onClose }) {
           <input id={`${formId}-website`} tabIndex={-1} autoComplete="off" value={values.website} onChange={(e) => set({ website: e.target.value })} />
         </div>
 
-        <p className="text-xs text-stone-500">{t('report.privacyNote')}</p>
+        <p className="text-xs text-stone-500">
+          {t('report.privacyNote')}{' '}
+          <Link to="/privacy" target="_blank" className="font-semibold text-bay-700 underline">
+            {t('report.privacyLink')}
+          </Link>
+        </p>
       </form>
     </Modal>
   )

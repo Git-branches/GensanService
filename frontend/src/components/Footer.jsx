@@ -8,6 +8,8 @@ const EXPLORE_LINKS = [
   { to: '/services', label: 'nav.services' },
   { to: '/agencies', label: 'footer.governmentAgencies' },
   { to: '/offices', label: 'footer.officeDirectory' },
+  { to: '/faq', label: 'footer.faq' },
+  { to: '/privacy', label: 'footer.privacy' },
 ]
 
 const OFFICIAL_PORTALS = [

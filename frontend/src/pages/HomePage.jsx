@@ -17,16 +17,21 @@ import SectionHeading from '../components/SectionHeading'
 import { Kicker } from '../components/PageHeader'
 import CategoryTile from '../components/CategoryTile'
 import AgencyCard from '../components/AgencyCard'
+import FaqItem from '../components/FaqItem'
+import SearchBox from '../components/SearchBox'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { useI18n } from '../i18n/context'
 import { usePageTitle } from '../hooks/usePageTitle'
-import { getAgencies, getCategories, getServices, getStats } from '../services/api'
+import { getAgencies, getCategories, getFaqs, getServices, getStats } from '../services/api'
+import { addRecentSearch, getRecentlyViewed } from '../utils/deviceHistory'
 
 // Icons for home.accuracy.points and home.reminders.items, in the same order as the messages.
 const ACCURACY_ICONS = [Link2, BadgeCheck, BookOpenText]
 const REMINDER_ICONS = [Info, RefreshCw, Lock]
+
+const FAQ_PREVIEW = 3
 
 // Same tile for both columns of the "Our approach" section; each column adds its own tint.
 const ICON_TILE = 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1'
@@ -41,6 +46,7 @@ function GuideSearch({ categories, quickPicks }) {
     const params = new URLSearchParams()
     const q = String(form.get('q') || '').trim()
     const category = String(form.get('category') || '')
+    addRecentSearch(q)
     if (q) params.set('q', q)
     if (category) params.set('category', category)
     const query = params.toString()
@@ -60,10 +66,8 @@ function GuideSearch({ categories, quickPicks }) {
           </label>
           <div className="relative mt-1.5">
             <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-            <input
+            <SearchBox
               id="hero-q"
-              name="q"
-              type="search"
               placeholder={t('common.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-300 bg-white py-3 pl-10 pr-3 text-base placeholder:text-stone-400 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
             />
@@ -213,13 +217,16 @@ function BrowseTabs({ categories, agencies, loading, error }) {
 }
 
 export default function HomePage() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   usePageTitle(null)
 
   const categories = useFetch(getCategories, [])
   const agencies = useFetch(getAgencies, [])
   const { data: stats } = useFetch(getStats, [])
   const recent = useFetch(() => getServices({ sort: 'recent', limit: 6 }), [])
+  const popular = useFetch(() => getServices({ sort: 'popular', limit: 3 }), [])
+  const faqs = useFetch(() => getFaqs(locale), [locale])
+  const [viewed] = useState(getRecentlyViewed)
 
   const quickPicks = (agencies.data ?? [])
     .filter((agency) => agency.acronym)
@@ -335,8 +342,33 @@ export default function HomePage() {
         </div>
       </section>
 
+      {popular.data?.length > 0 && (
+        <section className="pt-14 sm:pt-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <SectionHeading kicker={t('home.popular.kicker')} title={t('home.popular.title')} description={t('home.popular.description')} />
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {popular.data.map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          {viewed.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-sm font-bold text-stone-700">{t('home.viewed.title')}</h2>
+              <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                {viewed.map((guide) => (
+                  <li key={guide.slug}>
+                    <Link to={`/services/${guide.slug}`} className="font-semibold text-bay-700 hover:underline">{guide.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <SectionHeading
             kicker={t('home.recent.kicker')}
             title={t('home.recent.title')}
@@ -400,6 +432,19 @@ export default function HomePage() {
           </aside>
         </div>
       </section>
+
+      {faqs.data?.length > 0 && (
+        <section className="py-14 sm:py-20">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <SectionHeading kicker={t('home.faq.kicker')} title={t('home.faq.title')} action={{ to: '/faq', label: t('home.faq.all') }} />
+            <div className="mt-6 divide-y divide-stone-200 border-y border-stone-200">
+              {faqs.data.slice(0, FAQ_PREVIEW).map((faq) => (
+                <FaqItem key={faq.id} faq={faq} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   )
 }

@@ -4,10 +4,14 @@ namespace App\Controllers;
 
 use App\Database;
 use App\Response;
-use App\Services\SearchTerms;
+use App\Services\ServiceSearch;
 
 class ServiceController
 {
+    private const POPULAR = 'SELECT service_id, SUM(views) AS total FROM service_daily_views
+                             WHERE view_date >= (CURDATE() - INTERVAL 30 DAY) GROUP BY service_id';
+    private const RELATED_LIMIT = 4;
+
     public function index(): void
     {
         $pdo = Database::connection();
@@ -24,19 +28,9 @@ class ServiceController
         $bindings = [];
 
         if ($search !== '') {
-            // The query plus any official terms for local words in it ("sedula" also finds "cedula").
-            $terms = SearchTerms::expand($search);
-            $matches = ['MATCH(s.title, s.summary, s.description) AGAINST (:search IN NATURAL LANGUAGE MODE)'];
-            $bindings['search'] = implode(' ', $terms);
-            foreach ($terms as $i => $term) {
-                // Native prepares can't reuse a named placeholder, so each LIKE gets its own.
-                $like = '%' . addcslashes($term, '%_\\') . '%';
-                foreach (['title' => 's.title', 'agency' => 'a.name', 'acronym' => 'a.acronym', 'category' => 'c.name'] as $name => $column) {
-                    $matches[] = "{$column} LIKE :like_{$name}_{$i}";
-                    $bindings["like_{$name}_{$i}"] = $like;
-                }
-            }
-            $conditions[] = '(' . implode(' OR ', $matches) . ')';
+            [$condition, $searchBindings] = ServiceSearch::condition($search);
+            $conditions[] = $condition;
+            $bindings += $searchBindings;
         }
 
         if ($categorySlug !== '') {
@@ -56,14 +50,43 @@ class ServiceController
                 FROM services s
                 JOIN categories c ON c.id = s.category_id
                 JOIN agencies a ON a.id = s.agency_id
+                ' . ($sort === 'popular' ? 'JOIN (' . self::POPULAR . ') pv ON pv.service_id = s.id' : '') . '
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY ' . ($sort === 'recent' ? 's.updated_at DESC' : 's.title ASC')
+                ORDER BY ' . match (true) {
+                    $sort === 'recent' => 's.updated_at DESC',
+                    $sort === 'popular' => 'pv.total DESC, s.title ASC',
+                    $search !== '' => '(s.title LIKE :rank) DESC, s.title ASC',
+                    default => 's.title ASC',
+                }
                 . ($limit ? ' LIMIT ' . $limit : '');
+
+        if ($search !== '' && !in_array($sort, ['recent', 'popular'], true)) {
+            $bindings['rank'] = ServiceSearch::like($search);
+        }
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($bindings);
 
         Response::success($stmt->fetchAll());
+    }
+
+    /** Adds one to today's total for a guide. No IP address or visitor identifier is stored. */
+    public function recordView(array $params): void
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare("SELECT id FROM services WHERE slug = :slug AND status = 'published'");
+        $stmt->execute(['slug' => $params['slug']]);
+        $id = $stmt->fetchColumn();
+        if (!$id) {
+            Response::notFound('Service not found');
+        }
+
+        $pdo->prepare(
+            'INSERT INTO service_daily_views (service_id, view_date, views) VALUES (:id, CURDATE(), 1)
+             ON DUPLICATE KEY UPDATE views = views + 1'
+        )->execute(['id' => $id]);
+
+        Response::success(['recorded' => true]);
     }
 
     public function show(array $params): void
@@ -131,7 +154,43 @@ class ServiceController
         );
         $officesStmt->execute(['id' => $serviceId]);
         $service['offices'] = $officesStmt->fetchAll();
+        $service['related'] = $this->related($pdo, (int) $serviceId, (int) $service['category_id']);
 
         Response::success($service);
+    }
+
+    /** Guides an editor linked, in either direction, or else others in the same category. */
+    private function related(\PDO $pdo, int $id, int $categoryId): array
+    {
+        $columns = 'SELECT s.title, s.slug, s.summary, s.last_verified_at, s.verification_status,
+                           c.name AS category_name, c.icon AS category_icon,
+                           a.name AS agency_name, a.acronym AS agency_acronym
+                    FROM services s
+                    JOIN categories c ON c.id = s.category_id
+                    JOIN agencies a ON a.id = s.agency_id';
+        $limit = self::RELATED_LIMIT;
+
+        $stmt = $pdo->prepare(
+            "{$columns}
+             WHERE s.status = 'published' AND s.id IN (
+                 SELECT related_service_id FROM service_related WHERE service_id = :id1
+                 UNION
+                 SELECT service_id FROM service_related WHERE related_service_id = :id2
+             )
+             ORDER BY s.title ASC LIMIT {$limit}"
+        );
+        $stmt->execute(['id1' => $id, 'id2' => $id]);
+        $related = $stmt->fetchAll();
+        if ($related !== []) {
+            return $related;
+        }
+
+        $stmt = $pdo->prepare(
+            "{$columns}
+             WHERE s.status = 'published' AND s.category_id = :category AND s.id <> :id
+             ORDER BY s.title ASC LIMIT {$limit}"
+        );
+        $stmt->execute(['category' => $categoryId, 'id' => $id]);
+        return $stmt->fetchAll();
     }
 }

@@ -8,41 +8,9 @@
 // API_URL overrides the default http://127.0.0.1:8000/api.
 import assert from 'node:assert/strict'
 import { before, test } from 'node:test'
+import { API, client, PASSWORD, SEED_ADMIN } from './helpers.mjs'
 
-const API = process.env.API_URL ?? 'http://127.0.0.1:8000/api'
-const PASSWORD = 'Test-Password-2026!'
 const stamp = Date.now()
-
-// One signed-in session: keeps its own cookie and CSRF token.
-function client() {
-  let cookie = ''
-  let csrf = ''
-  async function call(method, path, body, sendToken = true) {
-    const response = await fetch(`${API}${path}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookie && { Cookie: cookie }),
-        ...(csrf && sendToken && { 'X-CSRF-Token': csrf }),
-      },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    })
-    const setCookie = response.headers.get('set-cookie')
-    if (setCookie) cookie = setCookie.split(';')[0]
-    return { status: response.status, json: await response.json().catch(() => null) }
-  }
-  return {
-    get: (path) => call('GET', path),
-    post: (path, body = {}) => call('POST', path, body),
-    postWithoutToken: (path, body = {}) => call('POST', path, body, false),
-    put: (path, body) => call('PUT', path, body),
-    async signIn(email, password) {
-      const result = await call('POST', '/admin/login', { email, password })
-      assert.equal(result.status, 200, `sign-in failed for ${email}`)
-      csrf = result.json.data.csrf_token
-    },
-  }
-}
 
 const admin = client()
 const editor = client()
@@ -76,7 +44,7 @@ async function publishedGuide(title) {
 }
 
 before(async () => {
-  await admin.signIn('admin@gensan-service-navigator.local', 'ChangeMe123!')
+  await admin.signIn(...SEED_ADMIN)
   for (const [person, role] of [[editor, 'editor'], [reviewer, 'reviewer']]) {
     const email = `${role}-${stamp}@example.com`
     const created = await admin.post('/admin/admins', { name: `Test ${role}`, email, role, password: PASSWORD })

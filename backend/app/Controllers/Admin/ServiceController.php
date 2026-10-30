@@ -105,9 +105,9 @@ class ServiceController
         $pdo->beginTransaction();
         try {
             $pdo->prepare(
-                "INSERT INTO services (category_id, agency_id, title, slug, summary, description, fee_description,
+                "INSERT INTO services (category_id, agency_id, title, slug, summary, description, search_keywords, fee_description,
                                        processing_time_description, status, created_by, updated_by)
-                 VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :fee,
+                 VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :keywords, :fee,
                          :processing, 'draft', :admin, :admin2)"
             )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'admin2' => $admin['id']]);
 
@@ -308,7 +308,7 @@ class ServiceController
 
             $pdo->prepare(
                 'UPDATE services SET category_id = :category_id, agency_id = :agency_id, title = :title, slug = :slug,
-                        summary = :summary, description = :description, fee_description = :fee,
+                        summary = :summary, description = :description, search_keywords = :keywords, fee_description = :fee,
                         processing_time_description = :processing, updated_by = :admin,
                         verification_status = IF(verification_status = \'verified\', \'needs_review\', verification_status)
                  WHERE id = :id'
@@ -344,7 +344,7 @@ class ServiceController
     {
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
-            'SELECT s.id, s.category_id, s.agency_id, s.title, s.slug, s.summary, s.description, s.fee_description,
+            'SELECT s.id, s.category_id, s.agency_id, s.title, s.slug, s.summary, s.description, s.search_keywords, s.fee_description,
                     s.processing_time_description, s.status, s.last_verified_at, s.verification_status,
                     s.next_review_at, s.verification_notes, s.published_at, s.archived_at,
                     s.created_at, s.updated_at, c.slug AS category_slug, u.name AS updated_by_name
@@ -385,6 +385,10 @@ class ServiceController
             $fetch('SELECT office_id FROM service_offices WHERE service_id = :id'),
             'office_id'
         ));
+        $service['related_ids'] = array_map('intval', array_column(
+            $fetch('SELECT related_service_id FROM service_related WHERE service_id = :id'),
+            'related_service_id'
+        ));
 
         return $service;
     }
@@ -399,6 +403,7 @@ class ServiceController
             'title' => $v->string($body['title'] ?? null, 'title', 200, true, 3),
             'summary' => $v->string($body['summary'] ?? null, 'summary', 500),
             'description' => $v->string($body['description'] ?? null, 'description', 10000),
+            'search_keywords' => $v->string($body['search_keywords'] ?? null, 'search_keywords', 500),
             'fee_description' => $v->string($body['fee_description'] ?? null, 'fee_description', 255),
             'processing_time_description' => $v->string($body['processing_time_description'] ?? null, 'processing_time_description', 255),
             'category_id' => $v->id($body['category_id'] ?? null, 'category_id'),
@@ -469,6 +474,17 @@ class ServiceController
         }
         $data['office_ids'] = array_values(array_unique($data['office_ids']));
 
+        $data['related_ids'] = [];
+        foreach ($v->list($body['related_ids'] ?? null, 'related_ids', 12) as $relatedId) {
+            $relatedId = filter_var($relatedId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($relatedId === false || $relatedId === $serviceId || !$this->exists($pdo, 'services', $relatedId)) {
+                $v->add('related_ids', 'One of the related guides is not valid.');
+                continue;
+            }
+            $data['related_ids'][] = $relatedId;
+        }
+        $data['related_ids'] = array_values(array_unique($data['related_ids']));
+
         $v->failIfErrors();
         return $data;
     }
@@ -483,6 +499,7 @@ class ServiceController
             'slug' => $data['slug'],
             'summary' => $data['summary'],
             'description' => $data['description'],
+            'keywords' => $data['search_keywords'],
             'fee' => $data['fee_description'],
             'processing' => $data['processing_time_description'],
         ];
@@ -545,6 +562,12 @@ class ServiceController
         $insert = $pdo->prepare('INSERT INTO service_offices (service_id, office_id) VALUES (:id, :office)');
         foreach ($data['office_ids'] as $officeId) {
             $insert->execute(['id' => $serviceId, 'office' => $officeId]);
+        }
+
+        $pdo->prepare('DELETE FROM service_related WHERE service_id = :id')->execute(['id' => $serviceId]);
+        $insert = $pdo->prepare('INSERT INTO service_related (service_id, related_service_id) VALUES (:id, :related)');
+        foreach ($data['related_ids'] as $relatedId) {
+            $insert->execute(['id' => $serviceId, 'related' => $relatedId]);
         }
     }
 

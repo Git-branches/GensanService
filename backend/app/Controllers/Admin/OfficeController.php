@@ -17,7 +17,7 @@ class OfficeController
     {
         Auth::requireAdmin();
         $rows = Database::connection()->query(
-            'SELECT o.id, o.agency_id, o.name, o.address, o.barangay, o.city, o.province, o.contact_number, o.email,
+            'SELECT o.id, o.agency_id, o.name, o.branch_type, o.description, o.address, o.barangay, o.city, o.province, o.contact_number, o.email,
                     o.opening_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at, o.is_active,
                     a.name AS agency_name, a.acronym AS agency_acronym,
                     (SELECT COUNT(*) FROM service_offices so WHERE so.office_id = o.id) AS service_count
@@ -36,9 +36,9 @@ class OfficeController
 
         $pdo = Database::connection();
         $pdo->prepare(
-            'INSERT INTO offices (agency_id, name, address, barangay, city, province, contact_number, email, opening_hours,
+            'INSERT INTO offices (agency_id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours,
                                   latitude, longitude, is_verified, last_verified_at, is_active)
-             VALUES (:agency_id, :name, :address, :barangay, :city, :province, :contact_number, :email, :opening_hours,
+             VALUES (:agency_id, :name, :branch_type, :description, :address, :barangay, :city, :province, :contact_number, :email, :opening_hours,
                      :latitude, :longitude, :is_verified, :last_verified_at, :is_active)'
         )->execute($data);
         $id = (int) $pdo->lastInsertId();
@@ -60,7 +60,7 @@ class OfficeController
 
         $data = $this->validate(Request::json());
         Database::connection()->prepare(
-            'UPDATE offices SET agency_id = :agency_id, name = :name, address = :address, barangay = :barangay, city = :city,
+            'UPDATE offices SET agency_id = :agency_id, name = :name, branch_type = :branch_type, description = :description, address = :address, barangay = :barangay, city = :city,
                     province = :province, contact_number = :contact_number, email = :email, opening_hours = :opening_hours,
                     latitude = :latitude, longitude = :longitude, is_verified = :is_verified,
                     last_verified_at = :last_verified_at, is_active = :is_active
@@ -79,6 +79,8 @@ class OfficeController
         $data = [
             'agency_id' => $v->id($body['agency_id'] ?? null, 'agency_id'),
             'name' => $v->string($body['name'] ?? null, 'name', 150, true, 2),
+            'branch_type' => in_array($body['branch_type'] ?? null, ['main', 'satellite'], true) ? $body['branch_type'] : null,
+            'description' => $v->string($body['description'] ?? null, 'description', 500),
             'address' => $v->string($body['address'] ?? null, 'address', 255),
             'barangay' => $v->string($body['barangay'] ?? null, 'barangay', 100),
             'city' => $v->string($body['city'] ?? null, 'city', 100) ?? 'General Santos City',

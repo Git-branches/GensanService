@@ -15,7 +15,7 @@ class AgencyController
     {
         $stmt = Database::connection()->query(
             'SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website,
-                    a.is_local_government, ' . self::COUNT_COLUMNS . '
+                    a.presence, a.is_local_government, ' . self::COUNT_COLUMNS . '
              FROM agencies a
              WHERE a.is_active = 1
              ORDER BY a.name ASC'
@@ -30,7 +30,7 @@ class AgencyController
 
         $stmt = $pdo->prepare(
             'SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website,
-                    a.hotline, a.email, a.facebook_url,
+                    a.hotline, a.email, a.facebook_url, a.presence,
                     a.is_local_government, ' . self::COUNT_COLUMNS . '
              FROM agencies a
              WHERE a.slug = :slug AND a.is_active = 1'
@@ -43,7 +43,7 @@ class AgencyController
         }
 
         $officesStmt = $pdo->prepare(
-            'SELECT id, name, address, barangay, city, province, contact_number, email, opening_hours,
+            'SELECT id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours,
                     latitude, longitude, is_verified, last_verified_at
              FROM offices
              WHERE agency_id = :agency_id AND is_active = 1

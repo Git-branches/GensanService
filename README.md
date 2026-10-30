@@ -45,12 +45,15 @@ Requirements for government services in the Philippines are scattered across age
 
 For residents (no account needed):
 
-- Search and browse service guides by keyword, category, or agency. Search also understands common local words and old names, such as "sedula", "pulis", "lisensya", and "NSO".
+- Search across guides, agencies, offices, and categories, with suggestions as you type and your recent searches. Search also covers the documents a guide requires, each guide's keywords, and common local words and old names, such as "sedula", "pulis", "lisensya", and "NSO".
 - Service guides with eligibility, a document checklist, application steps, fees, processing times, offices, and official sources.
 - A document checklist with a progress bar that saves on the device.
 - Agency and office directories with hotlines, emails, Facebook pages, and Google Maps and Waze links.
 - Checklist items can link to the guide that explains how to get that document.
 - A "Report incorrect information" form on every guide.
+- Share, copy, and print actions on every guide, plus related guides.
+- Popular guides, recently updated guides, and guides you recently viewed on your device.
+- A searchable FAQ in four languages and a privacy policy.
 - Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
 
 For administrators (`/admin`):
@@ -137,7 +140,7 @@ npm install
 
 To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, and `018_add_review_workflow_verification_and_revisions.sql`, in that order. Then run `database/seeders/008_update_categories.sql` to move to the 10 categories.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, and `019_add_resident_features.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
 
 ## Usage
 
@@ -213,6 +216,7 @@ node --test "backend/tests/*.test.mjs"
 - [ ] Native-speaker review of the Bisaya, Filipino, and Hiligaynon text
 - [ ] Blaan, Maguindanaon, and Maranao translations
 - [x] Guide review workflow, verification status, and version history
+- [x] Site-wide search, FAQ, privacy policy, and share and print actions
 - [ ] Automated tests for the rest of the API
 - [ ] Add and verify real service guides and office details
 
@@ -230,8 +234,11 @@ The frontend uses a JSON API under `/api`. Successful responses look like `{ "su
 | GET | `/api/agencies` | Active agencies with guide and office counts |
 | GET | `/api/agencies/{slug}` | One agency and its offices |
 | GET | `/api/offices` | Active offices with their agency |
-| GET | `/api/services` | Published guides. Query: `q`, `category`, `agency`, `sort=recent`, `limit` (1–50) |
-| GET | `/api/services/{slug}` | One published guide with eligibility, requirements, steps, sources, and offices |
+| GET | `/api/services` | Published guides. Query: `q`, `category`, `agency`, `sort` (`recent` or `popular`), `limit` (1–50) |
+| GET | `/api/services/{slug}` | One published guide with eligibility, requirements, steps, sources, offices, and related guides |
+| POST | `/api/services/{slug}/view` | Adds one to the guide's daily view total. Stores no visitor information |
+| GET | `/api/search` | Search guides, agencies, offices, and categories. Query: `q` (2 or more characters) |
+| GET | `/api/faqs` | Active FAQs. Query: `lang`. Untranslated questions fall back to English |
 | POST | `/api/services/{slug}/reports` | Report incorrect information. Body: `reason`, `message`, optional `email`. Limited to 5 per hour per IP |
 
 ### Admin endpoints
