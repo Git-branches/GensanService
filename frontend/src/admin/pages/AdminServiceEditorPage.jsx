@@ -4,10 +4,11 @@ import { AlertCircle, ArrowLeft, CheckCircle2, ExternalLink, Info, Loader2 } fro
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
 import { adminApi } from '../api'
-import { canEditContent, useAdminAuth } from '../auth'
+import { canEditContent, canReview, isSuperAdmin, useAdminAuth } from '../auth'
 import ConfirmDialog from '../components/ConfirmDialog'
 import ListEditor from '../components/ListEditor'
 import { withKey } from '../components/listKeys'
+import VerificationCard from '../components/VerificationCard'
 import { Button, Card, Field, StatusBadge, inputClass } from '../components/ui'
 
 const EMPTY_FORM = {
@@ -19,7 +20,6 @@ const EMPTY_FORM = {
   description: '',
   fee_description: '',
   processing_time_description: '',
-  last_verified_at: '',
   eligibility: [],
   requirements: [],
   steps: [],
@@ -28,8 +28,10 @@ const EMPTY_FORM = {
 }
 
 const SUCCESS_MESSAGES = {
+  for_review: 'Guide submitted for review.',
+  approved: 'Guide approved. A super admin can now publish it.',
   published: 'Guide published. It is now visible on the public site.',
-  draft: 'Guide moved to drafts. It is no longer visible to the public.',
+  draft: 'Guide moved to drafts.',
   archived: 'Guide archived. It is hidden from the public site.',
 }
 
@@ -51,7 +53,6 @@ function fromService(service) {
     description: service.description ?? '',
     fee_description: service.fee_description ?? '',
     processing_time_description: service.processing_time_description ?? '',
-    last_verified_at: service.last_verified_at ?? '',
     eligibility: service.eligibility.map((text) => withKey({ text })),
     requirements: service.requirements.map((item) =>
       withKey({ id: item.id, requirement_text: item.requirement_text, notes: item.notes ?? '', is_optional: item.is_optional, linked_service_id: item.linked_service_id ?? null })
@@ -80,7 +81,6 @@ function toPayload(form) {
     description: form.description,
     fee_description: form.fee_description,
     processing_time_description: form.processing_time_description,
-    last_verified_at: form.last_verified_at || null,
     eligibility: form.eligibility.map((item) => item.text),
     requirements: form.requirements.map(stripKey),
     steps: form.steps.map(stripKey),
@@ -110,7 +110,9 @@ export default function AdminServiceEditorPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { admin } = useAdminAuth()
-  const readOnly = !canEditContent(admin)
+  const isSuper = isSuperAdmin(admin)
+  const canEdit = canEditContent(admin)
+  const canApprove = canReview(admin)
 
   const [loadError, setLoadError] = useState('')
   const [ready, setReady] = useState(false)
@@ -256,6 +258,8 @@ export default function AdminServiceEditorPage() {
   }
 
   const status = service?.status ?? 'draft'
+  // Editors change drafts only, so nothing reaches residents without review.
+  const readOnly = !canEdit || status === 'archived' || (!isSuper && status !== 'draft')
   const sortedOffices = [...lookups.offices].sort(
     (a, b) => (String(b.agency_id) === form.agency_id) - (String(a.agency_id) === form.agency_id)
   )
@@ -310,7 +314,8 @@ export default function AdminServiceEditorPage() {
 
       {readOnly && (
         <p className="mt-5 flex items-center gap-2 rounded-lg bg-bay-50 px-4 py-3 text-sm text-bay-800">
-          <Info size={17} aria-hidden="true" /> Your reviewer role can view guides but not edit them.
+          <Info size={17} aria-hidden="true" />
+          {!canEdit ? 'Your reviewer role can review guides but not edit them.' : 'Move this guide back to draft to edit it.'}
         </p>
       )}
 
@@ -465,10 +470,7 @@ export default function AdminServiceEditorPage() {
             />
           </Card>
 
-          <Card title="Official sources and verification" description="Link the official pages this guide is based on, and record when it was last checked.">
-            <Field id="last_verified_at" label="Guide last verified on" error={errors.last_verified_at} hint="Shown to residents. Guides older than 6 months are flagged for review.">
-              <TextInput id="last_verified_at" type="date" value={form.last_verified_at} error={errors.last_verified_at} onChange={(e) => update({ last_verified_at: e.target.value })} className={`${inputClass} sm:max-w-xs`} />
-            </Field>
+          <Card title="Official sources" description="Link the official pages this guide is based on.">
             <ListEditor
               items={form.sources}
               onChange={(sources) => update({ sources })}
@@ -521,26 +523,44 @@ export default function AdminServiceEditorPage() {
         </fieldset>
       </form>
 
-      {!readOnly && (
+      {service && (
+        <div className="mt-6">
+          <VerificationCard key={service.verification_status} service={service} canVerify={canApprove} onSaved={setService} />
+        </div>
+      )}
+
+      {(canEdit || canApprove) && (
         <div className="fixed inset-x-0 bottom-0 z-20 bg-white/95 shadow-[0_-8px_24px_-12px_rgba(10,38,51,0.18)] backdrop-blur lg:left-64">
           <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
             <p className="text-sm text-stone-500">{dirty ? 'You have unsaved changes.' : 'All changes saved.'}</p>
             <div className="flex flex-wrap gap-2">
-              {status === 'published' && (
+              {status === 'published' && isSuper && (
                 <>
                   <Button variant="danger" disabled={saving !== null} onClick={() => requestStatus('archived')}>Archive</Button>
                   <Button variant="secondary" disabled={saving !== null} onClick={() => requestStatus('draft')}>Unpublish</Button>
                   <Button loading={saving === 'save'} disabled={saving !== null || !dirty} onClick={() => save()}>Save changes</Button>
                 </>
               )}
-              {status === 'draft' && (
+              {status === 'draft' && canEdit && (
                 <>
                   {service && <Button variant="danger" disabled={saving !== null} onClick={() => requestStatus('archived')}>Archive</Button>}
                   <Button variant="secondary" loading={saving === 'save'} disabled={saving !== null || (service && !dirty)} onClick={() => save()}>{service ? 'Save draft' : 'Save as draft'}</Button>
-                  <Button variant="success" loading={saving === 'published'} disabled={saving !== null} onClick={() => save('published')}>{dirty ? 'Save and publish' : 'Publish'}</Button>
+                  <Button loading={saving === 'for_review'} disabled={saving !== null} onClick={() => save('for_review')}>{dirty ? 'Save and submit for review' : 'Submit for review'}</Button>
                 </>
               )}
-              {status === 'archived' && (
+              {(status === 'for_review' || status === 'approved') && (
+                <>
+                  <Button variant="secondary" loading={saving === 'draft'} disabled={saving !== null} onClick={() => save('draft')}>Send back to draft</Button>
+                  {isSuper && <Button variant="secondary" loading={saving === 'save'} disabled={saving !== null || !dirty} onClick={() => save()}>Save changes</Button>}
+                  {status === 'for_review' && canApprove && (
+                    <Button loading={saving === 'approved'} disabled={saving !== null} onClick={() => save('approved')}>Approve</Button>
+                  )}
+                  {status === 'approved' && isSuper && (
+                    <Button variant="success" loading={saving === 'published'} disabled={saving !== null} onClick={() => save('published')}>Publish</Button>
+                  )}
+                </>
+              )}
+              {status === 'archived' && canEdit && (
                 <Button variant="secondary" loading={saving === 'draft'} disabled={saving !== null} onClick={() => save('draft')}>Restore to drafts</Button>
               )}
             </div>

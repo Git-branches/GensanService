@@ -99,8 +99,8 @@ export default {
     },
     recent: {
       kicker: 'Pinakabagong update',
-      title: 'Mga bagong na-verify na gabay',
-      description: 'Mga gabay na pinakahuling sinuri batay sa mga opisyal na sanggunian.',
+      title: 'Mga bagong na-update na gabay',
+      description: 'Mga gabay na pinakahuling binago o sinuri ng aming team.',
       allGuides: 'Lahat ng gabay sa serbisyo',
       empty: 'Wala pang nailathalang gabay',
     },
@@ -202,6 +202,8 @@ items: [
     loading: 'Nilo-load ang gabay...',
     unavailable: 'Hindi ma-load ang gabay na ito. Maaaring inilipat o hindi na nakalathala.',
     back: 'Bumalik sa lahat ng gabay sa serbisyo',
+    verificationNote: 'Hindi pa ganap na nakukumpirma ang gabay na ito. Tingnan ang mga opisyal na sanggunian o magtanong sa ahensya bago ka pumunta.',
+    lastChecked: 'Huling sinuri',
     atAGlance: 'Serbisyo ng Gobyerno',
     agency: 'Ahensya',
     category: 'Kategorya',
@@ -225,6 +227,12 @@ items: [
     steps: 'Hakbang-hakbang',
     whereToGo: 'Saan pupunta',
     onThisPage: 'Sa pahinang ito',
+  },
+  verification: {
+    verified: 'Na-verify',
+    needs_review: 'Kailangang suriin',
+    unverified: 'Hindi pa na-verify',
+    outdated: 'Maaaring luma na',
   },
   checklist: {
     ready: '{ready} sa {total} dokumento ang handa na',

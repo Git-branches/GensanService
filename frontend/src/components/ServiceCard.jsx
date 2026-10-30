@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
-import VerifiedBadge from './VerifiedBadge'
+import VerificationBadge from './VerificationBadge'
 import { renderCategoryIcon } from '../utils/icons'
 import { useI18n } from '../i18n/context'
 
@@ -25,7 +25,7 @@ export default function ServiceCard({ service }) {
         {service.summary && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-stone-600">{service.summary}</p>}
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-          <VerifiedBadge date={service.last_verified_at} />
+          <VerificationBadge status={service.verification_status} date={service.last_verified_at} />
           <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-bay-700">
             {t('serviceCard.viewGuide')}
             <ChevronRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />

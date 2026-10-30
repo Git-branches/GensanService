@@ -19,3 +19,7 @@ export function isSuperAdmin(admin) {
 export function canEditContent(admin) {
   return admin?.role === 'super_admin' || admin?.role === 'editor'
 }
+
+export function canReview(admin) {
+  return admin?.role === 'super_admin' || admin?.role === 'reviewer'
+}

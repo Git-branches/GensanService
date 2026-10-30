@@ -60,6 +60,7 @@ export const adminApi = {
   updateService: (id, data) => request(`/services/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
   setServiceStatus: (id, status) =>
     request(`/services/${encodeURIComponent(id)}/status`, { method: 'POST', body: { status } }),
+  setServiceVerification: (id, data) => request(`/services/${encodeURIComponent(id)}/verification`, { method: 'POST', body: data }),
   dashboard: () => request('/dashboard'),
   activity: ({ page, type, adminId } = {}) => request(`/activity${query({ page: page > 1 ? String(page) : '', type, admin_id: adminId })}`),
   reports: (status) => request(`/reports${query({ status })}`),

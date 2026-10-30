@@ -18,7 +18,7 @@ import {
 import PageHeader from '../components/PageHeader'
 import Checklist from '../components/Checklist'
 import OfficeCard from '../components/OfficeCard'
-import VerifiedBadge from '../components/VerifiedBadge'
+import VerificationBadge from '../components/VerificationBadge'
 import ReportIssue from '../components/ReportIssue'
 import { ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -87,7 +87,7 @@ function AtAGlance({ service }) {
           </Fact>
         )}
         {service.last_verified_at && (
-          <Fact icon={BadgeCheck} label={t('detail.lastVerified')}>
+          <Fact icon={BadgeCheck} label={service.verification_status === 'verified' ? t('detail.lastVerified') : t('detail.lastChecked')}>
             {formatDate(service.last_verified_at, { year: 'numeric', month: 'long', day: 'numeric' })}
           </Fact>
         )}
@@ -207,8 +207,11 @@ export default function ServiceDetailPage() {
           <span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-semibold text-stone-700 ring-1 ring-stone-200">
             {service.category_name}
           </span>
-          <VerifiedBadge date={service.last_verified_at} label={t('detail.lastVerified')} />
+          <VerificationBadge status={service.verification_status} date={service.last_verified_at} />
         </div>
+        {service.verification_status !== 'verified' && (
+          <p className="mt-3 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
+        )}
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">

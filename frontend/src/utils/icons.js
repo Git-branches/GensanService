@@ -1,11 +1,15 @@
 import { createElement } from 'react'
 import {
   Briefcase,
+  Car,
   FileText,
   FolderOpen,
+  GraduationCap,
+  HardHat,
   HeartPulse,
   Home,
   IdCard,
+  Landmark,
   Receipt,
   Shield,
 } from 'lucide-react'
@@ -18,6 +22,10 @@ const ICON_MAP = {
   briefcase: Briefcase,
   receipt: Receipt,
   'id-card': IdCard,
+  'hard-hat': HardHat,
+  car: Car,
+  'graduation-cap': GraduationCap,
+  landmark: Landmark,
 }
 
 // Must match the allowed icons in backend/app/Controllers/Admin/CategoryController.php.

@@ -99,8 +99,8 @@ export default {
     },
     recent: {
       kicker: 'Pinakabag-o',
-      title: 'Bag-o lang na-verify nga mga giya',
-      description: 'Mga giya nga bag-o lang ginsusi batok sa mga opisyal nga ginhalinan.',
+      title: 'Bag-o lang na-update nga mga giya',
+      description: 'Mga giya nga bag-o lang ginbag-o ukon ginsusi sang amon team.',
       allGuides: 'Tanan nga giya sa serbisyo',
       empty: 'Wala pa sing giya nga napublikar',
     },
@@ -202,6 +202,8 @@ items: [
     loading: 'Ginakarga ang giya...',
     unavailable: 'Indi ma-load ini nga giya. Basi ginsaylo ukon wala na ginapublikar.',
     back: 'Balik sa tanan nga giya sa serbisyo',
+    verificationNote: 'Wala pa bug-os nga nakumpirma ini nga giya. Tan-awa ang mga opisyal nga ginhalinan ukon pamangkota ang ahensya antes ka magkadto.',
+    lastChecked: 'Katapusan nga ginsusi',
     atAGlance: 'Serbisyo sang Gobyerno',
     agency: 'Ahensya',
     category: 'Kategorya',
@@ -225,6 +227,12 @@ items: [
     steps: 'Lakang-lakang',
     whereToGo: 'Diin magkadto',
     onThisPage: 'Sa sini nga pahina',
+  },
+  verification: {
+    verified: 'Na-verify',
+    needs_review: 'Kinahanglan susihon',
+    unverified: 'Wala pa na-verify',
+    outdated: 'Basi daan na',
   },
   checklist: {
     ready: '{ready} sa {total} ka dokumento ang handa na',

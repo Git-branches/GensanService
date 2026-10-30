@@ -50,14 +50,14 @@ class ServiceController
         }
 
         $sql = 'SELECT s.id, s.title, s.slug, s.summary, s.fee_description, s.processing_time_description,
-                       s.last_verified_at,
+                       s.last_verified_at, s.verification_status,
                        c.name AS category_name, c.slug AS category_slug, c.icon AS category_icon,
                        a.name AS agency_name, a.slug AS agency_slug, a.acronym AS agency_acronym
                 FROM services s
                 JOIN categories c ON c.id = s.category_id
                 JOIN agencies a ON a.id = s.agency_id
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY ' . ($sort === 'recent' ? 's.last_verified_at DESC, s.updated_at DESC' : 's.title ASC')
+                ORDER BY ' . ($sort === 'recent' ? 's.updated_at DESC' : 's.title ASC')
                 . ($limit ? ' LIMIT ' . $limit : '');
 
         $stmt = $pdo->prepare($sql);
@@ -72,7 +72,7 @@ class ServiceController
 
         $stmt = $pdo->prepare(
             'SELECT s.id, s.title, s.slug, s.summary, s.description, s.fee_description,
-                    s.processing_time_description, s.last_verified_at,
+                    s.processing_time_description, s.last_verified_at, s.verification_status,
                     c.id AS category_id, c.name AS category_name, c.slug AS category_slug,
                     c.icon AS category_icon,
                     a.id AS agency_id, a.name AS agency_name, a.slug AS agency_slug,

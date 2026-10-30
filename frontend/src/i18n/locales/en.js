@@ -99,8 +99,8 @@ export default {
     },
     recent: {
       kicker: 'Latest updates',
-      title: 'Recently verified guides',
-      description: 'Guides whose details were checked against official sources most recently.',
+      title: 'Recently updated guides',
+      description: 'The guides our team changed or checked most recently.',
       allGuides: 'All service guides',
       empty: 'No guides published yet',
     },
@@ -204,6 +204,8 @@ items: [
     loading: 'Loading service guide...',
     unavailable: "This guide couldn't be loaded. It may have been moved or is no longer published.",
     back: 'Back to all service guides',
+    verificationNote: 'This guide is not fully confirmed yet. Check the official sources or ask the agency before you go.',
+    lastChecked: 'Last checked',
     atAGlance: 'Government Services',
     agency: 'Agency',
     category: 'Category',
@@ -227,6 +229,12 @@ items: [
     steps: 'Step-by-step',
     whereToGo: 'Where to go',
     onThisPage: 'On this page',
+  },
+  verification: {
+    verified: 'Verified',
+    needs_review: 'Needs review',
+    unverified: 'Not yet verified',
+    outdated: 'May be outdated',
   },
   checklist: {
     ready: '{ready} of {total} documents ready',

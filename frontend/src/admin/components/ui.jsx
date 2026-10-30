@@ -3,11 +3,13 @@ import { Loader2 } from 'lucide-react'
 
 const STATUS_STYLES = {
   draft: { pill: 'bg-stone-100 text-stone-700', dot: 'bg-stone-400' },
+  for_review: { pill: 'bg-sun-50 text-sun-800', dot: 'bg-sun-500' },
+  approved: { pill: 'bg-bay-50 text-bay-800', dot: 'bg-bay-500' },
   published: { pill: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
   archived: { pill: 'bg-rose-50 text-rose-700', dot: 'bg-rose-400' },
 }
 
-const STATUS_LABELS = { draft: 'Draft', published: 'Published', archived: 'Archived' }
+const STATUS_LABELS = { draft: 'Draft', for_review: 'For review', approved: 'Approved', published: 'Published', archived: 'Archived' }
 
 export function StatusBadge({ status }) {
   const style = STATUS_STYLES[status] || STATUS_STYLES.draft

@@ -64,6 +64,10 @@ $router->post('/api/admin/services', [$adminServices, 'store']);
 $router->get('/api/admin/services/{id}', [$adminServices, 'show']);
 $router->put('/api/admin/services/{id}', [$adminServices, 'update']);
 $router->post('/api/admin/services/{id}/status', [$adminServices, 'setStatus']);
+$router->post('/api/admin/services/{id}/verification', [$adminServices, 'setVerification']);
+$router->get('/api/admin/services/{id}/revisions', [$adminServices, 'revisions']);
+$router->get('/api/admin/services/{id}/revisions/{revisionId}', [$adminServices, 'revision']);
+$router->post('/api/admin/services/{id}/revisions/{revisionId}/restore', [$adminServices, 'restoreRevision']);
 
 $adminAgencies = new AdminAgencyController();
 foreach (['agencies' => $adminAgencies, 'offices' => new AdminOfficeController(), 'categories' => new AdminCategoryController()] as $resource => $controller) {

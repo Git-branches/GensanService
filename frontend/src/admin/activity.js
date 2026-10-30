@@ -2,6 +2,12 @@ import { ROLE_LABELS } from './auth'
 
 const STATUS_WORDS = {
   draft: 'draft',
+  for_review: 'for review',
+  approved: 'approved',
+  verified: 'verified',
+  needs_review: 'needs review',
+  unverified: 'unverified',
+  outdated: 'outdated',
   published: 'published',
   archived: 'archived',
   pending: 'pending',
@@ -17,6 +23,8 @@ const ACTIONS = {
   'service.created': (d) => `created the guide "${d.title}"`,
   'service.updated': (d) => `edited the guide "${d.title}"`,
   'service.status_changed': (d) => `changed "${d.title}" from ${STATUS_WORDS[d.from] ?? d.from} to ${STATUS_WORDS[d.to] ?? d.to}`,
+  'service.verification_changed': (d) => `changed verification of "${d.title}" from ${STATUS_WORDS[d.from] ?? d.from} to ${STATUS_WORDS[d.to] ?? d.to}`,
+  'service.restored': (d) => `restored an earlier version of "${d.title}"`,
   'agency.created': (d) => `added the agency "${d.name}"`,
   'agency.updated': (d) => `edited the agency "${d.name}"`,
   'agency.logo_updated': (d) => `changed the logo of "${d.name}"`,

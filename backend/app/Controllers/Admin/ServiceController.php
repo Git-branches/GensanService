@@ -14,7 +14,22 @@ use PDO;
 class ServiceController
 {
     private const EDITORS = ['super_admin', 'editor'];
-    private const STALE_DAYS = 180;
+    private const VERIFIERS = ['super_admin', 'reviewer'];
+    private const STATUSES = ['draft', 'for_review', 'approved', 'published', 'archived'];
+    private const VERIFICATION_STATUSES = ['verified', 'needs_review', 'unverified', 'outdated'];
+
+    // Who may move a guide from one status to another. Editors submit, reviewers approve, super admins publish.
+    private const TRANSITIONS = [
+        'draft' => ['for_review' => self::EDITORS, 'archived' => self::EDITORS],
+        'for_review' => ['approved' => self::VERIFIERS, 'draft' => ['super_admin', 'editor', 'reviewer']],
+        'approved' => ['published' => ['super_admin'], 'draft' => ['super_admin', 'editor', 'reviewer']],
+        'published' => ['draft' => ['super_admin'], 'archived' => ['super_admin']],
+        'archived' => ['draft' => self::EDITORS],
+    ];
+
+    // Not yet confirmed, not checked in six months, or past its next review date.
+    public const NEEDS_VERIFICATION = "(s.verification_status <> 'verified' OR s.last_verified_at IS NULL
+        OR s.last_verified_at < (CURDATE() - INTERVAL 180 DAY) OR s.next_review_at < CURDATE())";
 
     public function index(): void
     {
@@ -32,19 +47,19 @@ class ServiceController
             $like = '%' . addcslashes($search, '%_\\') . '%';
             $bindings += ['q_title' => $like, 'q_agency' => $like, 'q_acronym' => $like];
         }
-        if (in_array($status, ['draft', 'published', 'archived'], true)) {
+        if (in_array($status, self::STATUSES, true)) {
             $conditions[] = 's.status = :status';
             $bindings['status'] = $status;
         }
         if ($needsReview) {
-            $conditions[] = "s.status <> 'archived' AND (s.last_verified_at IS NULL OR s.last_verified_at < (CURDATE() - INTERVAL " . self::STALE_DAYS . ' DAY))';
+            $conditions[] = "s.status <> 'archived' AND " . self::NEEDS_VERIFICATION;
         }
 
         $stmt = Database::connection()->prepare(
-            'SELECT s.id, s.title, s.slug, s.status, s.last_verified_at, s.updated_at, s.published_at,
+            'SELECT s.id, s.title, s.slug, s.status, s.last_verified_at, s.verification_status, s.updated_at, s.published_at,
                     a.acronym AS agency_acronym, a.name AS agency_name, c.name AS category_name,
                     u.name AS updated_by_name,
-                    (s.last_verified_at IS NULL OR s.last_verified_at < (CURDATE() - INTERVAL ' . self::STALE_DAYS . ' DAY)) AS needs_review
+                    ' . self::NEEDS_VERIFICATION . ' AS needs_review
              FROM services s
              JOIN agencies a ON a.id = s.agency_id
              JOIN categories c ON c.id = s.category_id
@@ -91,9 +106,9 @@ class ServiceController
         try {
             $pdo->prepare(
                 "INSERT INTO services (category_id, agency_id, title, slug, summary, description, fee_description,
-                                       processing_time_description, status, last_verified_at, created_by, updated_by)
+                                       processing_time_description, status, created_by, updated_by)
                  VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :fee,
-                         :processing, 'draft', :verified, :admin, :admin2)"
+                         :processing, 'draft', :admin, :admin2)"
             )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'admin2' => $admin['id']]);
 
             $id = (int) $pdo->lastInsertId();
@@ -112,42 +127,134 @@ class ServiceController
     {
         $admin = Auth::requireAdmin(self::EDITORS);
         $id = (int) $params['id'];
+        $current = $this->load($id);
+        $this->requireEditable($current, $admin);
+
+        $body = Request::json();
+        $data = $this->validate($body, $id);
+        $summary = trim((string) ($body['change_summary'] ?? ''));
+        $this->replaceContent($id, $current, $data, $admin, mb_substr($summary, 0, 255) ?: null);
+        ActivityLogger::log((int) $admin['id'], 'service.updated', 'service', $id, ['title' => $data['title']]);
+
+        Response::success($this->load($id));
+    }
+
+    public function revisions(array $params): void
+    {
+        Auth::requireAdmin();
+        $id = (int) $params['id'];
         $this->load($id);
-        $data = $this->validate(Request::json(), $id);
-        $pdo = Database::connection();
 
-        $pdo->beginTransaction();
-        try {
-            $pdo->prepare(
-                'UPDATE services SET category_id = :category_id, agency_id = :agency_id, title = :title, slug = :slug,
-                        summary = :summary, description = :description, fee_description = :fee,
-                        processing_time_description = :processing, last_verified_at = :verified, updated_by = :admin
-                 WHERE id = :id'
-            )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'id' => $id]);
+        $stmt = Database::connection()->prepare(
+            'SELECT r.id, r.change_summary, r.created_at, a.name AS admin_name
+             FROM service_revisions r
+             LEFT JOIN admins a ON a.id = r.admin_id
+             WHERE r.service_id = :id
+             ORDER BY r.id DESC'
+        );
+        $stmt->execute(['id' => $id]);
 
-            $this->syncChildren($pdo, $id, $data);
-            ActivityLogger::log((int) $admin['id'], 'service.updated', 'service', $id, ['title' => $data['title']]);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
+        Response::success($stmt->fetchAll());
+    }
+
+    public function revision(array $params): void
+    {
+        Auth::requireAdmin();
+        $revision = $this->findRevision((int) $params['id'], (int) $params['revisionId']);
+        $revision['snapshot'] = json_decode($revision['snapshot'], true);
+
+        Response::success($revision);
+    }
+
+    public function restoreRevision(array $params): void
+    {
+        $admin = Auth::requireAdmin(['super_admin']);
+        $id = (int) $params['id'];
+        $current = $this->load($id);
+        if ($current['status'] === 'archived') {
+            Response::error('Restore this guide to drafts first.', 422);
         }
+
+        $revision = $this->findRevision($id, (int) $params['revisionId']);
+        $data = $this->validate((array) json_decode($revision['snapshot'], true), $id);
+
+        // The current content is saved as a revision too, so a restore can itself be undone.
+        $this->replaceContent($id, $current, $data, $admin, 'Before restoring the version from ' . $revision['created_at']);
+        ActivityLogger::log((int) $admin['id'], 'service.restored', 'service', $id, [
+            'title' => $data['title'],
+            'from' => $revision['created_at'],
+        ]);
+
+        Response::success($this->load($id));
+    }
+
+    public function setVerification(array $params): void
+    {
+        $admin = Auth::requireAdmin(self::VERIFIERS);
+        $id = (int) $params['id'];
+        $service = $this->load($id);
+        $body = Request::json();
+
+        $v = new Validator();
+        $status = (string) ($body['verification_status'] ?? '');
+        if (!in_array($status, self::VERIFICATION_STATUSES, true)) {
+            $v->add('verification_status', 'Choose a verification status.');
+        }
+        $checked = $v->date($body['last_verified_at'] ?? null, 'last_verified_at');
+        $nextReview = $v->date($body['next_review_at'] ?? null, 'next_review_at');
+        $notes = $v->string($body['verification_notes'] ?? null, 'verification_notes', 1000);
+
+        if ($checked !== null && $checked > date('Y-m-d')) {
+            $v->add('last_verified_at', 'The date cannot be in the future.');
+        }
+        if ($status === 'verified') {
+            if ($checked === null) {
+                $v->add('last_verified_at', 'Enter the date this guide was checked against official sources.');
+            }
+            if ($service['sources'] === []) {
+                $v->add('verification_status', 'Add an official source before marking this guide as verified.');
+            }
+        }
+        $v->failIfErrors();
+
+        Database::connection()->prepare(
+            'UPDATE services SET verification_status = :status, last_verified_at = :checked, next_review_at = :next_review,
+                    verification_notes = :notes, updated_by = :admin
+             WHERE id = :id'
+        )->execute([
+            'status' => $status,
+            'checked' => $checked,
+            'next_review' => $nextReview,
+            'notes' => $notes,
+            'admin' => $admin['id'],
+            'id' => $id,
+        ]);
+
+        ActivityLogger::log((int) $admin['id'], 'service.verification_changed', 'service', $id, [
+            'title' => $service['title'],
+            'from' => $service['verification_status'],
+            'to' => $status,
+        ]);
 
         Response::success($this->load($id));
     }
 
     public function setStatus(array $params): void
     {
-        $admin = Auth::requireAdmin(self::EDITORS);
+        $admin = Auth::requireAdmin();
         $id = (int) $params['id'];
         $service = $this->load($id);
         $status = (string) (Request::json()['status'] ?? '');
 
-        if (!in_array($status, ['draft', 'published', 'archived'], true)) {
-            Response::error('Choose draft, published, or archived.', 422);
+        $allowedRoles = self::TRANSITIONS[$service['status']][$status] ?? null;
+        if ($allowedRoles === null) {
+            Response::error('A guide cannot move from this status to that one.', 422);
         }
-        if ($status === 'published' && $service['requirements'] === [] && $service['steps'] === []) {
-            Response::error('Add at least one requirement or application step before publishing.', 422);
+        if (!in_array($admin['role'], $allowedRoles, true)) {
+            Response::error('Your role does not allow this action.', 403);
+        }
+        if (in_array($status, ['for_review', 'published'], true) && $service['requirements'] === [] && $service['steps'] === []) {
+            Response::error('Add at least one requirement or application step first.', 422);
         }
 
         Database::connection()->prepare(
@@ -172,13 +279,74 @@ class ServiceController
         Response::success($this->load($id));
     }
 
+    /** Editors change drafts only, so nothing reaches residents without review. */
+    private function requireEditable(array $service, array $admin): void
+    {
+        if ($service['status'] === 'archived') {
+            Response::error('Restore this guide to drafts before editing it.', 422);
+        }
+        if ($admin['role'] !== 'super_admin' && $service['status'] !== 'draft') {
+            Response::error('Move this guide back to draft before editing it. Only a super admin can change a published guide.', 403);
+        }
+    }
+
+    /** Saves new content, keeping the content it replaces as a revision. */
+    private function replaceContent(int $id, array $current, array $data, array $admin, ?string $summary): void
+    {
+        $pdo = Database::connection();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare(
+                'INSERT INTO service_revisions (service_id, admin_id, snapshot, change_summary)
+                 VALUES (:id, :admin, :snapshot, :summary)'
+            )->execute([
+                'id' => $id,
+                'admin' => $admin['id'],
+                'snapshot' => json_encode($current, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+                'summary' => $summary,
+            ]);
+
+            $pdo->prepare(
+                'UPDATE services SET category_id = :category_id, agency_id = :agency_id, title = :title, slug = :slug,
+                        summary = :summary, description = :description, fee_description = :fee,
+                        processing_time_description = :processing, updated_by = :admin,
+                        verification_status = IF(verification_status = \'verified\', \'needs_review\', verification_status)
+                 WHERE id = :id'
+            )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'id' => $id]);
+
+            $this->syncChildren($pdo, $id, $data);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
+    /** @return array<string, mixed> */
+    private function findRevision(int $serviceId, int $revisionId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT r.id, r.snapshot, r.change_summary, r.created_at, a.name AS admin_name
+             FROM service_revisions r
+             LEFT JOIN admins a ON a.id = r.admin_id
+             WHERE r.id = :id AND r.service_id = :service_id'
+        );
+        $stmt->execute(['id' => $revisionId, 'service_id' => $serviceId]);
+        $revision = $stmt->fetch();
+        if (!$revision) {
+            Response::notFound('Revision not found');
+        }
+        return $revision;
+    }
+
     /** @return array<string, mixed> */
     private function load(int $id): array
     {
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
             'SELECT s.id, s.category_id, s.agency_id, s.title, s.slug, s.summary, s.description, s.fee_description,
-                    s.processing_time_description, s.status, s.last_verified_at, s.published_at, s.archived_at,
+                    s.processing_time_description, s.status, s.last_verified_at, s.verification_status,
+                    s.next_review_at, s.verification_notes, s.published_at, s.archived_at,
                     s.created_at, s.updated_at, c.slug AS category_slug, u.name AS updated_by_name
              FROM services s
              JOIN categories c ON c.id = s.category_id
@@ -233,7 +401,6 @@ class ServiceController
             'description' => $v->string($body['description'] ?? null, 'description', 10000),
             'fee_description' => $v->string($body['fee_description'] ?? null, 'fee_description', 255),
             'processing_time_description' => $v->string($body['processing_time_description'] ?? null, 'processing_time_description', 255),
-            'last_verified_at' => $v->date($body['last_verified_at'] ?? null, 'last_verified_at'),
             'category_id' => $v->id($body['category_id'] ?? null, 'category_id'),
             'agency_id' => $v->id($body['agency_id'] ?? null, 'agency_id'),
         ];
@@ -318,7 +485,6 @@ class ServiceController
             'description' => $data['description'],
             'fee' => $data['fee_description'],
             'processing' => $data['processing_time_description'],
-            'verified' => $data['last_verified_at'],
         ];
     }
 

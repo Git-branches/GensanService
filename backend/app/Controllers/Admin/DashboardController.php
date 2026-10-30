@@ -8,8 +8,7 @@ use App\Response;
 
 class DashboardController
 {
-    private const STALE_DAYS = 180;
-    private const STALE = '(s.last_verified_at IS NULL OR s.last_verified_at < (CURDATE() - INTERVAL ' . self::STALE_DAYS . ' DAY))';
+    private const STALE = ServiceController::NEEDS_VERIFICATION;
 
     public function index(): void
     {
@@ -21,6 +20,8 @@ class DashboardController
         $counts = [
             'published' => (int) ($statusCounts['published'] ?? 0),
             'draft' => (int) ($statusCounts['draft'] ?? 0),
+            'for_review' => (int) ($statusCounts['for_review'] ?? 0),
+            'approved' => (int) ($statusCounts['approved'] ?? 0),
             'archived' => (int) ($statusCounts['archived'] ?? 0),
             'needs_review' => (int) $pdo->query("SELECT COUNT(*) FROM services s WHERE s.status <> 'archived' AND " . self::STALE)->fetchColumn(),
             'open_reports' => (int) $pdo->query("SELECT COUNT(*) FROM content_reports WHERE status IN ('pending', 'reviewing')")->fetchColumn(),

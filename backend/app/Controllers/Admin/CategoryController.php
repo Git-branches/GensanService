@@ -15,7 +15,7 @@ class CategoryController
     private const EDITORS = ['super_admin', 'editor'];
 
     // Must match the icon names the frontend can render (frontend/src/utils/icons.js).
-    private const ICONS = ['file-text', 'shield', 'heart-pulse', 'home', 'briefcase', 'receipt', 'id-card'];
+    private const ICONS = ['file-text', 'shield', 'heart-pulse', 'home', 'briefcase', 'receipt', 'id-card', 'hard-hat', 'car', 'graduation-cap', 'landmark'];
 
     public function index(): void
     {

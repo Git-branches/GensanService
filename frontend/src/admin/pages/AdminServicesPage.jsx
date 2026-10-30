@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AlertTriangle, Archive, ExternalLink, EyeOff, Pencil, Plus, RotateCcw, Send } from 'lucide-react'
+import { AlertTriangle, Archive, CheckCheck, ExternalLink, EyeOff, Pencil, Plus, RotateCcw, Send, Undo2 } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
 import { adminApi } from '../api'
-import { canEditContent, useAdminAuth } from '../auth'
+import { canEditContent, canReview, isSuperAdmin, useAdminAuth } from '../auth'
 import { useAdminQuery } from '../useAdminList'
 import ConfirmDialog from '../components/ConfirmDialog'
 import FormModal from '../components/FormModal'
@@ -15,11 +15,34 @@ import { Button, Field, IconAction, PageTitle, StatusBadge, inputClass } from '.
 const STATUS_TABS = [
   { value: '', label: 'All' },
   { value: 'draft', label: 'Drafts' },
+  { value: 'for_review', label: 'For review' },
+  { value: 'approved', label: 'Approved' },
   { value: 'published', label: 'Published' },
   { value: 'archived', label: 'Archived' },
 ]
 
 const STATUS_ACTIONS = {
+  for_review: {
+    title: 'Submit for review?',
+    message: (s) => `A reviewer will check "${s.title}" against its sources. It can't be edited while it's in review.`,
+    confirmLabel: 'Submit for review',
+    tone: 'primary',
+    toast: 'Guide submitted for review.',
+  },
+  approved: {
+    title: 'Approve this guide?',
+    message: (s) => `"${s.title}" will be ready for a super admin to publish.`,
+    confirmLabel: 'Approve',
+    tone: 'primary',
+    toast: 'Guide approved.',
+  },
+  send_back: {
+    title: 'Send back to draft?',
+    message: (s) => `"${s.title}" will return to drafts so it can be changed.`,
+    confirmLabel: 'Send back',
+    tone: 'primary',
+    toast: 'Guide sent back to drafts.',
+  },
   published: {
     title: 'Publish this guide?',
     message: (s) => `"${s.title}" will be visible to residents on the public site.`,
@@ -112,6 +135,8 @@ export default function AdminServicesPage() {
   usePageTitle('Service guides · Admin')
   const { admin } = useAdminAuth()
   const canEdit = canEditContent(admin)
+  const canApprove = canReview(admin)
+  const isSuper = isSuperAdmin(admin)
   const [searchInput, setSearchInput] = useState('')
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('')
@@ -143,7 +168,7 @@ export default function AdminServicesPage() {
     const { service, action } = pending
     setWorking(true)
     try {
-      await adminApi.setServiceStatus(service.id, action === 'restore' ? 'draft' : action)
+      await adminApi.setServiceStatus(service.id, action === 'restore' || action === 'send_back' ? 'draft' : action)
       setToast(STATUS_ACTIONS[action].toast)
       setPending(null)
       reload()
@@ -178,7 +203,7 @@ export default function AdminServicesPage() {
         <span className="inline-flex items-center gap-1.5 text-stone-700">
           {s.last_verified_at ? formatDate(s.last_verified_at) : <span className="text-stone-400">Not set</span>}
           {Boolean(s.needs_review) && s.status !== 'archived' && (
-            <span title="Not verified in the last 6 months" className="inline-flex items-center gap-1 rounded-full bg-sun-50 px-2 py-0.5 text-xs font-semibold text-sun-800">
+            <span title="Not confirmed yet, or past its review date" className="inline-flex items-center gap-1 rounded-full bg-sun-50 px-2 py-0.5 text-xs font-semibold text-sun-800">
               <AlertTriangle size={11} aria-hidden="true" /> Review
             </span>
           )}
@@ -212,16 +237,31 @@ export default function AdminServicesPage() {
             </IconAction>
           )}
           {canEdit && s.status === 'draft' && (
+            <IconAction label="Submit for review" onClick={() => askStatus(s, 'for_review')}>
+              <Send size={16} />
+            </IconAction>
+          )}
+          {canApprove && s.status === 'for_review' && (
+            <IconAction label="Approve" tone="success" onClick={() => askStatus(s, 'approved')}>
+              <CheckCheck size={16} />
+            </IconAction>
+          )}
+          {(s.status === 'for_review' || s.status === 'approved') && (
+            <IconAction label="Send back to draft" onClick={() => askStatus(s, 'send_back')}>
+              <Undo2 size={16} />
+            </IconAction>
+          )}
+          {isSuper && s.status === 'approved' && (
             <IconAction label="Publish" tone="success" onClick={() => askStatus(s, 'published')}>
               <Send size={16} />
             </IconAction>
           )}
-          {canEdit && s.status === 'published' && (
+          {isSuper && s.status === 'published' && (
             <IconAction label="Unpublish" onClick={() => askStatus(s, 'draft')}>
               <EyeOff size={16} />
             </IconAction>
           )}
-          {canEdit && s.status !== 'archived' && (
+          {((canEdit && s.status === 'draft') || (isSuper && s.status === 'published')) && (
             <IconAction label="Archive" tone="danger" onClick={() => askStatus(s, 'archived')}>
               <Archive size={16} />
             </IconAction>

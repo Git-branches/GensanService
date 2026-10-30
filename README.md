@@ -56,16 +56,18 @@ For residents (no account needed):
 For administrators (`/admin`):
 
 - A dashboard of guides needing re-verification (not checked in 6+ months), open reports, drafts, and recent activity.
-- Create, edit, publish, unpublish, archive, and restore service guides.
+- Create and edit service guides, then move them through review: Draft, For review, Approved, Published. Guides can also be unpublished, archived, and restored.
+- Set each guide's verification status (Verified, Needs review, Unverified, Outdated) and its next review date. Changing a verified guide sets it back to Needs review.
+- Every change to a guide keeps the previous version, which a super admin can restore through the API. The history screen is planned.
 - Manage agencies (with logos), offices, and categories. Records are deactivated, never deleted.
 - Review residents' reports, and see an activity log of every sign-in and change.
 - Manage admin accounts and roles (super admins only), and change your own password.
 
 | Role | Can do |
 |---|---|
-| Super admin | Everything, including managing admin accounts |
-| Editor | Create, edit, publish, and archive content; handle reports |
-| Reviewer | View content and handle reports |
+| Super admin | Everything, including publishing and managing admin accounts |
+| Editor | Create and change draft guides, submit them for review, manage agencies and offices, handle reports |
+| Reviewer | Approve guides or send them back, set verification, handle reports |
 
 ### Information accuracy
 
@@ -135,7 +137,7 @@ npm install
 
 To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, and `017_add_agency_contacts_and_linked_requirements.sql`, in that order.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, and `018_add_review_workflow_verification_and_revisions.sql`, in that order. Then run `database/seeders/008_update_categories.sql` to move to the 10 categories.
 
 ## Usage
 
@@ -161,6 +163,12 @@ Before committing, run the checks:
 cd frontend
 npm run lint
 npm run build
+```
+
+The API tests create accounts and guides, so run them against a throwaway database, never a real one. Create it from `database/schema.sql` and the seeders, start the API with `DB_DATABASE` set to it, and run this from the project root:
+
+```bash
+node --test "backend/tests/*.test.mjs"
 ```
 
 ## Deployment
@@ -204,8 +212,8 @@ npm run build
 - [x] Interface in Bisaya, Filipino, and Hiligaynon
 - [ ] Native-speaker review of the Bisaya, Filipino, and Hiligaynon text
 - [ ] Blaan, Maguindanaon, and Maranao translations
-- [ ] Automated API tests
-- [ ] Optional resident accounts to save checklists across devices
+- [x] Guide review workflow, verification status, and version history
+- [ ] Automated tests for the rest of the API
 - [ ] Add and verify real service guides and office details
 
 ## API
