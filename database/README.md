@@ -47,7 +47,7 @@ This password is public. The admin panel shows a warning on every page until it 
 
 - All tables use InnoDB and `utf8mb4`.
 - Deleting a service cascades to its requirements, steps, eligibility, sources, and reports. The admin panel archives guides instead of deleting them.
-- `services.status` (`draft`, `published`, `archived`) controls visibility. The public API returns only published guides.
+- `services.status` (`draft`, `for_review`, `approved`, `published`, `archived`) controls visibility. The public API returns only published guides.
 - A `FULLTEXT` index on `services(title, summary, description)` powers search.
 - The sample PSA office in `seeders/004_seed_sample_service.sql` has no address or hours and is left unverified on purpose. Fill in its real details from the admin panel.
 - `seeders/005_seed_gensan_guides.sql` adds its guides as drafts, written from each agency's Citizen's Charter or website as checked on October 28, 2026. Before publishing a guide, open its sources and confirm the details. The Pag-IBIG guide has no verification date because the Pag-IBIG website could not be checked. Its offices are unverified; only the BIR office has an address, taken from the BIR Citizen's Charter.
