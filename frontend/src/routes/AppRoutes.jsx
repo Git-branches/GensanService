@@ -12,6 +12,7 @@ import FaqPage from '../pages/FaqPage'
 import PrivacyPage from '../pages/PrivacyPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
+// Public pages stay in one file: splitting them was measured at more than twice as slow on mobile data.
 // Loaded on demand so public visitors never download the admin code.
 const AdminApp = lazy(() => import('../admin/AdminApp'))
 
@@ -21,7 +22,7 @@ export default function AppRoutes() {
       <Route
         path="admin/*"
         element={
-          <Suspense fallback={<LoadingState label="Loading admin..." />}>
+          <Suspense fallback={<LoadingState label="Loading admin..." fill />}>
             <AdminApp />
           </Suspense>
         }

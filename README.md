@@ -178,10 +178,10 @@ node --test "backend/tests/*.test.mjs"
 
 ## Deployment
 
-1. Build the frontend with `npm run build` in `frontend/`. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
+1. Build the frontend with `npm run build` in `frontend/`. The build also pre-renders the public pages, so visitors on slow connections see them before the JavaScript loads. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
 2. Copy `backend/` to the server, outside the public web folder if possible, and run `composer install --no-dev --optimize-autoloader`.
 3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. Make `backend/storage/logs/` and `backend/public/uploads/` writable by the web server. Uploaded agency logos are saved in `uploads/`, whose `.htaccess` blocks scripts from running there.
-4. Serve both from one HTTPS domain: the frontend at `/` and the API's `public/` folder at `/api`. Enable `mod_rewrite` (`mod_headers` is recommended):
+4. Serve both from one HTTPS domain: the frontend at `/` and the API's `public/` folder at `/api`. Enable `mod_rewrite`. `mod_headers` is recommended, and so is `mod_deflate`, which compresses pages for visitors on mobile data:
 
    ```apache
    <VirtualHost *:443>

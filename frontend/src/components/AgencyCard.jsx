@@ -66,7 +66,7 @@ export default function AgencyCard({ agency }) {
         <ChevronRight
           size={18}
           aria-hidden="true"
-          className="ml-auto shrink-0 text-stone-400 transition-transform group-hover:translate-x-0.5 group-hover:text-bay-600"
+          className="ml-auto shrink-0 text-stone-500 transition-transform group-hover:translate-x-0.5 group-hover:text-bay-600"
         />
       </div>
     </Link>

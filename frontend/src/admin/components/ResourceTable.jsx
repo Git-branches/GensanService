@@ -12,7 +12,7 @@ export function TableToolbar({ search, onSearch, searchPlaceholder, children }) 
   return (
     <div className={`mt-6 flex flex-wrap items-center gap-3 p-3 ${SURFACE}`}>
       <div className="relative min-w-56 flex-1 basis-72">
-        <Search size={17} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+        <Search size={17} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
         <label className="sr-only" htmlFor="resource-search">
           {searchPlaceholder}
         </label>
@@ -22,7 +22,7 @@ export function TableToolbar({ search, onSearch, searchPlaceholder, children }) 
           value={search}
           onChange={(event) => onSearch(event.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full rounded-lg bg-stone-50 py-2.5 pl-9 pr-3 text-sm text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-bay-500/30"
+          className="w-full rounded-lg bg-stone-50 py-2.5 pl-9 pr-3 text-base text-stone-900 placeholder:text-stone-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-bay-500/30 sm:text-sm"
         />
       </div>
       {children}
@@ -50,7 +50,7 @@ export function DataTable({ loading, error, rows, columns, emptyText }) {
 
       {rows && rows.length > 0 && (
         <table className="w-full text-left text-sm">
-          <thead className="hidden text-xs font-semibold uppercase tracking-wider text-stone-400 md:table-header-group">
+          <thead className="hidden text-xs font-semibold uppercase tracking-wider text-stone-500 md:table-header-group">
             <tr>
               {columns.map((column) => (
                 <th key={column.key} scope="col" className={`px-4 pb-2 pt-4 first:pl-6 last:pr-6 ${cellClass(column)}`}>

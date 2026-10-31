@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom'
 import { AlertCircle, Inbox, Loader2 } from 'lucide-react'
 import { useI18n } from '../i18n/context'
 
-export function LoadingState({ label }) {
+// fill keeps the footer below the screen while a whole page loads, so it does not jump.
+export function LoadingState({ label, fill = false }) {
   const { t } = useI18n()
 
   return (
-    <div role="status" className="flex items-center justify-center gap-2 py-20 text-stone-500">
+    <div role="status" className={`flex items-center justify-center gap-2 py-20 text-stone-600 ${fill ? 'min-h-svh' : ''}`}>
       <Loader2 className="animate-spin text-bay-600" size={20} aria-hidden="true" />
       <span>{label ?? t('common.loading')}</span>
     </div>

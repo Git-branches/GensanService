@@ -36,7 +36,7 @@ export default function Checklist({ slug, requirements }) {
 
   return (
     <div>
-      <div className={`rounded-lg border p-4 print:hidden ${done ? 'border-emerald-200 bg-emerald-50' : 'border-bay-100 bg-bay-50'}`}>
+      <div className={`rounded-lg p-4 print:hidden ${done ? 'bg-emerald-50' : 'bg-bay-50'}`}>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span className="font-bold text-bay-950">
             {done ? t('checklist.allSet') : t('checklist.ready', { ready: readyCount, total: requirements.length })}
@@ -58,13 +58,13 @@ export default function Checklist({ slug, requirements }) {
         </div>
       </div>
 
-      <ul className="mt-4 divide-y divide-stone-100 rounded-lg border border-stone-200">
+      <ul className="-mx-5 mt-4 divide-y divide-stone-100 border-y border-stone-100 sm:-mx-6">
         {requirements.map((item) => {
           const isChecked = Boolean(checked[item.id])
           return (
             <li key={item.id}>
               <label
-                className={`flex cursor-pointer items-start gap-3 p-4 transition-colors ${
+                className={`flex cursor-pointer items-start gap-3 px-5 py-4 transition-colors sm:px-6 ${
                   isChecked ? 'bg-emerald-50/60' : 'bg-white hover:bg-stone-50'
                 }`}
               >
@@ -91,11 +91,11 @@ export default function Checklist({ slug, requirements }) {
                       {t('checklist.ifApplicable')}
                     </span>
                   )}
-                  {item.notes && <span className="mt-1 block text-sm text-stone-600">{item.notes}</span>}
+                  {item.notes && <span className="mt-1 block text-base text-stone-600 sm:text-sm">{item.notes}</span>}
                   {item.linked_slug && (
                     <Link
                       to={`/services/${item.linked_slug}`}
-                      className="mt-1.5 inline-flex items-center gap-0.5 text-sm font-semibold text-bay-700 hover:underline"
+                      className="mt-0.5 flex min-h-11 items-center gap-0.5 text-sm font-semibold text-bay-700 hover:underline"
                     >
                       {t('checklist.howToGet')}
                       <span className="sr-only">: {item.linked_title}</span>
@@ -114,7 +114,7 @@ export default function Checklist({ slug, requirements }) {
           <button
             type="button"
             onClick={() => update({})}
-            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-100"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-100"
           >
             <RotateCcw size={16} aria-hidden="true" /> {t('checklist.reset')}
           </button>

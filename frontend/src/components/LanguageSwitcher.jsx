@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
       <select
         value={locale}
         onChange={(event) => setLocale(event.target.value)}
-        className="cursor-pointer appearance-none rounded-md bg-transparent py-0.5 pr-5 pl-0.5 font-semibold text-stone-700 hover:text-bay-700 focus-visible:outline-2 focus-visible:outline-bay-600"
+        className="min-h-11 cursor-pointer appearance-none rounded-md bg-transparent py-1 pr-5 pl-0.5 text-base font-semibold text-stone-700 hover:text-bay-700 focus-visible:outline-2 focus-visible:outline-bay-600 sm:min-h-8 sm:text-xs"
       >
         {options.map((language) => (
           <option key={language.code} value={language.code} lang={language.htmlLang ?? undefined}>

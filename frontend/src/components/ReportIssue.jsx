@@ -7,7 +7,7 @@ import { REPORT_REASONS } from '../utils/reports'
 import { useI18n } from '../i18n/context'
 
 const FIELD =
-  'w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20 aria-[invalid=true]:border-red-400'
+  'w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 placeholder:text-stone-500 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20 aria-[invalid=true]:border-red-400 sm:text-sm'
 
 const EMPTY = { reason: '', message: '', email: '', website: '' }
 
@@ -61,7 +61,7 @@ function ReportForm({ slug, serviceTitle, onClose }) {
         title={t('report.thanksTitle')}
         size="sm"
         footer={
-          <button type="button" data-autofocus onClick={onClose} className="rounded-lg bg-bay-700 px-5 py-2 text-sm font-semibold text-white hover:bg-bay-800">
+          <button type="button" data-autofocus onClick={onClose} className="min-h-11 rounded-lg bg-bay-700 px-5 text-sm font-semibold text-white hover:bg-bay-800">
             {t('common.close')}
           </button>
         }
@@ -83,14 +83,14 @@ function ReportForm({ slug, serviceTitle, onClose }) {
       description={serviceTitle}
       footer={
         <>
-          <button type="button" onClick={onClose} disabled={sending} className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50">
+          <button type="button" onClick={onClose} disabled={sending} className="min-h-11 rounded-lg border border-stone-300 bg-white px-4 text-sm font-semibold text-stone-700 hover:bg-stone-50">
             {t('common.cancel')}
           </button>
           <button
             type="submit"
             form={formId}
             disabled={sending}
-            className="inline-flex items-center gap-2 rounded-lg bg-bay-700 px-4 py-2 text-sm font-semibold text-white hover:bg-bay-800 disabled:opacity-60"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-bay-700 px-4 text-sm font-semibold text-white hover:bg-bay-800 disabled:opacity-60"
           >
             {sending && <Loader2 size={15} className="animate-spin" aria-hidden="true" />}
             {t('report.send')}
@@ -106,13 +106,13 @@ function ReportForm({ slug, serviceTitle, onClose }) {
           </p>
         )}
 
-        <fieldset>
+        <fieldset aria-describedby={errors.reason ? `${formId}-reason-error` : undefined}>
           <legend className="text-sm font-semibold text-stone-700">{t('report.whatsWrong')}</legend>
           <div className="mt-2 grid gap-2">
             {REPORT_REASONS.map((reason, index) => (
               <label
                 key={reason.value}
-                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                className={`flex min-h-11 cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
                   values.reason === reason.value ? 'bg-bay-50 ring-2 ring-bay-500' : 'bg-stone-50 hover:bg-stone-100'
                 }`}
               >
@@ -129,41 +129,43 @@ function ReportForm({ slug, serviceTitle, onClose }) {
               </label>
             ))}
           </div>
-          {errors.reason && <p className="mt-1 text-xs font-medium text-red-600">{errors.reason}</p>}
+          {errors.reason && <p id={`${formId}-reason-error`} className="mt-1 text-xs font-medium text-red-600">{errors.reason}</p>}
         </fieldset>
 
         <div>
           <label htmlFor={`${formId}-message`} className="text-sm font-semibold text-stone-700">
             {t('report.details')} <span className="text-red-600">*</span>
           </label>
-          <p className="text-xs text-stone-500">{t('report.detailsHint')}</p>
+          <p id={`${formId}-message-hint`} className="text-xs text-stone-500">{t('report.detailsHint')}</p>
           <textarea
             id={`${formId}-message`}
             rows={4}
             maxLength={2000}
             value={values.message}
             aria-invalid={Boolean(errors.message)}
+            aria-describedby={`${formId}-message-hint${errors.message ? ` ${formId}-message-error` : ''}`}
             onChange={(e) => set({ message: e.target.value })}
             className={`${FIELD} mt-1.5`}
           />
-          {errors.message && <p className="mt-1 text-xs font-medium text-red-600">{errors.message}</p>}
+          {errors.message && <p id={`${formId}-message-error`} className="mt-1 text-xs font-medium text-red-600">{errors.message}</p>}
         </div>
 
         <div>
           <label htmlFor={`${formId}-email`} className="text-sm font-semibold text-stone-700">
             {t('report.email')} <span className="font-normal text-stone-500">{t('report.optional')}</span>
           </label>
-          <p className="text-xs text-stone-500">{t('report.emailHint')}</p>
+          <p id={`${formId}-email-hint`} className="text-xs text-stone-500">{t('report.emailHint')}</p>
           <input
             id={`${formId}-email`}
             type="email"
             maxLength={150}
             value={values.email}
             aria-invalid={Boolean(errors.email)}
+            aria-describedby={`${formId}-email-hint${errors.email ? ` ${formId}-email-error` : ''}`}
             onChange={(e) => set({ email: e.target.value })}
             className={`${FIELD} mt-1.5`}
           />
-          {errors.email && <p className="mt-1 text-xs font-medium text-red-600">{errors.email}</p>}
+          {errors.email && <p id={`${formId}-email-error`} className="mt-1 text-xs font-medium text-red-600">{errors.email}</p>}
         </div>
 
         {/* Spam trap: hidden from people, filled in by bots. */}
@@ -192,7 +194,7 @@ export default function ReportIssue({ slug, serviceTitle }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-md py-1 text-sm font-semibold text-bay-700 underline-offset-4 transition-colors hover:text-bay-900 hover:underline print:hidden"
+        className="inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-bay-700 underline-offset-4 transition-colors hover:text-bay-900 hover:underline print:hidden"
       >
         <Flag size={16} aria-hidden="true" /> {t('report.button')}
       </button>

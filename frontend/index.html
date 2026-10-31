@@ -5,18 +5,51 @@
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#15576f" />
+    <meta name="theme-color" content="#102f54" />
     <meta
       name="description"
       content="Independent guide to government service requirements, document checklists, and offices in General Santos City."
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap"
-      rel="stylesheet"
-    />
     <title>Andam GenSan</title>
+    <style>
+      html.other-language #root { visibility: hidden; }
+      html.other-page main { min-height: 100svh; }
+      html.other-page main > * { display: none; }
+    </style>
+    <script>
+      // A pre-built page is one English route. Before the first paint, hide what this visitor should not see.
+      // Keep this in step with initialLocale() in src/i18n/I18nProvider.jsx.
+      (function () {
+        var html = document.documentElement
+        var route = html.dataset.route
+        if (!route) return
+
+        var locale = new URLSearchParams(location.search).get('lang')
+        if (!locale) {
+          try {
+            locale = localStorage.getItem('andam-gensan-language')
+          } catch (error) {
+            locale = null
+          }
+        }
+        if (!locale) {
+          var browser = (navigator.languages || [navigator.language]).map(function (tag) {
+            return tag && tag.split('-')[0]
+          })
+          locale = ['en', 'ceb', 'fil', 'hil'].filter(function (code) {
+            return browser.indexOf(code) !== -1
+          })[0]
+        }
+
+        var path = location.pathname.replace(/\/+$/, '') || '/'
+        if ((locale && locale !== 'en') || path.indexOf('/admin') === 0) html.classList.add('other-language')
+
+        // A search or filter in the address changes the page, so the pre-built copy would not match.
+        var params = new URLSearchParams(location.search)
+        params.delete('lang')
+        if (path !== route || params.toString()) html.classList.add('other-page')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

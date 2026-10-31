@@ -11,9 +11,9 @@ export function Breadcrumbs({ items }) {
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((item, index) => (
           <li key={item.label} className="flex items-center gap-1.5">
-            {index > 0 && <ChevronRight size={14} aria-hidden="true" className="text-stone-400" />}
+            {index > 0 && <ChevronRight size={14} aria-hidden="true" className="text-stone-500" />}
             {item.to ? (
-              <Link to={item.to} className="hover:text-bay-700 hover:underline">
+              <Link to={item.to} className="inline-flex min-h-6 items-center hover:text-bay-700 hover:underline">
                 {item.label}
               </Link>
             ) : (
@@ -28,28 +28,17 @@ export function Breadcrumbs({ items }) {
   )
 }
 
-export function Kicker({ children, tone = 'light', className = '' }) {
-  return (
-    <p
-      className={`flex items-center gap-2 text-sm font-semibold ${tone === 'dark' ? 'text-sun-300' : 'text-bay-700'} ${className}`}
-    >
-      <span aria-hidden="true" className="h-2.5 w-2.5 rotate-45 rounded-[2px] bg-sun-400" />
-      {children}
-    </p>
-  )
-}
-
 const SECTION_CLASS =
   'relative overflow-hidden border-b border-bay-100 bg-gradient-to-br from-bay-50 via-white to-sun-50/60'
 
-export default function PageHeader({ kicker, title, description, breadcrumbs, image, children }) {
+export default function PageHeader({ meta, title, description, breadcrumbs, image, children }) {
   const intro = (
     <>
       {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
-      {kicker && <Kicker className={breadcrumbs ? 'mt-6' : ''}>{kicker}</Kicker>}
-      <h1 className="mt-3 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl">
+      <h1 className={`${breadcrumbs ? 'mt-5' : ''} max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl`}>
         {title}
       </h1>
+      {meta && <p className="mt-2 font-semibold text-bay-700">{meta}</p>}
       {description && <p className="mt-3 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>}
     </>
   )
@@ -82,7 +71,8 @@ export default function PageHeader({ kicker, title, description, breadcrumbs, im
               width={image.width}
               height={image.height}
               draggable="false"
-              className="relative mx-auto block max-h-64 w-auto select-none sm:max-h-80 lg:ml-auto lg:mr-0 lg:max-h-92"
+              style={{ aspectRatio: `${image.width} / ${image.height}` }}
+              className="relative mx-auto block h-64 w-auto max-w-full select-none object-contain object-bottom sm:h-80 lg:ml-auto lg:mr-0 lg:h-92"
             />
           </div>
         </div>

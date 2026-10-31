@@ -74,7 +74,6 @@ export default {
     verifiedNote: 'Every guide links to official sources and shows when it was last verified.',
     heroAlt: 'Three smiling Filipino residents — a young man, a woman holding a document folder, and a senior woman',
     how: {
-      kicker: 'How it works',
       title: 'Be ready in three steps',
       description: 'A smoother trip to the office starts with knowing exactly what to bring.',
       steps: [
@@ -85,7 +84,6 @@ export default {
       startBrowsing: 'Start browsing guides',
     },
     directory: {
-      kicker: 'Service directory',
       title: 'What do you need to process?',
       description: 'Search for a service, or browse guides by category or agency below.',
       whatDoYouNeed: 'What do you need?',
@@ -101,7 +99,6 @@ export default {
       byAgency: 'By agency',
     },
     popular: {
-      kicker: 'Most viewed',
       title: 'Popular guides',
       description: 'The guides residents opened most in the last 30 days.',
     },
@@ -109,19 +106,16 @@ export default {
       title: 'Recently viewed on this device',
     },
     faq: {
-      kicker: 'Help',
       title: 'Frequently asked questions',
       all: 'See all questions',
     },
     recent: {
-      kicker: 'Latest updates',
       title: 'Recently updated guides',
       description: 'The guides our team changed or checked most recently.',
       allGuides: 'All service guides',
       empty: 'No guides published yet',
     },
     accuracy: {
-      kicker: 'Our approach',
       title: 'How we keep guides accurate',
       points: [
         { title: 'Official sources linked', text: 'Each guide points back to the agency’s own website or published rules.' },
@@ -140,7 +134,6 @@ items: [
   },
   services: {
     pageTitle: 'Service guides',
-    kicker: 'Service guides',
     heading: 'Find a government service guide',
     description: 'Search by keyword, then narrow down by category or agency.',
     heroAlt: 'A student, a senior citizen, and a mother carrying her child — residents preparing for government transactions',
@@ -172,7 +165,6 @@ items: [
   },
   agencies: {
     pageTitle: 'Government agencies',
-    kicker: 'Agency directory',
     heading: 'Government agencies serving GenSan',
     description: 'Local and national offices whose services are covered in our guides.',
     heroAlt: 'Three smiling public service workers',
@@ -198,7 +190,6 @@ items: [
   },
   offices: {
     pageTitle: 'Office directory',
-    kicker: 'Office directory',
     heading: 'Where to go in General Santos',
     description: 'Agency branches and local offices with addresses, office hours, and directions.',
     heroAlt: 'Three smiling office staff ready to assist residents',
@@ -321,8 +312,8 @@ items: [
     unconfirmed: 'GenSan office not confirmed',
   },
   faq: {
+    heroAlt: 'Three smiling Andam GenSan team members in navy polo shirts, one pointing toward the questions',
     pageTitle: 'Frequently asked questions',
-    kicker: 'Help',
     description: 'Answers about using Andam GenSan.',
     search: 'Search questions',
     filter: 'Filter questions',
@@ -386,7 +377,6 @@ items: [
   },
   notFound: {
     pageTitle: 'Page not found',
-    kicker: 'Error 404',
     title: "We couldn't find that page",
     description: 'The page may have moved, or the link may be incorrect.',
     home: 'Back to home',

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Clock, Info, Menu, Search, X } from 'lucide-react'
 import Logo from './Logo'
@@ -26,12 +26,26 @@ function desktopLinkClass({ isActive }) {
 export default function Header() {
   const { t } = useI18n()
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuButton = useRef(null)
   const closeMenu = () => setMenuOpen(false)
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+
+    function handleKeyDown(event) {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      menuButton.current?.focus()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [menuOpen])
 
   return (
     <>
-      <div className="border-t-[3px] border-b border-t-gold-line border-b-line bg-mist text-xs text-ink print:hidden">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6">
+      <aside aria-label={t('topbar.independent')} className="border-t-[3px] border-b border-t-gold-line border-b-line bg-mist text-xs text-ink print:hidden">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 sm:py-1">
           <p className="flex items-center gap-1.5">
             <Info size={14} aria-hidden="true" className="shrink-0 text-bay-700" />
             <span>
@@ -46,7 +60,7 @@ export default function Header() {
             <LanguageSwitcher />
           </div>
         </div>
-      </div>
+      </aside>
 
       <header className="sticky top-0 z-40 bg-navy print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -75,8 +89,9 @@ export default function Header() {
           </Link>
 
           <button
+            ref={menuButton}
             type="button"
-            className={`rounded-lg p-2 text-white transition-colors hover:bg-white/10 md:hidden ${FOCUS_RING}`}
+            className={`inline-flex h-11 w-11 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 md:hidden ${FOCUS_RING}`}
             onClick={() => setMenuOpen((open) => !open)}
             aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={menuOpen}

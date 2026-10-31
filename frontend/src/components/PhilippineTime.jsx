@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 const FORMATTER = new Intl.DateTimeFormat('en-PH', {
   timeZone: 'Asia/Manila',
@@ -9,13 +9,21 @@ const FORMATTER = new Intl.DateTimeFormat('en-PH', {
   minute: '2-digit',
 })
 
-export default function PhilippineTime() {
-  const [now, setNow] = useState(() => new Date())
+const TICK = 30_000
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 30_000)
-    return () => clearInterval(id)
-  }, [])
+function subscribe(onTick) {
+  const id = setInterval(onTick, TICK)
+  return () => clearInterval(id)
+}
+
+const currentTick = () => Math.floor(Date.now() / TICK)
+const noTick = () => null
+
+// Pre-built pages have no clock, so the time appears once the page is live.
+export default function PhilippineTime() {
+  const tick = useSyncExternalStore(subscribe, currentTick, noTick)
+  if (tick === null) return null
+  const now = new Date(tick * TICK)
 
   return (
     <time dateTime={now.toISOString()}>

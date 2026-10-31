@@ -84,7 +84,7 @@ export default function Modal({ open, onClose, title, description, size = 'md', 
         tabIndex={-1}
         className={`relative flex max-h-[92vh] w-full flex-col rounded-t-2xl bg-white shadow-2xl shadow-bay-950/30 focus:outline-none sm:rounded-2xl motion-safe:animate-modal-in ${SIZES[size]}`}
       >
-        <header className="flex items-start justify-between gap-4 px-6 pb-2 pt-5">
+        <div className="flex items-start justify-between gap-4 px-6 pb-2 pt-5">
           <div className="min-w-0">
             <h2 id={titleId} className="text-lg font-bold tracking-tight text-bay-950">
               {title}
@@ -100,15 +100,15 @@ export default function Modal({ open, onClose, title, description, size = 'md', 
             onClick={onClose}
             disabled={busy}
             aria-label={t('common.closeDialog')}
-            className="-mr-2 rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 disabled:opacity-40"
+            className="-mr-3 -mt-1.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700 disabled:opacity-40"
           >
             <X size={20} />
           </button>
-        </header>
+        </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
 
-        {footer && <footer className="flex flex-wrap justify-end gap-2 px-6 pb-6 pt-2">{footer}</footer>}
+        {footer && <div className="flex flex-wrap justify-end gap-2 px-6 pb-6 pt-2">{footer}</div>}
       </div>
     </div>,
     document.body

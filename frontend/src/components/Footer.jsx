@@ -46,10 +46,10 @@ export default function Footer() {
 
           <div className="lg:col-span-2">
             <ColumnTitle>{t('footer.explore')}</ColumnTitle>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-2 text-sm sm:mt-4 sm:space-y-2.5">
               {EXPLORE_LINKS.map((link) => (
                 <li key={link.to}>
-                  <Link to={link.to} className="text-navy-muted hover:text-navy-active hover:underline">
+                  <Link to={link.to} className="inline-flex min-h-11 items-center text-navy-muted hover:text-navy-active hover:underline sm:min-h-0">
                     {t(link.label)}
                   </Link>
                 </li>
@@ -59,17 +59,17 @@ export default function Footer() {
 
           <div className="lg:col-span-3">
             <ColumnTitle>{t('footer.officialPortals')}</ColumnTitle>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-2 text-sm sm:mt-4 sm:space-y-2.5">
               {OFFICIAL_PORTALS.map((portal) => (
                 <li key={portal.href}>
                   <a
                     href={portal.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-navy-muted hover:text-navy-active hover:underline"
+                    className="inline-flex min-h-11 items-center gap-1 text-navy-muted hover:text-navy-active hover:underline sm:min-h-0"
                   >
-                    {portal.label}{' '}
-                    <ExternalLink size={13} aria-hidden="true" className="inline align-[-1px]" />
+                    {portal.label}
+                    <ExternalLink size={13} aria-hidden="true" className="shrink-0" />
                     <span className="sr-only">{t('common.opensInNewTab')}</span>
                   </a>
                 </li>

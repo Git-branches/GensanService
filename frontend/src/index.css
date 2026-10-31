@@ -1,7 +1,28 @@
 @import "tailwindcss";
 
+/* Sized to match Plus Jakarta Sans, so text barely moves when the real font arrives. */
+@font-face {
+  font-family: "Jakarta Fallback";
+  font-weight: 400 500;
+  src: local("Arial"), local("Roboto"), local("Helvetica");
+  size-adjust: 90.6%;
+  ascent-override: 98%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Jakarta Fallback";
+  font-weight: 600 800;
+  src: local("Arial Bold"), local("Roboto Bold"), local("Helvetica Bold");
+  size-adjust: 89.5%;
+  ascent-override: 99%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans Variable", "Jakarta Fallback", ui-sans-serif, system-ui, sans-serif;
 
   /* Bay — navy blue (primary), anchored on the navbar's #102f54 at 900 */
   --color-bay-50: #eef5fb;
@@ -37,18 +58,6 @@
   --color-mist: #f3f8fb;
   --color-ink: #334155;
   --color-line: #d9e3ec;
-
-  --animate-float: float 6s ease-in-out infinite;
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-  }
 
   --animate-fade-in: fade-in 150ms ease-out both;
   --animate-modal-in: modal-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -91,11 +100,14 @@
     scroll-behavior: auto;
   }
 
+  /* Movement stops; color and opacity changes stay, so hover and state feedback still shows. */
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property: color, background-color, border-color, opacity, box-shadow !important;
+  }
+
+  .animate-modal-in {
+    animation-name: fade-in;
   }
 }

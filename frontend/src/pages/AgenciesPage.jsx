@@ -21,7 +21,6 @@ export default function AgenciesPage() {
     <>
       <PageHeader
         breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('nav.agencies') }]}
-        kicker={t('agencies.kicker')}
         title={t('agencies.heading')}
         description={t('agencies.description')}
         image={{

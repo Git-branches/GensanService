@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
               {data.drafts.map((draft) => (
                 <li key={draft.id}>
                   <Link to={`/admin/services/${draft.id}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-stone-50">
-                    <PenLine size={16} aria-hidden="true" className="shrink-0 text-stone-400" />
+                    <PenLine size={16} aria-hidden="true" className="shrink-0 text-stone-500" />
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-bay-900">{draft.title}</span>
                       <span className="block text-xs text-stone-500">
@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                   <span>
                     <span className="font-semibold text-bay-950">{item.admin_name ?? 'Someone'}</span>{' '}
                     <span className="text-stone-700">{describeActivity(item)}</span>
-                    <span className="block text-xs text-stone-400">{timeAgo(item.created_at)}</span>
+                    <span className="block text-xs text-stone-500">{timeAgo(item.created_at)}</span>
                   </span>
                 </li>
               ))}

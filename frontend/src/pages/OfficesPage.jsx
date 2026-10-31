@@ -34,7 +34,6 @@ export default function OfficesPage() {
     <>
       <PageHeader
         breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('nav.offices') }]}
-        kicker={t('offices.kicker')}
         title={t('offices.heading')}
         description={t('offices.description')}
         image={{
@@ -50,14 +49,14 @@ export default function OfficesPage() {
               {t('offices.filter')}
             </label>
             <div className="relative mt-1.5">
-              <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
               <input
                 id="offices-q"
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('offices.filterPlaceholder')}
-                className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-400`}
+                className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-500`}
               />
             </div>
           </div>
@@ -87,9 +86,9 @@ export default function OfficesPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         {offices && (
-          <p aria-live="polite" className="mb-6 border-b border-stone-200 pb-4 text-lg font-bold text-bay-950">
+          <h2 aria-live="polite" className="mb-6 border-b border-stone-200 pb-4 text-lg font-bold text-bay-950">
             {t('common.officesCount', { count: visible.length })}
-          </p>
+          </h2>
         )}
         {loading && <CardGridSkeleton count={3} />}
         {error && <ErrorState message={t('common.loadError')} />}

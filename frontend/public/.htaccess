@@ -1,6 +1,7 @@
 # Copied into dist/ by `npm run build`. Serves the React app and lets client-side routes
 # like /services/some-guide or /admin load on refresh. Requests to /api go to the PHP backend.
 Options -Indexes
+DirectorySlash Off
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -8,11 +9,20 @@ Options -Indexes
 
     RewriteRule ^api(/|$) - [L]
 
+    # Pre-built pages live in folders, such as faq/index.html.
+    RewriteCond %{REQUEST_FILENAME}/index.html -f
+    RewriteRule ^(.+?)/?$ $1/index.html [L]
+
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
     RewriteRule ^ index.html [L]
+</IfModule>
+
+# Compress text files. The main script drops from about 420 KB to 125 KB.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>
 
 <IfModule mod_headers.c>

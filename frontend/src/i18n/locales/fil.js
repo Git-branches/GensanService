@@ -74,7 +74,6 @@ export default {
     verifiedNote: 'Bawat gabay ay may link sa mga opisyal na sanggunian at ipinapakita kung kailan ito huling na-verify.',
     heroAlt: 'Tatlong nakangiting Pilipinong residente — isang binata, isang babaeng may hawak na folder ng dokumento, at isang matandang babae',
     how: {
-      kicker: 'Paano ito gumagana',
       title: 'Maging handa sa tatlong hakbang',
       description: 'Mas maayos ang pagpunta sa opisina kapag alam mo kung ano mismo ang dadalhin.',
       steps: [
@@ -85,7 +84,6 @@ export default {
       startBrowsing: 'Simulang tumingin ng mga gabay',
     },
     directory: {
-      kicker: 'Direktoryo ng serbisyo',
       title: 'Ano ang kailangan mong asikasuhin?',
       description: 'Maghanap ng serbisyo, o tingnan ang mga gabay ayon sa kategorya o ahensya sa ibaba.',
       whatDoYouNeed: 'Ano ang kailangan mo?',
@@ -101,7 +99,6 @@ export default {
       byAgency: 'Ayon sa ahensya',
     },
     popular: {
-      kicker: 'Pinakatiningnan',
       title: 'Mga sikat na gabay',
       description: 'Ang mga gabay na pinakabinuksan ng mga residente sa nakalipas na 30 araw.',
     },
@@ -109,19 +106,16 @@ export default {
       title: 'Kamakailang tiningnan sa device na ito',
     },
     faq: {
-      kicker: 'Tulong',
       title: 'Mga madalas itanong',
       all: 'Tingnan ang lahat ng tanong',
     },
     recent: {
-      kicker: 'Pinakabagong update',
       title: 'Mga bagong na-update na gabay',
       description: 'Mga gabay na pinakahuling binago o sinuri ng aming team.',
       allGuides: 'Lahat ng gabay sa serbisyo',
       empty: 'Wala pang nailathalang gabay',
     },
     accuracy: {
-      kicker: 'Ang aming pamamaraan',
       title: 'Paano namin pinapanatiling tama ang mga gabay',
       points: [
         { title: 'May link sa opisyal na sanggunian', text: 'Bawat gabay ay tumuturo pabalik sa sariling website o inilathalang patakaran ng ahensya.' },
@@ -140,7 +134,6 @@ items: [
   },
   services: {
     pageTitle: 'Mga gabay sa serbisyo',
-    kicker: 'Mga gabay sa serbisyo',
     heading: 'Maghanap ng gabay sa serbisyo ng gobyerno',
     description: 'Maghanap gamit ang keyword, saka paliitin ayon sa kategorya o ahensya.',
     heroAlt: 'Isang estudyante, isang senior citizen, at isang inang karga ang kanyang anak — mga residenteng naghahanda para sa transaksyon sa gobyerno',
@@ -172,7 +165,6 @@ items: [
   },
   agencies: {
     pageTitle: 'Mga ahensya ng gobyerno',
-    kicker: 'Direktoryo ng ahensya',
     heading: 'Mga ahensya ng gobyerno na naglilingkod sa GenSan',
     description: 'Mga lokal at pambansang opisina na saklaw ng aming mga gabay ang mga serbisyo.',
     heroAlt: 'Tatlong nakangiting kawani ng gobyerno',
@@ -198,7 +190,6 @@ items: [
   },
   offices: {
     pageTitle: 'Direktoryo ng mga opisina',
-    kicker: 'Direktoryo ng mga opisina',
     heading: 'Saan pupunta sa General Santos',
     description: 'Mga sangay ng ahensya at lokal na opisina na may address, oras ng opisina, at direksyon.',
     heroAlt: 'Tatlong nakangiting kawani ng opisina na handang tumulong sa mga residente',
@@ -318,8 +309,8 @@ items: [
     unconfirmed: 'Hindi pa kumpirmado ang opisina sa GenSan',
   },
   faq: {
+    heroAlt: 'Tatlong nakangiting miyembro ng Andam GenSan na naka-navy na polo, at itinuturo ng isa ang mga tanong',
     pageTitle: 'Mga madalas itanong',
-    kicker: 'Tulong',
     description: 'Mga sagot tungkol sa paggamit ng Andam GenSan.',
     search: 'Maghanap ng tanong',
     filter: 'Salain ang mga tanong',

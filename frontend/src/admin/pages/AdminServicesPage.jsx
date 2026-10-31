@@ -204,7 +204,7 @@ export default function AdminServicesPage() {
       className: 'md:w-44 whitespace-nowrap',
       render: (s) => (
         <span className="inline-flex items-center gap-1.5 text-stone-700">
-          {s.last_verified_at ? formatDate(s.last_verified_at) : <span className="text-stone-400">Not set</span>}
+          {s.last_verified_at ? formatDate(s.last_verified_at) : <span className="text-stone-500">Not set</span>}
           {Boolean(s.needs_review) && s.status !== 'archived' && (
             <span title="Not confirmed yet, or past its review date" className="inline-flex items-center gap-1 rounded-full bg-sun-50 px-2 py-0.5 text-xs font-semibold text-sun-800">
               <AlertTriangle size={11} aria-hidden="true" /> Review
@@ -221,7 +221,7 @@ export default function AdminServicesPage() {
       render: (s) => (
         <span className="text-stone-600">
           {formatDate(s.updated_at?.slice(0, 10))}
-          {s.updated_by_name && <span className="block text-xs text-stone-400">by {s.updated_by_name}</span>}
+          {s.updated_by_name && <span className="block text-xs text-stone-500">by {s.updated_by_name}</span>}
         </span>
       ),
     },
@@ -304,7 +304,7 @@ export default function AdminServicesPage() {
               aria-pressed={status === tab.value}
               onClick={() => setStatus(tab.value)}
               className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-                status === tab.value ? 'bg-white text-bay-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+                status === tab.value ? 'bg-white text-bay-800 shadow-sm' : 'text-stone-600 hover:text-stone-800'
               }`}
             >
               {tab.label}

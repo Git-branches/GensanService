@@ -74,7 +74,6 @@ export default {
     verifiedNote: 'Ang kada giya may link sa mga opisyal nga ginhalinan kag ginapakita kon san-o ini katapusan nga na-verify.',
     heroAlt: 'Tatlo ka nagayuhom nga mga pumuluyo nga Pilipino — isa ka pamatan-on nga lalaki, isa ka babayi nga nagauyat sang folder sang dokumento, kag isa ka tigulang nga babayi',
     how: {
-      kicker: 'Paano ini nagagamit',
       title: 'Mangin handa sa tatlo ka lakang',
       description: 'Mas mahapos ang pagkadto sa opisina kon nahibaluan mo gid kon ano ang dalhon.',
       steps: [
@@ -85,7 +84,6 @@ export default {
       startBrowsing: 'Umpisahi ang pagtan-aw sang mga giya',
     },
     directory: {
-      kicker: 'Direktoryo sang serbisyo',
       title: 'Ano ang kinahanglan mo i-proseso?',
       description: 'Mangita sang serbisyo, ukon tan-awa ang mga giya suno sa kategorya ukon ahensya sa idalom.',
       whatDoYouNeed: 'Ano ang kinahanglan mo?',
@@ -101,7 +99,6 @@ export default {
       byAgency: 'Suno sa ahensya',
     },
     popular: {
-      kicker: 'Pinakaginatan-aw',
       title: 'Popular nga mga giya',
       description: 'Ang mga giya nga pinakaginbuksan sang mga pumuluyo sa nagligad nga 30 ka adlaw.',
     },
@@ -109,19 +106,16 @@ export default {
       title: 'Bag-o lang gintan-aw sa sini nga device',
     },
     faq: {
-      kicker: 'Bulig',
       title: 'Masunson nga pamangkot',
       all: 'Tan-awa ang tanan nga pamangkot',
     },
     recent: {
-      kicker: 'Pinakabag-o',
       title: 'Bag-o lang na-update nga mga giya',
       description: 'Mga giya nga bag-o lang ginbag-o ukon ginsusi sang amon team.',
       allGuides: 'Tanan nga giya sa serbisyo',
       empty: 'Wala pa sing giya nga napublikar',
     },
     accuracy: {
-      kicker: 'Amon pamaagi',
       title: 'Paano namon ginapabilin nga husto ang mga giya',
       points: [
         { title: 'May link sa opisyal nga ginhalinan', text: 'Ang kada giya nagatudlo pabalik sa kaugalingon nga website ukon ginpublikar nga pamatasan sang ahensya.' },
@@ -140,7 +134,6 @@ items: [
   },
   services: {
     pageTitle: 'Mga giya sa serbisyo',
-    kicker: 'Mga giya sa serbisyo',
     heading: 'Mangita sang giya sa serbisyo sang gobyerno',
     description: 'Mangita paagi sa keyword, dayon pilia ang kategorya ukon ahensya.',
     heroAlt: 'Isa ka estudyante, isa ka senior citizen, kag isa ka iloy nga nagakugos sang iya bata — mga pumuluyo nga nagahanda para sa transaksyon sa gobyerno',
@@ -172,7 +165,6 @@ items: [
   },
   agencies: {
     pageTitle: 'Mga ahensya sang gobyerno',
-    kicker: 'Direktoryo sang ahensya',
     heading: 'Mga ahensya sang gobyerno nga nagaserbisyo sa GenSan',
     description: 'Lokal kag nasyonal nga mga opisina nga ang ila serbisyo yara sa amon mga giya.',
     heroAlt: 'Tatlo ka nagayuhom nga mga empleyado sang gobyerno',
@@ -198,7 +190,6 @@ items: [
   },
   offices: {
     pageTitle: 'Direktoryo sang mga opisina',
-    kicker: 'Direktoryo sang mga opisina',
     heading: 'Diin magkadto sa General Santos',
     description: 'Mga sanga sang ahensya kag lokal nga mga opisina nga may address, oras sang opisina, kag direksyon.',
     heroAlt: 'Tatlo ka nagayuhom nga mga empleyado sang opisina nga handa magbulig sa mga pumuluyo',
@@ -318,8 +309,8 @@ items: [
     unconfirmed: 'Wala pa nakumpirma ang opisina sa GenSan',
   },
   faq: {
+    heroAlt: 'Tatlo ka nagayuhom nga miyembro sang Andam GenSan nga naka-navy nga polo, kag ang isa nagatudlo sa mga pamangkot',
     pageTitle: 'Masunson nga pamangkot',
-    kicker: 'Bulig',
     description: 'Mga sabat parte sa paggamit sang Andam GenSan.',
     search: 'Mangita sang pamangkot',
     filter: 'Salaa ang mga pamangkot',

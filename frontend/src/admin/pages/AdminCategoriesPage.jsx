@@ -125,7 +125,7 @@ export default function AdminCategoriesPage() {
         </span>
       ),
     },
-    { key: 'guides', label: 'Live guides', className: 'whitespace-nowrap', render: (c) => <span className="text-stone-700">{c.published_count} <span className="text-stone-400">of {c.service_count}</span></span> },
+    { key: 'guides', label: 'Live guides', className: 'whitespace-nowrap', render: (c) => <span className="text-stone-700">{c.published_count} <span className="text-stone-500">of {c.service_count}</span></span> },
     { key: 'status', label: 'Status', render: (c) => <ActiveBadge active={Boolean(c.is_active)} /> },
     {
       key: 'actions',

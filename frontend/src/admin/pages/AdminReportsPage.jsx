@@ -199,7 +199,7 @@ export default function AdminReportsPage() {
               aria-pressed={tab === option.value}
               onClick={() => setTab(option.value)}
               className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-                tab === option.value ? 'bg-white text-bay-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+                tab === option.value ? 'bg-white text-bay-800 shadow-sm' : 'text-stone-600 hover:text-stone-800'
               }`}
             >
               {option.label}

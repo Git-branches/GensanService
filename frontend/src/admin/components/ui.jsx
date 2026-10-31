@@ -22,7 +22,7 @@ export function StatusBadge({ status }) {
 }
 
 export const inputClass =
-  'w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20 disabled:bg-stone-50 disabled:text-stone-500 aria-[invalid=true]:border-red-400'
+  'w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-900 placeholder:text-stone-500 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20 disabled:bg-stone-50 disabled:text-stone-500 aria-[invalid=true]:border-red-400 sm:text-sm'
 
 export function Field({ id, label, hint, error, required, children }) {
   return (
@@ -54,7 +54,7 @@ export function Button({ variant = 'primary', loading = false, className = '', c
     <button
       type="button"
       disabled={loading || props.disabled}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed ${styles[variant]} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed sm:min-h-0 ${styles[variant]} ${className}`}
       {...props}
     >
       {loading && <Loader2 size={15} className="animate-spin" aria-hidden="true" />}
@@ -63,8 +63,8 @@ export function Button({ variant = 'primary', loading = false, className = '', c
   )
 }
 
-// Borderless white panel: separation comes from a soft shadow instead of outline lines.
-export const SURFACE = 'rounded-2xl bg-white shadow-sm shadow-stone-900/5'
+// Flat white panel: a thin line separates it from the page, with no shadow at rest.
+export const SURFACE = 'rounded-2xl border border-line bg-white'
 
 export function ActiveBadge({ active }) {
   return active ? (
@@ -84,7 +84,7 @@ export function IconAction({ label, onClick, to, href, tone = 'default', childre
     danger: 'text-stone-500 hover:bg-rose-50 hover:text-rose-600',
     success: 'text-stone-500 hover:bg-emerald-50 hover:text-emerald-700',
   }
-  const className = `inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${styles[tone]}`
+  const className = `inline-flex h-11 w-11 items-center justify-center rounded-lg transition-colors sm:h-8 sm:w-8 ${styles[tone]}`
 
   if (href) {
     return (

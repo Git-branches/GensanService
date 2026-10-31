@@ -24,6 +24,7 @@ function store(code) {
 
 // ?lang= wins (and can open a hidden language for translators), then the saved choice,
 // then the browser language if it is one we offer, then English.
+// frontend/index.html repeats this check, so keep the two in step.
 function initialLocale() {
   const fromUrl = new URLSearchParams(window.location.search).get('lang')
   if (findLanguage(fromUrl)) return fromUrl
@@ -36,8 +37,9 @@ function initialLocale() {
   return match?.code ?? DEFAULT_LOCALE
 }
 
-export default function I18nProvider({ children }) {
-  const [chosen, setChosen] = useState(initialLocale)
+// serverLocale is set when pages are pre-built, where there is no browser to read from.
+export default function I18nProvider({ serverLocale, children }) {
+  const [chosen, setChosen] = useState(() => serverLocale ?? initialLocale())
   const { pathname } = useLocation()
   // The admin panel stays in English whatever the visitor picked.
   const locale = pathname.startsWith('/admin') ? DEFAULT_LOCALE : chosen

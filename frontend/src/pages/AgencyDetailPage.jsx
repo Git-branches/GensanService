@@ -11,7 +11,7 @@ import { usePageTitle } from '../hooks/usePageTitle'
 import { useI18n } from '../i18n/context'
 import { getAgency, getServices } from '../services/api'
 
-const CONTACT_LINK = 'inline-flex items-center gap-1.5 font-semibold text-bay-700 hover:underline'
+const CONTACT_LINK = 'inline-flex min-h-11 items-center gap-1.5 font-semibold text-bay-700 hover:underline'
 
 // A tel: link only works for one number; "8920-6446 / 8917-8000" stays plain text.
 function Hotline({ value, label }) {
@@ -48,7 +48,7 @@ export default function AgencyDetailPage() {
   const services = useFetch(() => getServices({ agency: slug }), [slug])
   usePageTitle(agency?.name ?? t('agencyDetail.pageTitle'))
 
-  if (loading) return <LoadingState label={t('agencyDetail.loading')} />
+  if (loading) return <LoadingState label={t('agencyDetail.loading')} fill />
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
@@ -66,7 +66,7 @@ export default function AgencyDetailPage() {
           { to: '/agencies', label: t('nav.agencies') },
           { label: agency.acronym || agency.name },
         ]}
-        kicker={agency.acronym}
+        meta={agency.acronym}
         title={agency.name}
         description={agency.description}
       >
@@ -79,7 +79,7 @@ export default function AgencyDetailPage() {
               href={agency.official_website}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-bay-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-bay-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
             >
               {t('agencyDetail.officialWebsite')} <ExternalLink size={15} aria-hidden="true" />
               <span className="sr-only">{t('common.opensInNewTab')}</span>

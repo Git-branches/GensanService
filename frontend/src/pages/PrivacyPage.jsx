@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <>
       <PageHeader
         breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('privacy.pageTitle') }]}
-        kicker={t('privacy.updated')}
+        meta={t('privacy.updated')}
         title={t('privacy.pageTitle')}
         description={t('privacy.intro')}
       />

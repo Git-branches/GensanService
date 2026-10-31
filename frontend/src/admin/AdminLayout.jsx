@@ -65,7 +65,7 @@ function Sidebar({ admin, counts, onNavigate }) {
       <div className="space-y-5">
         {NAV_GROUPS.map((group) => (
           <div key={group.label ?? 'main'} className="space-y-1">
-            {group.label && <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-bay-300/70">{group.label}</p>}
+            {group.label && <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-bay-200">{group.label}</p>}
             {group.items
               .filter((item) => !item.superAdminOnly || isSuperAdmin(admin))
               .map(({ to, label, icon: Icon, end, badge, badgeLabel }) => (

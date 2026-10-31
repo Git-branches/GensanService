@@ -34,6 +34,15 @@ export const clearRecentSearches = () => write(SEARCHES_KEY, [])
 
 export const getRecentlyViewed = () => read(VIEWED_KEY)
 
+// The stored text, so a page can tell when the list changed without parsing it on every render.
+export function recentlyViewedSnapshot() {
+  try {
+    return localStorage.getItem(VIEWED_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
+
 export function addRecentlyViewed(guide) {
   const others = read(VIEWED_KEY).filter((item) => item.slug !== guide.slug)
   write(VIEWED_KEY, [guide, ...others].slice(0, MAX_VIEWED))

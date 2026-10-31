@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState, useSyncExternalStore } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
@@ -11,10 +11,10 @@ import {
   RefreshCw,
   Search,
 } from 'lucide-react'
+import faqTeamImage from '../assets/page-faq.webp'
 import BayPattern from '../components/BayPattern'
 import HeroPhoto from '../components/HeroPhoto'
 import SectionHeading from '../components/SectionHeading'
-import { Kicker } from '../components/PageHeader'
 import CategoryTile from '../components/CategoryTile'
 import AgencyCard from '../components/AgencyCard'
 import FaqItem from '../components/FaqItem'
@@ -25,13 +25,16 @@ import { useFetch } from '../hooks/useFetch'
 import { useI18n } from '../i18n/context'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { getAgencies, getCategories, getFaqs, getServices, getStats } from '../services/api'
-import { addRecentSearch, getRecentlyViewed } from '../utils/deviceHistory'
+import { addRecentSearch, getRecentlyViewed, recentlyViewedSnapshot } from '../utils/deviceHistory'
 
 // Icons for home.accuracy.points and home.reminders.items, in the same order as the messages.
 const ACCURACY_ICONS = [Link2, BadgeCheck, BookOpenText]
 const REMINDER_ICONS = [Info, RefreshCw, Lock]
 
 const FAQ_PREVIEW = 3
+
+const neverChanges = () => () => {}
+const nothingViewed = () => ''
 
 // Same tile for both columns of the "Our approach" section; each column adds its own tint.
 const ICON_TILE = 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1'
@@ -65,11 +68,11 @@ function GuideSearch({ categories, quickPicks }) {
             {t('home.directory.whatDoYouNeed')}
           </label>
           <div className="relative mt-1.5">
-            <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+            <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
             <SearchBox
               id="hero-q"
               placeholder={t('common.searchPlaceholder')}
-              className="w-full rounded-lg border border-stone-300 bg-white py-3 pl-10 pr-3 text-base placeholder:text-stone-400 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
+              className="w-full rounded-lg border border-stone-300 bg-white py-3 pl-10 pr-3 text-base placeholder:text-stone-500 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
             />
           </div>
         </div>
@@ -109,7 +112,7 @@ function GuideSearch({ categories, quickPicks }) {
             <Link
               key={agency.id}
               to={`/services?agency=${agency.slug}`}
-              className="rounded-md bg-bay-50 px-2.5 py-1 font-semibold text-bay-800 ring-1 ring-bay-100 transition-colors hover:bg-bay-100"
+              className="inline-flex min-h-11 items-center rounded-md bg-bay-50 px-3 font-semibold text-bay-800 ring-1 ring-bay-100 transition-colors hover:bg-bay-100"
             >
               {agency.acronym}
             </Link>
@@ -129,7 +132,6 @@ function HowItWorks() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           tone="dark"
-          kicker={t('home.how.kicker')}
           title={t('home.how.title')}
           description={t('home.how.description')}
         />
@@ -148,7 +150,7 @@ function HowItWorks() {
         </ol>
         <Link
           to="/services"
-          className="mt-10 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-bold text-bay-800 transition-colors hover:bg-sun-100"
+          className="mt-10 inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-5 text-sm font-bold text-bay-800 transition-colors hover:bg-sun-100"
         >
           {t('home.how.startBrowsing')} <ArrowRight size={16} aria-hidden="true" />
         </Link>
@@ -226,7 +228,9 @@ export default function HomePage() {
   const recent = useFetch(() => getServices({ sort: 'recent', limit: 6 }), [])
   const popular = useFetch(() => getServices({ sort: 'popular', limit: 3 }), [])
   const faqs = useFetch(() => getFaqs(locale), [locale])
-  const [viewed] = useState(getRecentlyViewed)
+  // Empty on pre-built pages, which know nothing about this device.
+  const viewedText = useSyncExternalStore(neverChanges, recentlyViewedSnapshot, nothingViewed)
+  const viewed = useMemo(() => (viewedText ? getRecentlyViewed() : []), [viewedText])
 
   const quickPicks = (agencies.data ?? [])
     .filter((agency) => agency.acronym)
@@ -298,10 +302,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
             <div className="lg:col-span-9">
-              <Kicker>{t('home.directory.kicker')}</Kicker>
               <h2
                 id="find-a-guide-title"
-                className="mt-2 text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl"
+                className="text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl"
               >
                 {t('home.directory.title')}
               </h2>
@@ -327,7 +330,7 @@ export default function HomePage() {
             <h3 className="text-xl font-extrabold tracking-tight text-bay-950">{t('home.directory.orBrowse')}</h3>
             <Link
               to="/agencies"
-              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:text-bay-800 hover:underline"
+              className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-bay-700 hover:text-bay-800 hover:underline"
             >
               {t('home.directory.allAgencies')}
               <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
@@ -345,7 +348,7 @@ export default function HomePage() {
       {popular.data?.length > 0 && (
         <section className="pt-14 sm:pt-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <SectionHeading kicker={t('home.popular.kicker')} title={t('home.popular.title')} description={t('home.popular.description')} />
+            <SectionHeading title={t('home.popular.title')} description={t('home.popular.description')} />
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {popular.data.map((service) => (
                 <ServiceCard key={service.id} service={service} />
@@ -360,17 +363,16 @@ export default function HomePage() {
           {viewed.length > 0 && (
             <div className="mb-10">
               <h2 className="text-sm font-bold text-stone-700">{t('home.viewed.title')}</h2>
-              <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <ul className="mt-1 flex flex-wrap gap-x-5 text-sm">
                 {viewed.map((guide) => (
                   <li key={guide.slug}>
-                    <Link to={`/services/${guide.slug}`} className="font-semibold text-bay-700 hover:underline">{guide.title}</Link>
+                    <Link to={`/services/${guide.slug}`} className="inline-flex min-h-11 items-center font-semibold text-bay-700 hover:underline">{guide.title}</Link>
                   </li>
                 ))}
               </ul>
             </div>
           )}
           <SectionHeading
-            kicker={t('home.recent.kicker')}
             title={t('home.recent.title')}
             description={t('home.recent.description')}
             action={{ to: '/services', label: t('home.recent.allGuides') }}
@@ -393,7 +395,7 @@ export default function HomePage() {
       <section className="border-t border-stone-200 bg-white py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
           <div>
-            <SectionHeading kicker={t('home.accuracy.kicker')} title={t('home.accuracy.title')} />
+            <SectionHeading title={t('home.accuracy.title')} />
             <ul className="mt-8 space-y-6">
               {t('home.accuracy.points').map(({ title, text }, index) => {
                 const Icon = ACCURACY_ICONS[index]
@@ -412,8 +414,8 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <aside className="self-start rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-6 sm:p-8">
-            <h2 className="text-xl font-extrabold text-bay-950">{t('home.reminders.title')}</h2>
+          <section aria-labelledby="home-reminders-title" className="self-start rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-6 sm:p-8">
+            <h2 id="home-reminders-title" className="text-xl font-extrabold text-bay-950">{t('home.reminders.title')}</h2>
             <ul className="mt-6 space-y-5">
               {t('home.reminders.items').map(({ lead, text }, index) => {
                 const Icon = REMINDER_ICONS[index]
@@ -429,19 +431,32 @@ export default function HomePage() {
                 )
               })}
             </ul>
-          </aside>
+          </section>
         </div>
       </section>
 
       {faqs.data?.length > 0 && (
         <section className="py-14 sm:py-20">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <SectionHeading kicker={t('home.faq.kicker')} title={t('home.faq.title')} action={{ to: '/faq', label: t('home.faq.all') }} />
-            <div className="mt-6 divide-y divide-stone-200 border-y border-stone-200">
-              {faqs.data.slice(0, FAQ_PREVIEW).map((faq) => (
-                <FaqItem key={faq.id} faq={faq} />
-              ))}
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <SectionHeading title={t('home.faq.title')} action={{ to: '/faq', label: t('home.faq.all') }} />
+              <div className="mt-6 divide-y divide-stone-200 border-y border-stone-200">
+                {faqs.data.slice(0, FAQ_PREVIEW).map((faq) => (
+                  <FaqItem key={faq.id} faq={faq} />
+                ))}
+              </div>
             </div>
+
+            {/* Larger screens only: the negative margin stands the people on the footer's gold line. */}
+            <img
+              src={faqTeamImage}
+              alt={t('faq.heroAlt')}
+              width="612"
+              height="408"
+              loading="lazy"
+              draggable="false"
+              className="hidden h-auto w-full select-none self-end lg:col-span-5 lg:-mb-20 lg:block"
+            />
           </div>
         </section>
       )}

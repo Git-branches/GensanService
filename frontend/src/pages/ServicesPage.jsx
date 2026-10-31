@@ -84,7 +84,6 @@ export default function ServicesPage() {
     <>
       <PageHeader
         breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('services.pageTitle') }]}
-        kicker={t('services.kicker')}
         title={t('services.heading')}
         description={t('services.description')}
         image={{
@@ -104,13 +103,13 @@ export default function ServicesPage() {
               {t('services.keyword')}
             </label>
             <div className="relative mt-1.5">
-              <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
               <SearchBox
                 key={q}
                 id="services-q"
                 defaultValue={q}
                 placeholder={t('common.searchPlaceholder')}
-                className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-400`}
+                className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-500`}
               />
             </div>
           </div>
@@ -132,7 +131,7 @@ export default function ServicesPage() {
           </SelectField>
           <button
             type="submit"
-            className="rounded-lg bg-bay-700 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-bay-800"
+            className="min-h-11 rounded-lg bg-bay-700 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-bay-800"
           >
             {t('services.search')}
           </button>
@@ -141,9 +140,9 @@ export default function ServicesPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4">
-          <p aria-live="polite" className="text-lg font-bold text-bay-950">
+          <h2 aria-live="polite" className="text-lg font-bold text-bay-950">
             {loading ? t('services.searching') : services ? t('services.found', { count: services.length }) : ''}
-          </p>
+          </h2>
 
           {activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">

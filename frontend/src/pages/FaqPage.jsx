@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
+import faqTeamImage from '../assets/page-faq.webp'
 import FaqItem from '../components/FaqItem'
 import PageHeader from '../components/PageHeader'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
@@ -26,15 +27,20 @@ export default function FaqPage() {
     <>
       <PageHeader
         breadcrumbs={[{ to: '/', label: t('common.home') }, { label: t('faq.pageTitle') }]}
-        kicker={t('faq.kicker')}
         title={t('faq.pageTitle')}
         description={t('faq.description')}
+        image={{
+          src: faqTeamImage,
+          alt: t('faq.heroAlt'),
+          width: 612,
+          height: 408,
+        }}
       />
 
       <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
         <label htmlFor="faq-q" className="text-sm font-semibold text-stone-700">{t('faq.search')}</label>
         <div className="relative mt-1.5">
-          <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+          <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
           <input
             id="faq-q"
             type="search"
@@ -51,7 +57,7 @@ export default function FaqPage() {
               type="button"
               aria-pressed={category === value}
               onClick={() => setCategory(value)}
-              className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+              className={`min-h-11 min-w-11 rounded-md px-3 text-sm font-semibold transition-colors ${
                 category === value ? 'bg-bay-900 text-white' : 'bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-stone-50'
               }`}
             >

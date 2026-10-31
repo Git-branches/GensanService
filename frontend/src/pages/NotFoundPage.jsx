@@ -9,7 +9,6 @@ export default function NotFoundPage() {
 
   return (
     <PageHeader
-      kicker={t('notFound.kicker')}
       title={t('notFound.title')}
       description={t('notFound.description')}
     >

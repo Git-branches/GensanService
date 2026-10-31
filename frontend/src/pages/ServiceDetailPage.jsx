@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   BadgeCheck,
@@ -34,14 +34,15 @@ import { getService, recordView } from '../services/api'
 import { addRecentlyViewed, isFirstViewThisVisit } from '../utils/deviceHistory'
 import { formatDate } from '../utils/format'
 
-function DetailSection({ id, icon: Icon, title, children }) {
+// bare leaves off the card for sections whose content is already made of cards.
+function DetailSection({ id, icon: Icon, title, bare = false, children }) {
   return (
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className="scroll-mt-24 rounded-xl border border-stone-200 bg-white print:border-0"
+      className={`scroll-mt-24 ${bare ? '' : 'rounded-xl border border-stone-200 bg-white print:border-0'}`}
     >
-      <div className="flex items-center gap-3 border-b border-stone-100 px-5 py-4 sm:px-6">
+      <div className={`flex items-center gap-3 ${bare ? 'pb-4' : 'border-b border-stone-100 px-5 py-4 sm:px-6'}`}>
         <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bay-50 text-bay-700 ring-1 ring-bay-100 print:hidden">
           <Icon size={18} aria-hidden="true" />
         </span>
@@ -49,19 +50,19 @@ function DetailSection({ id, icon: Icon, title, children }) {
           {title}
         </h2>
       </div>
-      <div className="p-5 sm:p-6">{children}</div>
+      <div className={bare ? '' : 'p-5 sm:p-6'}>{children}</div>
     </section>
   )
 }
 
 function Fact({ icon: Icon, label, children }) {
   return (
-    <div className="flex gap-3 py-3.5">
-      <Icon size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-bay-600" />
-      <div className="min-w-0">
-        <dt className="text-xs font-bold uppercase tracking-wide text-stone-500">{label}</dt>
-        <dd className="mt-0.5 text-sm text-stone-900">{children}</dd>
-      </div>
+    <div className="relative py-3.5 pl-7.5">
+      <dt className="text-xs font-bold uppercase tracking-wide text-stone-500">
+        <Icon size={18} aria-hidden="true" className="absolute left-0 top-4 text-bay-600" />
+        {label}
+      </dt>
+      <dd className="mt-0.5 text-base text-stone-900 sm:text-sm">{children}</dd>
     </div>
   )
 }
@@ -105,7 +106,7 @@ function AtAGlance({ service }) {
             href={service.agency_website}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 rounded-lg bg-bay-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-bay-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
           >
             {t('detail.officialWebsite', { agency: service.agency_acronym || t('detail.agencyFallback') })} <ExternalLink size={15} aria-hidden="true" />
             <span className="sr-only">{t('common.opensInNewTab')}</span>
@@ -116,7 +117,7 @@ function AtAGlance({ service }) {
   )
 }
 
-const ACTION_BUTTON = 'inline-flex items-center gap-1.5 rounded-md py-1 text-sm font-semibold text-bay-700 underline-offset-4 hover:underline'
+const ACTION_BUTTON = 'inline-flex min-h-11 items-center gap-1.5 rounded-md text-sm font-semibold text-bay-700 underline-offset-4 hover:underline'
 
 function useCopy() {
   const { t } = useI18n()
@@ -148,7 +149,7 @@ function GuideActions({ title }) {
   }
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 print:hidden">
+    <div className="mt-2 flex flex-wrap items-center gap-x-5 print:hidden">
       {typeof navigator.share === 'function' && (
         <button type="button" onClick={share} className={ACTION_BUTTON}>
           <Share2 size={15} aria-hidden="true" /> {t('detail.share')}
@@ -173,14 +174,14 @@ function Sources({ sources }) {
   return (
     <div className="rounded-xl border border-stone-200 bg-white p-5">
       <h2 className="text-base font-bold text-bay-950">{t('detail.sources')}</h2>
-      <ul className="mt-3 space-y-3">
+      <ul className="mt-2 space-y-1">
         {sources.map((source) => (
           <li key={source.url}>
             <a
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline"
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline"
             >
               {source.label || source.url} <ExternalLink size={13} aria-hidden="true" />
               <span className="sr-only">{t('common.opensInNewTab')}</span>
@@ -208,11 +209,12 @@ const REMINDER_ICONS = [Info, RefreshCw, Lock]
 
 function Reminder({ agencyAcronym }) {
   const { t } = useI18n()
+  const titleId = useId()
   const items = t('detail.reminders', { agency: agencyAcronym || t('detail.theAgency') })
 
   return (
-    <aside className="rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-5">
-      <h2 className="text-base font-bold text-bay-950">{t('detail.doubleCheck')}</h2>
+    <section aria-labelledby={titleId} className="rounded-r-xl border-l-4 border-sun-400 bg-sun-50/60 p-5">
+      <h2 id={titleId} className="text-base font-bold text-bay-950">{t('detail.doubleCheck')}</h2>
       <ul className="mt-4 space-y-3.5">
         {items.map(({ lead, text }, index) => {
           const Icon = REMINDER_ICONS[index]
@@ -221,14 +223,14 @@ function Reminder({ agencyAcronym }) {
               <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sun-700 ring-1 ring-sun-200">
                 <Icon size={16} aria-hidden="true" />
               </span>
-              <p className="pt-1 text-sm leading-relaxed text-stone-700">
+              <p className="pt-1 text-base leading-relaxed text-stone-700 sm:text-sm">
                 <strong className="font-bold text-bay-950">{lead}</strong> {text}
               </p>
             </li>
           )
         })}
       </ul>
-    </aside>
+    </section>
   )
 }
 
@@ -246,7 +248,7 @@ export default function ServiceDetailPage({ loadGuide }) {
     if (isFirstViewThisVisit(service.slug)) recordView(service.slug).catch(() => {})
   }, [service, preview])
 
-  if (loading) return <LoadingState label={t('detail.loading')} />
+  if (loading) return <LoadingState label={t('detail.loading')} fill />
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
@@ -257,11 +259,11 @@ export default function ServiceDetailPage({ loadGuide }) {
   if (!service) return null
 
   const sections = [
-    service.description && { id: 'about', label: t('detail.about') },
-    service.eligibility?.length && { id: 'eligibility', label: t('detail.eligibility') },
     service.requirements?.length && { id: 'checklist', label: t('detail.checklist') },
     service.steps?.length && { id: 'steps', label: t('detail.steps') },
     service.offices?.length && { id: 'offices', label: t('detail.whereToGo') },
+    service.eligibility?.length && { id: 'eligibility', label: t('detail.eligibility') },
+    service.description && { id: 'about', label: t('detail.about') },
   ].filter(Boolean)
 
   return (
@@ -272,18 +274,15 @@ export default function ServiceDetailPage({ loadGuide }) {
           { to: '/services', label: t('nav.services') },
           { to: `/services?category=${service.category_slug}`, label: service.category_name },
         ]}
-        kicker={[service.agency_acronym, service.agency_name].filter(Boolean).join(' — ')}
+        meta={[service.agency_acronym, service.agency_name].filter(Boolean).join(' — ')}
         title={service.title}
         description={service.summary}
       >
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-semibold text-stone-700 ring-1 ring-stone-200">
-            {service.category_name}
-          </span>
+        <div className="mt-4">
           <VerificationBadge status={service.verification_status} date={service.last_verified_at} />
         </div>
         {service.verification_status !== 'verified' && (
-          <p className="mt-3 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
+          <p className="mt-2 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
         )}
         {!preview && <GuideActions title={service.title} />}
       </PageHeader>
@@ -291,29 +290,6 @@ export default function ServiceDetailPage({ loadGuide }) {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
           <div className="space-y-6 lg:col-span-8">
-            <div className="lg:hidden">
-              <AtAGlance service={service} />
-            </div>
-
-            {service.description && (
-              <DetailSection id="about" icon={Info} title={t('detail.about')}>
-                <p className="leading-relaxed text-stone-700">{service.description}</p>
-              </DetailSection>
-            )}
-
-            {service.eligibility?.length > 0 && (
-              <DetailSection id="eligibility" icon={UserCheck} title={t('detail.eligibility')}>
-                <ul className="space-y-3">
-                  {service.eligibility.map((condition) => (
-                    <li key={condition} className="flex gap-3 text-stone-700">
-                      <CircleCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-600" />
-                      <span className="leading-relaxed">{condition}</span>
-                    </li>
-                  ))}
-                </ul>
-              </DetailSection>
-            )}
-
             {service.requirements?.length > 0 && (
               <DetailSection id="checklist" icon={ListChecks} title={t('detail.checklist')}>
                 <Checklist key={service.slug} slug={service.slug} requirements={service.requirements} />
@@ -342,12 +318,35 @@ export default function ServiceDetailPage({ loadGuide }) {
             )}
 
             {service.offices?.length > 0 && (
-              <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')}>
+              <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')} bare>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {service.offices.map((office) => (
                     <OfficeCard key={office.id} office={office} showAgency={false} />
                   ))}
                 </div>
+              </DetailSection>
+            )}
+
+            <div className="lg:hidden">
+              <AtAGlance service={service} />
+            </div>
+
+            {service.description && (
+              <DetailSection id="about" icon={Info} title={t('detail.about')}>
+                <p className="leading-relaxed text-stone-700">{service.description}</p>
+              </DetailSection>
+            )}
+
+            {service.eligibility?.length > 0 && (
+              <DetailSection id="eligibility" icon={UserCheck} title={t('detail.eligibility')}>
+                <ul className="space-y-3">
+                  {service.eligibility.map((condition) => (
+                    <li key={condition} className="flex gap-3 text-stone-700">
+                      <CircleCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-600" />
+                      <span className="leading-relaxed">{condition}</span>
+                    </li>
+                  ))}
+                </ul>
               </DetailSection>
             )}
 

@@ -124,7 +124,7 @@ export default function RevisionHistory({ service, canRestore, onRestored }) {
             <li key={revision.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
               <span className="min-w-0">
                 <span className="flex items-center gap-2 text-sm font-semibold text-bay-950">
-                  <History size={15} aria-hidden="true" className="shrink-0 text-stone-400" />
+                  <History size={15} aria-hidden="true" className="shrink-0 text-stone-500" />
                   {revision.change_summary || 'Guide changed'}
                 </span>
                 <span className="block text-xs text-stone-500">

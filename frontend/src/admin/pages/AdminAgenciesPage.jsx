@@ -262,7 +262,7 @@ export default function AdminAgenciesPage() {
       ),
     },
     { key: 'type', label: 'Type', hideBelow: 'xl', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.is_local_government ? 'Local government' : 'National'}</span> },
-    { key: 'guides', label: 'Live guides', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.published_count} <span className="text-stone-400">of {a.service_count}</span></span> },
+    { key: 'guides', label: 'Live guides', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.published_count} <span className="text-stone-500">of {a.service_count}</span></span> },
     { key: 'offices', label: 'Offices', hideBelow: 'xl', render: (a) => <span className="text-stone-700">{a.office_count}</span> },
     { key: 'verification', label: 'Verification', hideBelow: 'lg', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{VERIFICATION[a.verification_status]}</span> },
     { key: 'status', label: 'Status', render: (a) => <ActiveBadge active={Boolean(a.is_active)} /> },
