@@ -30,3 +30,8 @@ backend/storage/logs/*
 backend/public/uploads/*
 !backend/public/uploads/.htaccess
 !backend/storage/logs/.gitkeep
+
+# Impeccable (per-developer settings and session state)
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/live/sessions/
