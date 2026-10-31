@@ -33,6 +33,10 @@ Run any migrations your database doesn't have yet, in order:
 |---|---|
 | `015_create_login_attempts_table.sql` | Sign-in throttling for the admin panel |
 | `016_add_review_fields_to_content_reports.sql` | Reporter IP (for rate limiting) and admin notes on reports |
+| `017_add_agency_contacts_and_linked_requirements.sql` | Agency contacts and checklist items that link to other guides |
+| `018_add_review_workflow_verification_and_revisions.sql` | Guide review statuses, verification, and version history |
+| `019_add_resident_features.sql` | Search keywords, agency presence, office branch types, daily guide views, and the FAQ |
+| `020_add_admin_tools.sql` | Failed sign-ins in the activity log, agency verification, review notes, report resolutions, and notices |
 
 ## Default local admin account
 

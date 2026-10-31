@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   ExternalLink,
   FileText,
@@ -11,29 +11,35 @@ import {
   LayoutGrid,
   LogOut,
   MapPin,
+  Megaphone,
   Menu,
+  MessageCircleQuestion,
   ShieldAlert,
   Users,
   X,
 } from 'lucide-react'
 import { LogoMark } from '../components/Logo'
+import { adminApi } from './api'
 import { ROLE_LABELS, isSuperAdmin, useAdminAuth } from './auth'
+import { useAdminQuery } from './useAdminList'
 
 const NAV_GROUPS = [
   {
     label: null,
     items: [
       { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/admin/reports', label: 'Reports', icon: Flag },
+      { to: '/admin/reports', label: 'Reports', icon: Flag, badge: (n) => n.open_reports, badgeLabel: 'new reports' },
     ],
   },
   {
     label: 'Content',
     items: [
-      { to: '/admin/services', label: 'Service guides', icon: FileText },
+      { to: '/admin/services', label: 'Service guides', icon: FileText, badge: (n) => n.for_review + n.approved, badgeLabel: 'guides waiting' },
       { to: '/admin/agencies', label: 'Agencies', icon: Landmark },
       { to: '/admin/offices', label: 'Offices', icon: MapPin },
       { to: '/admin/categories', label: 'Categories', icon: LayoutGrid },
+      { to: '/admin/faqs', label: 'FAQ', icon: MessageCircleQuestion },
+      { to: '/admin/notices', label: 'Notices', icon: Megaphone },
     ],
   },
   {
@@ -45,7 +51,7 @@ const NAV_GROUPS = [
   },
 ]
 
-function Sidebar({ admin, onNavigate }) {
+function Sidebar({ admin, counts, onNavigate }) {
   return (
     <nav aria-label="Admin" className="flex h-full flex-col overflow-y-auto p-4">
       <Link to="/admin" onClick={onNavigate} className="mb-6 flex items-center gap-3 px-2 py-1">
@@ -62,7 +68,7 @@ function Sidebar({ admin, onNavigate }) {
             {group.label && <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-bay-300/70">{group.label}</p>}
             {group.items
               .filter((item) => !item.superAdminOnly || isSuperAdmin(admin))
-              .map(({ to, label, icon: Icon, end }) => (
+              .map(({ to, label, icon: Icon, end, badge, badgeLabel }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -76,6 +82,12 @@ function Sidebar({ admin, onNavigate }) {
                 >
                   <Icon size={18} aria-hidden="true" />
                   {label}
+                  {badge && counts && badge(counts) > 0 && (
+                    <span className="ml-auto rounded-full bg-sun-400 px-1.5 text-xs font-bold tabular-nums text-bay-950">
+                      {badge(counts)}
+                      <span className="sr-only"> {badgeLabel}</span>
+                    </span>
+                  )}
                 </NavLink>
               ))}
           </div>
@@ -98,6 +110,8 @@ export default function AdminLayout() {
   const { admin, logout } = useAdminAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const { pathname } = useLocation()
+  const { data: counts } = useAdminQuery(adminApi.notifications, [pathname])
 
   async function handleLogout() {
     setSigningOut(true)
@@ -107,14 +121,14 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-stone-50 lg:pl-64">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 bg-bay-950 lg:block">
-        <Sidebar admin={admin} />
+        <Sidebar admin={admin} counts={counts} />
       </aside>
 
       {menuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <button type="button" aria-label="Close menu" className="absolute inset-0 bg-bay-950/50" onClick={() => setMenuOpen(false)} />
           <aside className="relative h-full w-64 bg-bay-950">
-            <Sidebar admin={admin} onNavigate={() => setMenuOpen(false)} />
+            <Sidebar admin={admin} counts={counts} onNavigate={() => setMenuOpen(false)} />
           </aside>
         </div>
       )}

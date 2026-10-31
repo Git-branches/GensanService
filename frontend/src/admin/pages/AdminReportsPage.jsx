@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ExternalLink, Eye, Mail, Pencil } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
-import { reasonLabel } from '../../utils/reports'
+import { REPORT_REASONS, reasonLabel } from '../../utils/reports'
 import { adminApi } from '../api'
 import { timeAgo } from '../activity'
 import { canEditContent, useAdminAuth } from '../auth'
@@ -14,23 +14,25 @@ import { Field, IconAction, PageTitle, SURFACE, inputClass } from '../components
 
 const TABS = [
   { value: 'open', label: 'Open' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'reviewing', label: 'Under review' },
   { value: 'resolved', label: 'Resolved' },
-  { value: 'dismissed', label: 'Dismissed' },
+  { value: 'dismissed', label: 'Rejected' },
   { value: '', label: 'All' },
 ]
 
 const STATUS = {
-  pending: { label: 'New', className: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' },
-  reviewing: { label: 'Reviewing', className: 'bg-sun-50 text-sun-800', dot: 'bg-sun-500' },
+  pending: { label: 'Pending', className: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' },
+  reviewing: { label: 'Under review', className: 'bg-sun-50 text-sun-800', dot: 'bg-sun-500' },
   resolved: { label: 'Resolved', className: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
-  dismissed: { label: 'Dismissed', className: 'bg-stone-100 text-stone-600', dot: 'bg-stone-400' },
+  dismissed: { label: 'Rejected', className: 'bg-stone-100 text-stone-600', dot: 'bg-stone-400' },
 }
 
 const STATUS_OPTIONS = [
-  { value: 'pending', label: 'New', hint: 'Not looked at yet' },
-  { value: 'reviewing', label: 'Reviewing', hint: 'Checking official sources' },
+  { value: 'pending', label: 'Pending', hint: 'Not looked at yet' },
+  { value: 'reviewing', label: 'Under review', hint: 'Checking official sources' },
   { value: 'resolved', label: 'Resolved', hint: 'Guide was corrected' },
-  { value: 'dismissed', label: 'Dismissed', hint: 'Guide was already correct, or spam' },
+  { value: 'dismissed', label: 'Rejected', hint: 'Guide was already correct, or spam' },
 ]
 
 function ReportStatus({ status }) {
@@ -48,7 +50,7 @@ function ReviewModal({ report, canEditGuides, onClose, onSaved }) {
     <FormModal
       title="Review report"
       description={`Received ${timeAgo(report.created_at)}`}
-      initialValues={{ status: report.status === 'pending' ? 'reviewing' : report.status, admin_note: report.admin_note ?? '' }}
+      initialValues={{ status: report.status === 'pending' ? 'reviewing' : report.status, admin_note: report.admin_note ?? '', resolution: report.resolution ?? '' }}
       submitLabel="Save review"
       onClose={onClose}
       onSaved={onSaved}
@@ -111,8 +113,12 @@ function ReviewModal({ report, canEditGuides, onClose, onSaved }) {
             {errors.status && <p className="mt-1 text-xs font-medium text-red-600">{errors.status}</p>}
           </fieldset>
 
-          <Field id="report-note" label="Internal note" hint="Only visible to admins, e.g. what you changed or why it was dismissed." error={errors.admin_note}>
-            <textarea id="report-note" rows={3} maxLength={1000} value={values.admin_note} onChange={(e) => set({ admin_note: e.target.value })} className={inputClass} />
+          <Field id="report-note" label="Internal note" hint="Only visible to admins. Notes while you check the report." error={errors.admin_note}>
+            <textarea id="report-note" rows={2} maxLength={1000} value={values.admin_note} onChange={(e) => set({ admin_note: e.target.value })} className={inputClass} />
+          </Field>
+
+          <Field id="report-resolution" label="Resolution" hint="Only visible to admins. What was changed, or why it was rejected." error={errors.resolution}>
+            <textarea id="report-resolution" rows={2} maxLength={1000} value={values.resolution} onChange={(e) => set({ resolution: e.target.value })} className={inputClass} />
           </Field>
         </>
       )}
@@ -128,6 +134,8 @@ export default function AdminReportsPage() {
   const [toast, setToast] = useState('')
   const dismissToast = useCallback(() => setToast(''), [])
   const { data, error, loading, reload } = useAdminQuery(() => adminApi.reports(tab), [tab])
+  const [reason, setReason] = useState('')
+  const rows = data?.reports.filter((report) => !reason || report.reason === reason)
 
   const counts = data?.counts
   const tabCount = (value) => {
@@ -149,7 +157,7 @@ export default function AdminReportsPage() {
         </>
       ),
     },
-    { key: 'status', label: 'Status', className: 'md:w-32', render: (r) => <ReportStatus status={r.status} /> },
+    { key: 'status', label: 'Status', className: 'md:w-36', render: (r) => <ReportStatus status={r.status} /> },
     {
       key: 'received',
       label: 'Received',
@@ -201,12 +209,19 @@ export default function AdminReportsPage() {
             </button>
           ))}
         </div>
+        <label className="sr-only" htmlFor="report-reason">Issue type</label>
+        <select id="report-reason" value={reason} onChange={(e) => setReason(e.target.value)} className={`${inputClass} w-auto`}>
+          <option value="">All issue types</option>
+          {REPORT_REASONS.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
       </div>
 
       <DataTable
         loading={loading}
         error={error}
-        rows={data?.reports}
+        rows={rows}
         columns={columns}
         emptyText={tab === 'open' ? 'No open reports. Nice work!' : 'No reports here.'}
       />

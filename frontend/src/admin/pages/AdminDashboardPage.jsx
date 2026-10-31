@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, CheckCircle2, FileText, Flag, MapPin, PenLine } from 'lucide-react'
+import { AlarmClock, AlertTriangle, ArrowRight, CheckCheck, CheckCircle2, ClipboardCheck, FileText, Flag, Landmark, MapPin, PenLine } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
 import { reasonLabel } from '../../utils/reports'
@@ -76,14 +76,18 @@ export default function AdminDashboardPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <PageTitle title={`Welcome back, ${admin?.name?.split(' ')[0] ?? ''}`} description="Here's what needs attention across the guides." />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Published guides" value={counts.published} icon={FileText} tone="green" to="/admin/services" hint={`${counts.draft} draft${counts.draft === 1 ? '' : 's'} · ${counts.archived} archived`} />
-        <StatCard label="Need re-verification" value={counts.needs_review} icon={AlertTriangle} tone="sun" to="/admin/services" hint="Not checked in 6+ months" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Published guides" value={counts.published} icon={FileText} tone="green" to="/admin/services?status=published" hint={`${counts.draft} draft${counts.draft === 1 ? '' : 's'} · ${counts.archived} archived`} />
+        <StatCard label="Waiting for review" value={counts.for_review} icon={ClipboardCheck} tone="sun" to="/admin/services?status=for_review" hint="Submitted by editors" />
+        <StatCard label="Ready to publish" value={counts.approved} icon={CheckCheck} tone="bay" to="/admin/services?status=approved" hint="Approved by a reviewer" />
+        <StatCard label="Need verification" value={counts.needs_review} icon={AlertTriangle} tone="sun" to="/admin/services?needs_review=1" hint="Not confirmed, or past review" />
+        <StatCard label="Overdue reviews" value={counts.overdue} icon={AlarmClock} tone="rose" to="/admin/services?overdue=1" hint="Past the next review date" />
         <StatCard label="Open reports" value={counts.open_reports} icon={Flag} tone="rose" to="/admin/reports" hint="From residents" />
-        <StatCard label="Unverified offices" value={counts.unverified_offices} icon={MapPin} tone="bay" to="/admin/offices" hint="Details not yet confirmed" />
+        <StatCard label="Agencies" value={counts.agencies} icon={Landmark} tone="bay" to="/admin/agencies" hint="Active in the directory" />
+        <StatCard label="Offices" value={counts.offices} icon={MapPin} tone="bay" to="/admin/offices" hint={`${counts.unverified_offices} not yet verified`} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Open reports" action={{ to: '/admin/reports', label: 'All reports' }}>
           {data.open_reports.length === 0 ? (
             <EmptyLine>No open reports.</EmptyLine>
@@ -103,9 +107,29 @@ export default function AdminDashboardPage() {
           )}
         </Panel>
 
-        <Panel title="Needs re-verification" action={{ to: '/admin/services', label: 'All guides' }}>
+        <Panel title="Waiting for review" action={{ to: '/admin/services?status=for_review', label: 'See all' }}>
+          {data.in_review.length === 0 ? (
+            <EmptyLine>Nothing is waiting for review.</EmptyLine>
+          ) : (
+            <ul className="space-y-1">
+              {data.in_review.map((service) => (
+                <li key={service.id}>
+                  <Link to={`/admin/services/${service.id}`} className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 hover:bg-stone-50">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-bay-900">{service.title}</span>
+                      <span className="block text-xs text-stone-500">{service.agency_acronym} · updated {timeAgo(service.updated_at)}</span>
+                    </span>
+                    <StatusBadge status={service.status} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel title="Needs verification" action={{ to: '/admin/services?needs_review=1', label: 'See all' }}>
           {data.needs_review.length === 0 ? (
-            <EmptyLine>Every guide was verified in the last 6 months.</EmptyLine>
+            <EmptyLine>Every guide is verified and up to date.</EmptyLine>
           ) : (
             <ul className="space-y-1">
               {data.needs_review.map((service) => (
@@ -114,7 +138,7 @@ export default function AdminDashboardPage() {
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-bay-900">{service.title}</span>
                       <span className="block text-xs text-stone-500">
-                        {service.agency_acronym} · {service.last_verified_at ? `Last verified ${formatDate(service.last_verified_at)}` : 'Never verified'}
+                        {service.agency_acronym} · {service.last_verified_at ? `Last checked ${formatDate(service.last_verified_at)}` : 'Never checked'}
                       </span>
                     </span>
                     <StatusBadge status={service.status} />
@@ -125,9 +149,26 @@ export default function AdminDashboardPage() {
           )}
         </Panel>
 
-        <Panel title="Drafts in progress" action={{ to: '/admin/services', label: 'All guides' }}>
+        <Panel title="Recently published" action={{ to: '/admin/services?status=published', label: 'See all' }}>
+          {data.recently_published.length === 0 ? (
+            <EmptyLine>No published guides yet.</EmptyLine>
+          ) : (
+            <ul className="space-y-1">
+              {data.recently_published.map((service) => (
+                <li key={service.id}>
+                  <Link to={`/admin/services/${service.id}`} className="block rounded-lg px-3 py-2.5 hover:bg-stone-50">
+                    <span className="block truncate text-sm font-semibold text-bay-900">{service.title}</span>
+                    <span className="block text-xs text-stone-500">{service.agency_acronym} · published {timeAgo(service.published_at)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel title="Drafts in progress" action={{ to: '/admin/services?status=draft', label: 'See all' }}>
           {data.drafts.length === 0 ? (
-            <EmptyLine>No drafts waiting to be published.</EmptyLine>
+            <EmptyLine>No drafts in progress.</EmptyLine>
           ) : (
             <ul className="space-y-1">
               {data.drafts.map((draft) => (
@@ -156,7 +197,7 @@ export default function AdminDashboardPage() {
                 <li key={item.id} className="flex gap-3 px-1 text-sm">
                   <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-bay-300" />
                   <span>
-                    <span className="font-semibold text-bay-950">{item.admin_name}</span>{' '}
+                    <span className="font-semibold text-bay-950">{item.admin_name ?? 'Someone'}</span>{' '}
                     <span className="text-stone-700">{describeActivity(item)}</span>
                     <span className="block text-xs text-stone-400">{timeAgo(item.created_at)}</span>
                   </span>

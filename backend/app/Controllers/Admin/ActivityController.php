@@ -10,7 +10,7 @@ use PDO;
 class ActivityController
 {
     private const PER_PAGE = 25;
-    private const TYPES = ['auth', 'service', 'agency', 'office', 'category', 'report', 'admin'];
+    private const TYPES = ['auth', 'service', 'agency', 'office', 'category', 'report', 'admin', 'faq', 'notice'];
 
     public function index(): void
     {
@@ -30,6 +30,16 @@ class ActivityController
         if ($adminId) {
             $conditions[] = 'l.admin_id = :admin_id';
             $bindings['admin_id'] = $adminId;
+        }
+        $from = (string) ($_GET['from'] ?? '');
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+            $conditions[] = 'l.created_at >= :from';
+            $bindings['from'] = $from;
+        }
+        $to = (string) ($_GET['to'] ?? '');
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
+            $conditions[] = 'l.created_at < (:to + INTERVAL 1 DAY)';
+            $bindings['to'] = $to;
         }
         $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10000]]) ?: 1;
 
@@ -53,7 +63,7 @@ class ActivityController
         $stmt = $pdo->prepare(
             "SELECT l.id, l.action, l.entity_type, l.entity_id, l.details, l.ip_address, l.created_at, a.name AS admin_name
              FROM admin_activity_logs l
-             JOIN admins a ON a.id = l.admin_id
+             LEFT JOIN admins a ON a.id = l.admin_id
              {$where}
              ORDER BY l.id DESC
              LIMIT {$limit} OFFSET {$offset}"

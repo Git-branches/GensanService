@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Auth;
+use App\Controllers\ServiceController as PublicServiceController;
 use App\Database;
 use App\Request;
 use App\Response;
@@ -54,9 +55,17 @@ class ServiceController
         if ($needsReview) {
             $conditions[] = "s.status <> 'archived' AND " . self::NEEDS_VERIFICATION;
         }
+        $verification = (string) ($_GET['verification'] ?? '');
+        if (in_array($verification, self::VERIFICATION_STATUSES, true)) {
+            $conditions[] = 's.verification_status = :verification';
+            $bindings['verification'] = $verification;
+        }
+        if (($_GET['overdue'] ?? '') === '1') {
+            $conditions[] = "s.status <> 'archived' AND s.next_review_at < CURDATE()";
+        }
 
         $stmt = Database::connection()->prepare(
-            'SELECT s.id, s.title, s.slug, s.status, s.last_verified_at, s.verification_status, s.updated_at, s.published_at,
+            'SELECT s.id, s.title, s.slug, s.status, s.last_verified_at, s.verification_status, s.next_review_at, s.updated_at, s.published_at,
                     a.acronym AS agency_acronym, a.name AS agency_name, c.name AS category_name,
                     u.name AS updated_by_name,
                     ' . self::NEEDS_VERIFICATION . ' AS needs_review
@@ -139,6 +148,46 @@ class ServiceController
         Response::success($this->load($id));
     }
 
+    public function preview(array $params): void
+    {
+        Auth::requireAdmin();
+        (new PublicServiceController())->preview((int) $params['id']);
+    }
+
+    /** Copies a guide into a new draft. The copy starts unverified: it has not been checked. */
+    public function duplicate(array $params): void
+    {
+        $admin = Auth::requireAdmin(self::EDITORS);
+        $source = $this->load((int) $params['id']);
+        $pdo = Database::connection();
+
+        $data = $source;
+        $data['title'] = mb_substr('Copy of ' . $source['title'], 0, 200);
+        $v = new Validator();
+        $data['slug'] = Slug::unique($pdo, 'services', null, $data['title'], null, $v);
+        $v->failIfErrors();
+        $data['requirements'] = array_map(fn ($r) => ['id' => null, 'is_optional' => (int) $r['is_optional']] + $r, $source['requirements']);
+
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare(
+                "INSERT INTO services (category_id, agency_id, title, slug, summary, description, search_keywords, fee_description,
+                                       processing_time_description, status, created_by, updated_by)
+                 VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :keywords, :fee,
+                         :processing, 'draft', :admin, :admin2)"
+            )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'admin2' => $admin['id']]);
+            $id = (int) $pdo->lastInsertId();
+            $this->syncChildren($pdo, $id, $data);
+            ActivityLogger::log((int) $admin['id'], 'service.duplicated', 'service', $id, ['title' => $source['title']]);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        Response::success($this->load($id), 201);
+    }
+
     public function revisions(array $params): void
     {
         Auth::requireAdmin();
@@ -201,7 +250,7 @@ class ServiceController
             $v->add('verification_status', 'Choose a verification status.');
         }
         $checked = $v->date($body['last_verified_at'] ?? null, 'last_verified_at');
-        $nextReview = $v->date($body['next_review_at'] ?? null, 'next_review_at');
+        $nextReview = $v->date($body['next_review_at'] ?? null, 'next_review_at', false);
         $notes = $v->string($body['verification_notes'] ?? null, 'verification_notes', 1000);
 
         if ($checked !== null && $checked > date('Y-m-d')) {
@@ -244,7 +293,8 @@ class ServiceController
         $admin = Auth::requireAdmin();
         $id = (int) $params['id'];
         $service = $this->load($id);
-        $status = (string) (Request::json()['status'] ?? '');
+        $body = Request::json();
+        $status = (string) ($body['status'] ?? '');
 
         $allowedRoles = self::TRANSITIONS[$service['status']][$status] ?? null;
         if ($allowedRoles === null) {
@@ -258,13 +308,15 @@ class ServiceController
         }
 
         Database::connection()->prepare(
-            "UPDATE services SET status = :status, updated_by = :admin,
+            "UPDATE services SET status = :status, updated_by = :admin, review_note = :note,
                     published_at = IF(:published = 1, COALESCE(published_at, NOW()), published_at),
                     archived_at = IF(:archived = 1, NOW(), NULL)
              WHERE id = :id"
         )->execute([
             'status' => $status,
             'admin' => $admin['id'],
+            // Kept only while a guide is back in draft, so the editor can see why.
+            'note' => $status === 'draft' ? (mb_substr(trim((string) ($body['note'] ?? '')), 0, 500) ?: null) : null,
             'published' => $status === 'published' ? 1 : 0,
             'archived' => $status === 'archived' ? 1 : 0,
             'id' => $id,
@@ -346,7 +398,7 @@ class ServiceController
         $stmt = $pdo->prepare(
             'SELECT s.id, s.category_id, s.agency_id, s.title, s.slug, s.summary, s.description, s.search_keywords, s.fee_description,
                     s.processing_time_description, s.status, s.last_verified_at, s.verification_status,
-                    s.next_review_at, s.verification_notes, s.published_at, s.archived_at,
+                    s.next_review_at, s.verification_notes, s.review_note, s.published_at, s.archived_at,
                     s.created_at, s.updated_at, c.slug AS category_slug, u.name AS updated_by_name
              FROM services s
              JOIN categories c ON c.id = s.category_id

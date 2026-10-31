@@ -44,6 +44,10 @@ class AuthController
         $valid = password_verify($password, $admin['password_hash'] ?? self::DUMMY_HASH);
         if (!$admin || !$valid || !(int) $admin['is_active']) {
             LoginThrottle::record($email, $ip, false);
+            // Only a real email address is kept, in case a password was typed into the wrong field.
+            ActivityLogger::log($admin ? (int) $admin['id'] : null, 'auth.login_failed', null, null, [
+                'email' => filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : '(not an email address)',
+            ]);
             Response::error('Incorrect email or password.', 401);
         }
 

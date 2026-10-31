@@ -1,9 +1,9 @@
 import { useCallback, useId, useState } from 'react'
-import { ExternalLink, Pencil, Plus, Upload } from 'lucide-react'
+import { BadgeCheck, ExternalLink, Pencil, Plus, Upload } from 'lucide-react'
 import AgencyLogo from '../../components/AgencyLogo'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { adminApi } from '../api'
-import { canEditContent, useAdminAuth } from '../auth'
+import { canEditContent, canReview, useAdminAuth } from '../auth'
 import { useAdminList } from '../useAdminList'
 import FormModal from '../components/FormModal'
 import ResourceTable from '../components/ResourceTable'
@@ -191,10 +191,48 @@ function AgencyFormModal({ agency, readOnly, onClose, onSaved, onLogoChange }) {
   )
 }
 
+const VERIFICATION = {
+  verified: 'Verified',
+  needs_review: 'Needs review',
+  unverified: 'Unverified',
+  outdated: 'Outdated',
+}
+
+function VerificationModal({ agency, onClose, onSaved }) {
+  return (
+    <FormModal
+      title={`Verification: ${agency.acronym || agency.name}`}
+      description="Shown on the agency page. Set this after checking the agency's details against official sources."
+      initialValues={{ verification_status: agency.verification_status, last_verified_at: agency.last_verified_at ?? '' }}
+      submitLabel="Save verification"
+      onClose={onClose}
+      onSaved={onSaved}
+      onSubmit={(values) => adminApi.setAgencyVerification(agency.id, { ...values, last_verified_at: values.last_verified_at || null })}
+    >
+      {(values, set, errors) => (
+        <>
+          <Field id="agency-verification" label="Status" error={errors.verification_status}>
+            <select id="agency-verification" data-autofocus value={values.verification_status} onChange={(e) => set({ verification_status: e.target.value })} className={inputClass}>
+              {Object.entries(VERIFICATION).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </Field>
+          <Field id="agency-checked" label="Last checked on" error={errors.last_verified_at}>
+            <input id="agency-checked" type="date" value={values.last_verified_at} aria-invalid={Boolean(errors.last_verified_at)} onChange={(e) => set({ last_verified_at: e.target.value })} className={`${inputClass} sm:max-w-xs`} />
+          </Field>
+        </>
+      )}
+    </FormModal>
+  )
+}
+
 export default function AdminAgenciesPage() {
   usePageTitle('Agencies · Admin')
   const { admin } = useAdminAuth()
   const canEdit = canEditContent(admin)
+  const canVerify = canReview(admin)
+  const [verifying, setVerifying] = useState(null)
   const { data, error, loading, reload } = useAdminList('agencies')
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState(null)
@@ -226,6 +264,7 @@ export default function AdminAgenciesPage() {
     { key: 'type', label: 'Type', hideBelow: 'xl', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.is_local_government ? 'Local government' : 'National'}</span> },
     { key: 'guides', label: 'Live guides', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{a.published_count} <span className="text-stone-400">of {a.service_count}</span></span> },
     { key: 'offices', label: 'Offices', hideBelow: 'xl', render: (a) => <span className="text-stone-700">{a.office_count}</span> },
+    { key: 'verification', label: 'Verification', hideBelow: 'lg', className: 'whitespace-nowrap', render: (a) => <span className="text-stone-700">{VERIFICATION[a.verification_status]}</span> },
     { key: 'status', label: 'Status', render: (a) => <ActiveBadge active={Boolean(a.is_active)} /> },
     {
       key: 'actions',
@@ -236,6 +275,11 @@ export default function AdminAgenciesPage() {
           <IconAction label={`${canEdit ? 'Edit' : 'View'} ${a.name}`} onClick={() => setEditing(a)}>
             <Pencil size={16} />
           </IconAction>
+          {canVerify && (
+            <IconAction label={`Verify ${a.name}`} onClick={() => setVerifying(a)}>
+              <BadgeCheck size={16} />
+            </IconAction>
+          )}
         </div>
       ),
     },
@@ -274,6 +318,17 @@ export default function AdminAgenciesPage() {
           onSaved={(message) => {
             setEditing(null)
             setToast(message)
+            reload()
+          }}
+        />
+      )}
+      {verifying && (
+        <VerificationModal
+          agency={verifying}
+          onClose={() => setVerifying(null)}
+          onSaved={() => {
+            setVerifying(null)
+            setToast('Verification saved.')
             reload()
           }}
         />

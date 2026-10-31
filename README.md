@@ -19,7 +19,6 @@ The project started as *GenSan Service Navigator*. The GitHub repository (`Gensa
 - [Usage](#usage)
 - [Deployment](#deployment)
 - [Roadmap](#roadmap)
-- [API](#api)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
@@ -58,19 +57,22 @@ For residents (no account needed):
 
 For administrators (`/admin`):
 
-- A dashboard of guides needing re-verification (not checked in 6+ months), open reports, drafts, and recent activity.
+- A dashboard of published guides, guides waiting for review or ready to publish, guides needing verification, overdue reviews, open reports, agencies, and offices, with recent activity. The sidebar shows a count beside anything that needs attention.
 - Create and edit service guides, then move them through review: Draft, For review, Approved, Published. Guides can also be unpublished, archived, and restored.
 - Set each guide's verification status (Verified, Needs review, Unverified, Outdated) and its next review date. Changing a verified guide sets it back to Needs review.
-- Every change to a guide keeps the previous version, which a super admin can restore through the API. The history screen is planned.
-- Manage agencies (with logos), offices, and categories. Records are deactivated, never deleted.
-- Review residents' reports, and see an activity log of every sign-in and change.
+- Every change to a guide keeps the previous version. Anyone can compare versions, and a super admin can restore one. Restoring keeps a copy of what it replaces.
+- Preview a guide as residents will see it before it is published, duplicate a guide as a new unverified draft, and leave a note when sending a guide back.
+- Manage agencies (with logos), offices, and categories. Records are deactivated, never deleted. Agencies have their own verification status.
+- Manage the FAQ in all four languages. A language left blank shows the English text.
+- Post notices that show as a banner across the public site, with optional start and end times. A super admin can also replace the whole site with a maintenance notice, which must have an end time. The admin panel keeps working during maintenance.
+- Review residents' reports and record how each was resolved. See an activity log of every sign-in, failed sign-in, and change, filtered by date. Passwords are never logged.
 - Manage admin accounts and roles (super admins only), and change your own password.
 
 | Role | Can do |
 |---|---|
 | Super admin | Everything, including publishing and managing admin accounts |
-| Editor | Create and change draft guides, submit them for review, manage agencies and offices, handle reports |
-| Reviewer | Approve guides or send them back, set verification, handle reports |
+| Editor | Create and change draft guides, submit them for review, manage agencies, offices, the FAQ, and notices, handle reports |
+| Reviewer | Approve guides or send them back, set verification on guides and agencies, handle reports |
 
 ### Information accuracy
 
@@ -140,7 +142,7 @@ npm install
 
 To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, and `019_add_resident_features.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, `019_add_resident_features.sql`, and `020_add_admin_tools.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
 
 ## Usage
 
@@ -217,6 +219,7 @@ node --test "backend/tests/*.test.mjs"
 - [ ] Blaan, Maguindanaon, and Maranao translations
 - [x] Guide review workflow, verification status, and version history
 - [x] Site-wide search, FAQ, privacy policy, and share and print actions
+- [x] Admin version history, preview, FAQ and notice management, agency verification, and alerts
 - [ ] Automated tests for the rest of the API
 - [ ] Add and verify real service guides and office details
 

@@ -3,6 +3,7 @@ import { ExternalLink, Mail, MessageCircle, Phone } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import { AgencyPresence, AgencyTypeBadge } from '../components/AgencyCard'
 import ServiceCard from '../components/ServiceCard'
+import VerificationBadge from '../components/VerificationBadge'
 import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -72,6 +73,7 @@ export default function AgencyDetailPage() {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <AgencyTypeBadge isLocal={Boolean(agency.is_local_government)} />
           <AgencyPresence presence={agency.presence} />
+          <VerificationBadge status={agency.verification_status} date={agency.last_verified_at} />
           {agency.official_website && (
             <a
               href={agency.official_website}

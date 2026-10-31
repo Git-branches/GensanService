@@ -232,17 +232,19 @@ function Reminder({ agencyAcronym }) {
   )
 }
 
-export default function ServiceDetailPage() {
+// loadGuide is set by the admin preview, which shows a guide residents may not see yet.
+export default function ServiceDetailPage({ loadGuide }) {
   const { t } = useI18n()
   const { slug } = useParams()
-  const { data: service, error, loading } = useFetch(() => getService(slug), [slug])
+  const { data: service, error, loading } = useFetch(() => (loadGuide ? loadGuide() : getService(slug)), [slug, loadGuide])
+  const preview = Boolean(loadGuide)
   usePageTitle(service?.title ?? t('detail.pageTitle'))
 
   useEffect(() => {
-    if (!service) return
+    if (!service || preview) return
     addRecentlyViewed({ slug: service.slug, title: service.title })
     if (isFirstViewThisVisit(service.slug)) recordView(service.slug).catch(() => {})
-  }, [service])
+  }, [service, preview])
 
   if (loading) return <LoadingState label={t('detail.loading')} />
   if (error) {
@@ -283,7 +285,7 @@ export default function ServiceDetailPage() {
         {service.verification_status !== 'verified' && (
           <p className="mt-3 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
         )}
-        <GuideActions title={service.title} />
+        {!preview && <GuideActions title={service.title} />}
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
@@ -352,7 +354,7 @@ export default function ServiceDetailPage() {
             <div className="space-y-4 lg:hidden">
               <Sources sources={service.sources} />
               <Reminder agencyAcronym={service.agency_acronym} />
-              <ReportIssue slug={service.slug} serviceTitle={service.title} />
+              {!preview && <ReportIssue slug={service.slug} serviceTitle={service.title} />}
             </div>
           </div>
 
@@ -380,7 +382,7 @@ export default function ServiceDetailPage() {
 
               <Sources sources={service.sources} />
               <Reminder agencyAcronym={service.agency_acronym} />
-              <ReportIssue slug={service.slug} serviceTitle={service.title} />
+              {!preview && <ReportIssue slug={service.slug} serviceTitle={service.title} />}
             </div>
           </aside>
         </div>

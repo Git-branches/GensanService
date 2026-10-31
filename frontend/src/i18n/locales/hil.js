@@ -332,6 +332,11 @@ items: [
       accuracy: 'Kahustuhan kag report',
     },
   },
+  notices: {
+    info: 'Pahibalo',
+    maintenance: 'Maintenance',
+    emergency: 'Emerhensya nga pahibalo',
+  },
   notFound: {
     pageTitle: 'Wala makita ang pahina',
     title: 'Indi namon makita ina nga pahina',

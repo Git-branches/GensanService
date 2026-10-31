@@ -332,6 +332,11 @@ items: [
       accuracy: 'Katukma ug report',
     },
   },
+  notices: {
+    info: 'Pahibalo',
+    maintenance: 'Maintenance',
+    emergency: 'Emerhensya nga pahibalo',
+  },
   notFound: {
     pageTitle: 'Wala makit-i ang panid',
     title: 'Wala namo makit-i kana nga panid',

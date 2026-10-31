@@ -332,6 +332,11 @@ items: [
       accuracy: 'Katumpakan at report',
     },
   },
+  notices: {
+    info: 'Paunawa',
+    maintenance: 'Maintenance',
+    emergency: 'Emergency na paunawa',
+  },
   notFound: {
     pageTitle: 'Hindi nahanap ang pahina',
     title: 'Hindi namin mahanap ang pahinang iyan',

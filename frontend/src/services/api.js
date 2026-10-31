@@ -34,6 +34,10 @@ export function recordView(slug) {
   return request(`/services/${encodeURIComponent(slug)}/view`, { method: 'POST' })
 }
 
+export function getAnnouncements() {
+  return request('/announcements')
+}
+
 export function getStats() {
   return request('/stats')
 }

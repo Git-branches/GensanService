@@ -29,7 +29,7 @@ class ReportController
 
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
-            "SELECT r.id, r.reason, r.message, r.reporter_email, r.status, r.admin_note, r.created_at, r.resolved_at,
+            "SELECT r.id, r.reason, r.message, r.reporter_email, r.status, r.admin_note, r.resolution, r.created_at, r.resolved_at,
                     s.id AS service_id, s.title AS service_title, s.slug AS service_slug, s.status AS service_status,
                     a.name AS resolved_by_name
              FROM content_reports r
@@ -68,16 +68,17 @@ class ReportController
             $v->add('status', 'Choose a valid status.');
         }
         $note = $v->string($body['admin_note'] ?? null, 'admin_note', 1000);
+        $resolution = $v->string($body['resolution'] ?? null, 'resolution', 1000);
         $v->failIfErrors();
 
         $closed = in_array($status, ['resolved', 'dismissed'], true);
         $pdo->prepare(
             'UPDATE content_reports
-             SET status = :status, admin_note = :note,
+             SET status = :status, admin_note = :note, resolution = :resolution,
                  resolved_by = IF(:closed = 1, :admin, NULL),
                  resolved_at = IF(:closed2 = 1, COALESCE(resolved_at, NOW()), NULL)
              WHERE id = :id'
-        )->execute(['status' => $status, 'note' => $note, 'closed' => $closed ? 1 : 0, 'closed2' => $closed ? 1 : 0, 'admin' => $admin['id'], 'id' => $id]);
+        )->execute(['status' => $status, 'note' => $note, 'resolution' => $resolution, 'closed' => $closed ? 1 : 0, 'closed2' => $closed ? 1 : 0, 'admin' => $admin['id'], 'id' => $id]);
 
         ActivityLogger::log((int) $admin['id'], 'report.status_changed', 'report', $id, [
             'service' => $report['title'],

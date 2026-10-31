@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { AlertTriangle, Archive, CheckCheck, ExternalLink, EyeOff, Pencil, Plus, RotateCcw, Send, Undo2 } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
@@ -139,8 +139,11 @@ export default function AdminServicesPage() {
   const isSuper = isSuperAdmin(admin)
   const [searchInput, setSearchInput] = useState('')
   const [q, setQ] = useState('')
-  const [status, setStatus] = useState('')
-  const [needsReview, setNeedsReview] = useState(false)
+  const [params] = useSearchParams()
+  const [status, setStatus] = useState(params.get('status') ?? '')
+  const [needsReview, setNeedsReview] = useState(params.get('needs_review') === '1')
+  const [overdue, setOverdue] = useState(params.get('overdue') === '1')
+  const [verification, setVerification] = useState('')
   const [creating, setCreating] = useState(false)
   const [pending, setPending] = useState(null)
   const [pendingError, setPendingError] = useState('')
@@ -154,8 +157,8 @@ export default function AdminServicesPage() {
   }, [searchInput])
 
   const { data: services, error, loading, reload } = useAdminQuery(
-    () => adminApi.listServices({ q, status, needsReview }),
-    [q, status, needsReview]
+    () => adminApi.listServices({ q, status, needsReview, verification, overdue }),
+    [q, status, needsReview, verification, overdue]
   )
   const { data: lookups } = useAdminQuery(adminApi.lookups, [])
 
@@ -309,6 +312,18 @@ export default function AdminServicesPage() {
           ))}
         </div>
         <label className="flex items-center gap-2 whitespace-nowrap px-1 text-sm font-medium text-stone-700">
+          <input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} className="h-4 w-4 accent-bay-700" />
+          Overdue
+        </label>
+        <label className="sr-only" htmlFor="verification-filter">Verification status</label>
+        <select id="verification-filter" value={verification} onChange={(e) => setVerification(e.target.value)} className={`${inputClass} w-auto`}>
+          <option value="">Any verification</option>
+          <option value="verified">Verified</option>
+          <option value="needs_review">Needs review</option>
+          <option value="unverified">Unverified</option>
+          <option value="outdated">Outdated</option>
+        </select>
+        <label className="flex items-center gap-2 text-sm text-stone-700">
           <input type="checkbox" checked={needsReview} onChange={(e) => setNeedsReview(e.target.checked)} className="h-4 w-4 accent-bay-700" />
           Needs re-verification
         </label>

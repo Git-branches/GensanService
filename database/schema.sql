@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS agencies (
     email VARCHAR(150) DEFAULT NULL,
     facebook_url VARCHAR(255) DEFAULT NULL,
     presence ENUM('physical_office', 'online_only', 'unconfirmed') NOT NULL DEFAULT 'unconfirmed',
+    verification_status ENUM('verified', 'needs_review', 'unverified', 'outdated') NOT NULL DEFAULT 'unverified',
+    last_verified_at DATE DEFAULT NULL,
     is_local_government TINYINT(1) NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,6 +107,7 @@ CREATE TABLE IF NOT EXISTS services (
     verification_status ENUM('verified', 'needs_review', 'unverified', 'outdated') NOT NULL DEFAULT 'unverified',
     next_review_at DATE DEFAULT NULL,
     verification_notes VARCHAR(1000) DEFAULT NULL,
+    review_note VARCHAR(500) DEFAULT NULL,
     created_by INT UNSIGNED DEFAULT NULL,
     updated_by INT UNSIGNED DEFAULT NULL,
     published_at TIMESTAMP NULL DEFAULT NULL,
@@ -287,9 +290,25 @@ CREATE TABLE IF NOT EXISTS user_checklist_progress (
 -- ---------------------------------------------------------------------------
 -- Administrator activity log
 -- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS announcements (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    message VARCHAR(1000) NOT NULL,
+    type ENUM('info', 'maintenance', 'emergency') NOT NULL DEFAULT 'info',
+    full_page TINYINT(1) NOT NULL DEFAULT 0,
+    starts_at DATETIME DEFAULT NULL,
+    ends_at DATETIME DEFAULT NULL,
+    is_published TINYINT(1) NOT NULL DEFAULT 0,
+    created_by INT UNSIGNED DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_announcements_admin FOREIGN KEY (created_by) REFERENCES admins(id) ON DELETE SET NULL,
+    KEY idx_announcements_live (is_published, starts_at, ends_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS admin_activity_logs (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    admin_id INT UNSIGNED NOT NULL,
+    admin_id INT UNSIGNED DEFAULT NULL,
     action VARCHAR(100) NOT NULL,
     entity_type VARCHAR(50) DEFAULT NULL,
     entity_id INT UNSIGNED DEFAULT NULL,
@@ -314,6 +333,7 @@ CREATE TABLE IF NOT EXISTS content_reports (
     message TEXT DEFAULT NULL,
     status ENUM('pending', 'reviewing', 'resolved', 'dismissed') NOT NULL DEFAULT 'pending',
     admin_note VARCHAR(1000) DEFAULT NULL,
+    resolution VARCHAR(1000) DEFAULT NULL,
     resolved_by INT UNSIGNED DEFAULT NULL,
     resolved_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

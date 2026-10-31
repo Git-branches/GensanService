@@ -53,16 +53,23 @@ export const adminApi = {
   login: (email, password) => request('/login', { method: 'POST', body: { email, password } }),
   logout: () => request('/logout', { method: 'POST' }),
   lookups: () => request('/lookups'),
-  listServices: ({ q, status, needsReview } = {}) =>
-    request(`/services${query({ q, status, needs_review: needsReview ? '1' : '' })}`),
+  listServices: ({ q, status, needsReview, verification, overdue } = {}) =>
+    request(`/services${query({ q, status, needs_review: needsReview ? '1' : '', verification, overdue: overdue ? '1' : '' })}`),
   getService: (id) => request(`/services/${encodeURIComponent(id)}`),
   createService: (data) => request('/services', { method: 'POST', body: data }),
   updateService: (id, data) => request(`/services/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
-  setServiceStatus: (id, status) =>
-    request(`/services/${encodeURIComponent(id)}/status`, { method: 'POST', body: { status } }),
+  setServiceStatus: (id, status, note) =>
+    request(`/services/${encodeURIComponent(id)}/status`, { method: 'POST', body: { status, note } }),
+  duplicateService: (id) => request(`/services/${encodeURIComponent(id)}/duplicate`, { method: 'POST', body: {} }),
+  previewService: (id) => request(`/services/${encodeURIComponent(id)}/preview`),
+  serviceRevisions: (id) => request(`/services/${encodeURIComponent(id)}/revisions`),
+  serviceRevision: (id, revisionId) => request(`/services/${encodeURIComponent(id)}/revisions/${encodeURIComponent(revisionId)}`),
+  restoreRevision: (id, revisionId) => request(`/services/${encodeURIComponent(id)}/revisions/${encodeURIComponent(revisionId)}/restore`, { method: 'POST', body: {} }),
+  setAgencyVerification: (id, data) => request(`/agencies/${encodeURIComponent(id)}/verification`, { method: 'POST', body: data }),
+  notifications: () => request('/notifications'),
   setServiceVerification: (id, data) => request(`/services/${encodeURIComponent(id)}/verification`, { method: 'POST', body: data }),
   dashboard: () => request('/dashboard'),
-  activity: ({ page, type, adminId } = {}) => request(`/activity${query({ page: page > 1 ? String(page) : '', type, admin_id: adminId })}`),
+  activity: ({ page, type, adminId, from, to } = {}) => request(`/activity${query({ page: page > 1 ? String(page) : '', type, admin_id: adminId, from, to })}`),
   reports: (status) => request(`/reports${query({ status })}`),
   updateReport: (id, data) => request(`/reports/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),
   admins: () => request('/admins'),

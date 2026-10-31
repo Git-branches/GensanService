@@ -8,7 +8,7 @@ use App\Request;
 class ActivityLogger
 {
     /** @param array<string, mixed>|null $details */
-    public static function log(int $adminId, string $action, ?string $entityType = null, ?int $entityId = null, ?array $details = null): void
+    public static function log(?int $adminId, string $action, ?string $entityType = null, ?int $entityId = null, ?array $details = null): void
     {
         Database::connection()->prepare(
             'INSERT INTO admin_activity_logs (admin_id, action, entity_type, entity_id, details, ip_address)

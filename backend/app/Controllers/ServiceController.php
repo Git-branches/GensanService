@@ -91,6 +91,17 @@ class ServiceController
 
     public function show(array $params): void
     {
+        $this->respond('s.slug = :key AND s.status = "published"', $params['slug']);
+    }
+
+    /** The resident view of any guide, for admins previewing an unpublished one. Callers must check access. */
+    public function preview(int $id): void
+    {
+        $this->respond('s.id = :key', $id);
+    }
+
+    private function respond(string $where, string|int $key): void
+    {
         $pdo = Database::connection();
 
         $stmt = $pdo->prepare(
@@ -103,9 +114,9 @@ class ServiceController
              FROM services s
              JOIN categories c ON c.id = s.category_id
              JOIN agencies a ON a.id = s.agency_id
-             WHERE s.slug = :slug AND s.status = "published"'
+             WHERE ' . $where
         );
-        $stmt->execute(['slug' => $params['slug']]);
+        $stmt->execute(['key' => $key]);
         $service = $stmt->fetch();
 
         if (!$service) {

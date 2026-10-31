@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { AlertCircle, ArrowLeft, CheckCircle2, ExternalLink, Info, Loader2 } from 'lucide-react'
+import { AlertCircle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Eye, Info, Loader2, MessageSquareWarning } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
 import { adminApi } from '../api'
 import { canEditContent, canReview, isSuperAdmin, useAdminAuth } from '../auth'
 import ConfirmDialog from '../components/ConfirmDialog'
 import ListEditor from '../components/ListEditor'
+import RevisionHistory from '../components/RevisionHistory'
 import { withKey } from '../components/listKeys'
 import VerificationCard from '../components/VerificationCard'
 import { Button, Card, Field, StatusBadge, inputClass } from '../components/ui'
@@ -126,6 +127,8 @@ export default function AdminServiceEditorPage() {
   const [service, setService] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [dirty, setDirty] = useState(false)
+  const [changeSummary, setChangeSummary] = useState('')
+  const [reviewNote, setReviewNote] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
   const [errors, setErrors] = useState({})
   const [banner, setBanner] = useState(() =>
@@ -213,6 +216,17 @@ export default function AdminServiceEditorPage() {
     }
   }
 
+  async function duplicate() {
+    setSaving('duplicate')
+    try {
+      const copy = await adminApi.duplicateService(service.id)
+      navigate(`/admin/services/${copy.id}`, { state: { flash: 'Copy created as a draft. It starts unverified.' } })
+    } catch (err) {
+      setBanner({ type: 'error', message: err.message })
+      setSaving(null)
+    }
+  }
+
   async function confirmPendingAction() {
     await save(confirmAction.status)
     setConfirmAction(null)
@@ -226,11 +240,13 @@ export default function AdminServiceEditorPage() {
       let saved = service
       if (!service || dirty) {
         saved = service
-          ? await adminApi.updateService(service.id, toPayload(form))
+          ? await adminApi.updateService(service.id, { ...toPayload(form), change_summary: changeSummary })
           : await adminApi.createService(toPayload(form))
       }
-      if (nextStatus) saved = await adminApi.setServiceStatus(saved.id, nextStatus)
+      if (nextStatus) saved = await adminApi.setServiceStatus(saved.id, nextStatus, reviewNote)
       setDirty(false)
+      setChangeSummary('')
+      setReviewNote('')
 
       if (!service) {
         navigate(`/admin/services/${saved.id}`, {
@@ -298,6 +314,18 @@ export default function AdminServiceEditorPage() {
             )}
           </p>
         </div>
+        {service && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Link to={`/admin/services/${service.id}/preview`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline">
+              <Eye size={14} aria-hidden="true" /> Preview
+            </Link>
+            {canEdit && (
+              <button type="button" disabled={saving !== null} onClick={duplicate} className="inline-flex items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline disabled:opacity-60">
+                <Copy size={14} aria-hidden="true" /> Duplicate
+              </button>
+            )}
+          </div>
+        )}
         {service?.status === 'published' && (
           <a
             href={`/services/${service.slug}`}
@@ -324,6 +352,13 @@ export default function AdminServiceEditorPage() {
             <CheckCircle2 size={18} aria-hidden="true" className="mt-0.5 shrink-0" />
           )}
           {banner.message}
+        </div>
+      )}
+
+      {service?.review_note && (
+        <div className="mt-5 flex items-start gap-2 rounded-r-lg border-l-4 border-sun-400 bg-sun-50/60 px-4 py-3 text-sm text-stone-800">
+          <MessageSquareWarning size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-sun-700" />
+          <p><strong className="font-bold text-bay-950">Sent back:</strong> {service.review_note}</p>
         </div>
       )}
 
@@ -567,10 +602,45 @@ export default function AdminServiceEditorPage() {
         </div>
       )}
 
+      {service && (
+        <div className="mt-6">
+          <RevisionHistory
+            service={service}
+            canRestore={isSuper}
+            onRestored={(restored) => {
+              setService(restored)
+              setForm(fromService(restored))
+              setDirty(false)
+              setBanner({ type: 'success', message: 'Earlier version restored.' })
+            }}
+          />
+        </div>
+      )}
+
       {(canEdit || canApprove) && (
         <div className="fixed inset-x-0 bottom-0 z-20 bg-white/95 shadow-[0_-8px_24px_-12px_rgba(10,38,51,0.18)] backdrop-blur lg:left-64">
           <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-            <p className="text-sm text-stone-500">{dirty ? 'You have unsaved changes.' : 'All changes saved.'}</p>
+            {service && dirty && !readOnly ? (
+              <input
+                aria-label="What changed? Optional, kept in the version history"
+                value={changeSummary}
+                maxLength={255}
+                placeholder="What changed? (optional)"
+                onChange={(e) => setChangeSummary(e.target.value)}
+                className={`${inputClass} max-w-xs`}
+              />
+            ) : status === 'for_review' || status === 'approved' ? (
+              <input
+                aria-label="Note for the editor if you send this back"
+                value={reviewNote}
+                maxLength={500}
+                placeholder="Note if sending back (optional)"
+                onChange={(e) => setReviewNote(e.target.value)}
+                className={`${inputClass} max-w-xs`}
+              />
+            ) : (
+              <p className="text-sm text-stone-500">{dirty ? 'You have unsaved changes.' : 'All changes saved.'}</p>
+            )}
             <div className="flex flex-wrap gap-2">
               {status === 'published' && isSuper && (
                 <>

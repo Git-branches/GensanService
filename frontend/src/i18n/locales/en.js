@@ -379,6 +379,11 @@ items: [
       },
     ],
   },
+  notices: {
+    info: 'Notice',
+    maintenance: 'Maintenance',
+    emergency: 'Emergency notice',
+  },
   notFound: {
     pageTitle: 'Page not found',
     kicker: 'Error 404',

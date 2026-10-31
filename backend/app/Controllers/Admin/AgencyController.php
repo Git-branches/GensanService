@@ -14,6 +14,7 @@ class AgencyController
 {
     private const EDITORS = ['super_admin', 'editor'];
     private const PRESENCE = ['physical_office', 'online_only', 'unconfirmed'];
+    private const VERIFICATION_STATUSES = ['verified', 'needs_review', 'unverified', 'outdated'];
 
     // Logos are re-encoded as small WebP files in public/uploads, served at /api/uploads like the API.
     private const LOGO_DIR = __DIR__ . '/../../../public/uploads/agencies';
@@ -26,7 +27,7 @@ class AgencyController
     {
         Auth::requireAdmin();
         $rows = Database::connection()->query(
-            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.hotline, a.email, a.facebook_url, a.presence,
+            "SELECT a.id, a.name, a.slug, a.acronym, a.description, a.logo_url, a.official_website, a.hotline, a.email, a.facebook_url, a.presence, a.verification_status, a.last_verified_at,
                     a.is_local_government, a.is_active,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id) AS service_count,
                     (SELECT COUNT(*) FROM services s WHERE s.agency_id = a.id AND s.status = 'published') AS published_count,
@@ -70,6 +71,31 @@ class AgencyController
 
         ActivityLogger::log((int) $admin['id'], 'agency.updated', 'agency', $id, ['name' => $data['name']]);
         Response::success(['id' => $id]);
+    }
+
+    /** Separate from editing, because editing an agency must never verify it. */
+    public function setVerification(array $params): void
+    {
+        $admin = Auth::requireAdmin(['super_admin', 'reviewer']);
+        $agency = $this->findOrFail((int) $params['id']);
+        $body = Request::json();
+
+        $v = new Validator();
+        $status = (string) ($body['verification_status'] ?? '');
+        if (!in_array($status, self::VERIFICATION_STATUSES, true)) {
+            $v->add('verification_status', 'Choose a verification status.');
+        }
+        $checked = $v->date($body['last_verified_at'] ?? null, 'last_verified_at');
+        if ($status === 'verified' && $checked === null) {
+            $v->add('last_verified_at', 'Enter the date these details were checked.');
+        }
+        $v->failIfErrors();
+
+        Database::connection()->prepare('UPDATE agencies SET verification_status = :status, last_verified_at = :checked WHERE id = :id')
+            ->execute(['status' => $status, 'checked' => $checked, 'id' => $agency['id']]);
+
+        ActivityLogger::log((int) $admin['id'], 'agency.verification_changed', 'agency', (int) $agency['id'], ['name' => $agency['name'], 'to' => $status]);
+        Response::success(['verification_status' => $status, 'last_verified_at' => $checked]);
     }
 
     public function uploadLogo(array $params): void

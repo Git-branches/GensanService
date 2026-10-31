@@ -11,8 +11,10 @@ export default function AdminActivityPage() {
   usePageTitle('Activity log · Admin')
   const [type, setType] = useState('')
   const [adminId, setAdminId] = useState('')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
   const [page, setPage] = useState(1)
-  const { data, error, loading } = useAdminQuery(() => adminApi.activity({ page, type, adminId }), [page, type, adminId])
+  const { data, error, loading } = useAdminQuery(() => adminApi.activity({ page, type, adminId, from, to }), [page, type, adminId, from, to])
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.per_page)) : 1
 
@@ -29,7 +31,7 @@ export default function AdminActivityPage() {
       label: 'Activity',
       render: (item) => (
         <span className="text-sm">
-          <span className="font-semibold text-bay-950">{item.admin_name}</span> <span className="text-stone-700">{describeActivity(item)}</span>
+          <span className="font-semibold text-bay-950">{item.admin_name ?? 'Someone'}</span> <span className="text-stone-700">{describeActivity(item)}</span>
         </span>
       ),
     },
@@ -68,6 +70,14 @@ export default function AdminActivityPage() {
             </option>
           ))}
         </select>
+        <label className="flex items-center gap-2 text-sm text-stone-600">
+          From
+          <input type="date" value={from} onChange={changeFilter(setFrom)} className={`${inputClass} w-auto`} />
+        </label>
+        <label className="flex items-center gap-2 text-sm text-stone-600">
+          To
+          <input type="date" value={to} onChange={changeFilter(setTo)} className={`${inputClass} w-auto`} />
+        </label>
         {data && <p className="ml-auto px-2 text-sm text-stone-500">{data.total} entries</p>}
       </div>
 
