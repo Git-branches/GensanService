@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T12:00:00+08:00",
+  "title": "Design System: Andam GenSan",
+  "extensions": {
+    "colorMeta": {
+      "deep-bay-navy": { "role": "primary", "displayName": "Deep Bay Navy", "canonical": "#102f54", "tonalRamp": ["#0a1f3a", "#102f54", "#194b80", "#2f72b0", "#5291c8", "#85b5dd", "#b5d2ec", "#eef5fb"] },
+      "action-blue": { "role": "primary", "displayName": "Action Blue", "canonical": "#194b80", "tonalRamp": ["#102f54", "#153d69", "#194b80", "#1f5c98", "#2f72b0", "#5291c8", "#b5d2ec", "#eef5fb"] },
+      "yellowfin-gold": { "role": "secondary", "displayName": "Yellowfin Gold", "canonical": "#f5b301", "tonalRamp": ["#663f10", "#925f08", "#b97d04", "#e0a106", "#f5b301", "#f5c451", "#ffe285", "#fffaeb"] },
+      "reef-blue": { "role": "tertiary", "displayName": "Reef Blue", "canonical": "#55c7f2" },
+      "bay-mist": { "role": "neutral", "displayName": "Bay Mist", "canonical": "#f3f8fb" },
+      "body-ink": { "role": "neutral", "displayName": "Body Ink", "canonical": "#1c1917", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#57534e", "#78716c", "#a8a29e", "#e7e5e4", "#fafaf9"] },
+      "ready-green": { "role": "status", "displayName": "Ready Green", "canonical": "#047857" },
+      "outdated-rose": { "role": "status", "displayName": "Outdated Rose", "canonical": "#9f1239" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The home page headline only." },
+      "headline": { "displayName": "Headline", "purpose": "Page and section headings." },
+      "title": { "displayName": "Title", "purpose": "Card titles such as guide and office names." },
+      "body": { "displayName": "Body", "purpose": "Reading text." },
+      "body-small": { "displayName": "Body Small", "purpose": "Secondary text only: summaries, metadata, and supporting notes." },
+      "label": { "displayName": "Label", "purpose": "Badges and metadata." }
+    },
+    "shadows": [
+      { "name": "hover-lift", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)", "purpose": "Cards a resident can open, on hover." },
+      { "name": "floating-panel", "value": "0 10px 15px -3px rgb(16 47 84 / 0.05), 0 4px 6px -4px rgb(16 47 84 / 0.05)", "purpose": "Search panels and suggestion lists." },
+      { "name": "dialog", "value": "0 25px 50px -12px rgb(10 31 58 / 0.3)", "purpose": "Dialogs and bottom sheets." }
+    ],
+    "motion": [
+      { "name": "fade-in", "value": "150ms ease-out", "purpose": "Overlays appearing." },
+      { "name": "modal-in", "value": "200ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Dialogs arriving." },
+      { "name": "color-state", "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Hover and state color changes." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action on any screen.",
+      "html": "<button class=\"ds-btn-primary\">Find a guide</button>",
+      "css": ".ds-btn-primary { background: var(--color-bay-700, #194b80); color: #fff; padding: 10px 24px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); font-size: 16px; font-weight: 600; border: 0; border-radius: 8px; cursor: pointer; transition: background-color 150ms; } .ds-btn-primary:hover { background: var(--color-bay-800, #153d69); } .ds-btn-primary:focus-visible { outline: 2px solid #1f5c98; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A supporting action beside a primary one.",
+      "html": "<button class=\"ds-btn-secondary\">Print</button>",
+      "css": ".ds-btn-secondary { background: #fff; color: #44403c; padding: 8px 16px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); font-size: 14px; font-weight: 600; border: 1px solid #d6d3d1; border-radius: 8px; cursor: pointer; transition: background-color 150ms; } .ds-btn-secondary:hover { background: #fafaf9; } .ds-btn-secondary:focus-visible { outline: 2px solid #1f5c98; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A field with a persistent label above it.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">What do you need?</span><input class=\"ds-input\" placeholder=\"e.g. birth certificate\"></label>",
+      "css": ".ds-field { display: grid; gap: 6px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); } .ds-field-label { font-size: 14px; font-weight: 600; color: #44403c; } .ds-input { width: 240px; background: #fff; color: #1c1917; padding: 8px 12px; font: inherit; font-size: 16px; border: 1px solid #d6d3d1; border-radius: 8px; } .ds-input:focus { border-color: #2f72b0; outline: none; box-shadow: 0 0 0 2px rgb(47 114 176 / 0.2); }"
+    },
+    {
+      "name": "Header Link",
+      "kind": "nav",
+      "refersTo": "nav-link-active",
+      "description": "Navigation on the navy header, with a gold bar on the active page.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link ds-nav-active\" href=\"#\">Service guides</a><a class=\"ds-nav-link\" href=\"#\">Agencies</a><a class=\"ds-nav-link\" href=\"#\">Offices</a></nav>",
+      "css": ".ds-nav { display: flex; background: var(--color-navy, #102f54); padding: 0 8px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); } .ds-nav-link { position: relative; padding: 20px 12px; font-size: 14px; font-weight: 600; color: rgb(255 255 255 / 0.85); text-decoration: none; transition: color 150ms; } .ds-nav-link:hover { color: #fff; } .ds-nav-link:focus-visible { outline: 2px solid #f5c451; outline-offset: -4px; } .ds-nav-active, .ds-nav-active:hover { color: #f5c451; } .ds-nav-active::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; border-radius: 9999px 9999px 0 0; background: #f5c451; }"
+    },
+    {
+      "name": "Verification Badge",
+      "kind": "chip",
+      "refersTo": "badge-verified",
+      "description": "Shows how well information is confirmed, always with an icon and words.",
+      "html": "<span class=\"ds-badge\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Verified</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; background: #ecfdf5; color: #065f46; box-shadow: inset 0 0 0 1px #a7f3d0; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Guide Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Opens a service guide. Flat at rest, lifts on hover.",
+      "html": "<a class=\"ds-card\" href=\"#\"><span class=\"ds-card-agency\">SSS</span><span class=\"ds-card-title\">Apply for an SSS number</span><span class=\"ds-card-text\">What to bring and where to go to get your number.</span></a>",
+      "css": ".ds-card { display: grid; gap: 4px; width: 280px; padding: 20px; background: #fff; border: 1px solid #e7e5e4; border-radius: 12px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); text-decoration: none; transition: box-shadow 150ms, border-color 150ms; } .ds-card:hover { border-color: #85b5dd; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); } .ds-card:focus-visible { outline: 2px solid #1f5c98; outline-offset: 2px; } .ds-card-agency { font-size: 12px; font-weight: 700; color: #925f08; } .ds-card-title { font-size: 18px; font-weight: 700; line-height: 1.375; color: #0a1f3a; } .ds-card-text { font-size: 14px; line-height: 1.625; color: #57534e; }"
+    },
+    {
+      "name": "Callout",
+      "kind": "custom",
+      "refersTo": "callout",
+      "description": "The one attention surface: a soft fill and a single 4px left accent.",
+      "html": "<aside class=\"ds-callout\"><span class=\"ds-callout-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/></svg></span><p><strong>Details can change:</strong> Confirm with the agency before you go.</p></aside>",
+      "css": ".ds-callout { display: flex; align-items: flex-start; gap: 12px; max-width: 420px; padding: 20px; background: rgb(255 250 235 / 0.6); border-left: 4px solid #f5b301; border-radius: 0 12px 12px 0; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); font-size: 14px; line-height: 1.625; color: #44403c; } .ds-callout p { margin: 0; padding-top: 4px; } .ds-callout strong { color: #0a1f3a; } .ds-callout-icon { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #fff; color: #925f08; box-shadow: inset 0 0 0 1px #ffe285; }"
+    },
+    {
+      "name": "Checklist Row",
+      "kind": "custom",
+      "description": "The signature component: the whole row is the tap target.",
+      "html": "<label class=\"ds-check\"><input type=\"checkbox\" class=\"ds-check-input\" checked><span class=\"ds-check-box\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span class=\"ds-check-text\">Valid government ID</span></label>",
+      "css": ".ds-check { display: flex; align-items: flex-start; gap: 12px; width: 300px; padding: 16px; background: rgb(236 253 245 / 0.6); border: 1px solid #e7e5e4; border-radius: 8px; font-family: var(--font-sans, 'Plus Jakarta Sans Variable', sans-serif); cursor: pointer; } .ds-check-input { position: absolute; opacity: 0; } .ds-check-box { display: flex; flex: none; align-items: center; justify-content: center; width: 20px; height: 20px; margin-top: 2px; border-radius: 4px; background: #059669; color: #fff; } .ds-check-input:focus-visible + .ds-check-box { outline: 2px solid #2f72b0; outline-offset: 2px; } .ds-check-text { font-size: 16px; font-weight: 600; color: #78716c; text-decoration: line-through; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Ready Folder",
+    "overview": "Andam GenSan looks and behaves like a well-kept folder you carry to a government office: everything labeled, in order, and ticked off. A resident arrives with a stressful errand, on a phone, possibly on mobile data. The design's job is to lower that stress, so it stays calm and capable. Nothing competes with the question \"what do I bring, and where do I go?\"\n\nControls are sturdy and obvious. Someone unsure of technology should never have to guess what can be tapped. Familiar patterns are a strength here. Personality comes from the deep navy, the yellowfin gold, and quiet local touches such as the Sarangani Bay contour lines, not from effects.\n\nThe design must never pass as an official government website. It must not clone a reference site, including gensanjobboard.com, and screens must not look machine-generated.",
+    "keyCharacteristics": [
+      "One family of navy blues from the header to the buttons, with gold used sparingly as a marker",
+      "A light Bay Mist page with flat white surfaces and thin borders",
+      "One typeface, with hierarchy built from weight and size",
+      "Status always shown with an icon and words, never color alone",
+      "The same structure in English, Bisaya, Filipino, and Hiligaynon, whichever runs longest"
+    ],
+    "rules": [
+      { "name": "The Uniform Navy Rule", "body": "The header, footer, buttons, and links all come from the same navy family. No section introduces its own hue.", "section": "colors" },
+      { "name": "The Gold Marks Rule", "body": "Gold marks position, progress, or attention. It is never the fill of a primary button, and it is never the color of small text on white; use Yellowfin Text there.", "section": "colors" },
+      { "name": "The Status Has Words Rule", "body": "Every status carries its own icon and wording, so it never depends on color alone.", "section": "colors" },
+      { "name": "The Sixteen Rule", "body": "Anything a resident must read to act, such as requirements, steps, and instructions, is at least 16px on a phone.", "section": "typography" },
+      { "name": "The Bold Lead-In Rule", "body": "Items in a reminder or callout list start with a bold key takeaway, such as \"**Protect your accounts:** Never share...\"", "section": "typography" },
+      { "name": "The Flat Until It Floats Rule", "body": "Nothing casts a shadow at rest unless it floats above the page.", "section": "elevation" },
+      { "name": "The Thumb Rule", "body": "Every control a resident taps on a phone is at least 44px tall. Small inline links, such as breadcrumbs, are at least 24px.", "section": "components" },
+      { "name": "The One Accent Rule", "body": "A callout has a soft fill and one 4px left accent. It never also has an outer stroke, so the two borders do not compete. This is the owner's confirmed style, and it applies only to callouts.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the checklist and steps as the most prominent content on a guide, with the checklist starting within the first phone screen.",
+      "Do show \"Not yet verified\" plainly wherever information is unconfirmed.",
+      "Do use one icon style (lucide, outline) at one size within a group, and align list icons to the first line of text.",
+      "Do test every new layout at phone width in all four languages.",
+      "Do keep motion short and functional, under 300ms, with a reduced-motion alternative.",
+      "Do blend reference sites into something original, using this palette."
+    ],
+    "donts": [
+      "Don't make any screen look or read like an official government website, or use the official GenSan city seal as a logo.",
+      "Don't clone a single reference site, including gensanjobboard.com.",
+      "Don't add a new hue for a section, or use a different navy from the family above.",
+      "Don't add a small label above a heading. Supporting details such as an agency name or an updated date go below it.",
+      "Don't put a card inside a card. Section content sits directly in the section, and a section made of cards has no outer card.",
+      "Don't combine a thick left accent with a full outer stroke on the same card.",
+      "Don't use gradient text, decorative glass, or decorative glows.",
+      "Don't show a statistic or a verified state that the data does not support."
+    ]
+  }
+}

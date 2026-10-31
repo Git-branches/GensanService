@@ -1,3 +1,20 @@
 {
-  "buildPath": "comp"
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "frontend/src/admin/pages/AdminServiceEditorPage.jsx",
+          "frontend/src/pages/HomePage.jsx",
+          "frontend/src/pages/ServiceDetailPage.jsx"
+        ],
+        "createdAt": "2026-10-31T03:29:55.270Z",
+        "reason": "User confirmed: soft fill with one 4px left accent is the owner's callout style (DESIGN.md, The One Accent Rule)"
+      }
+    ]
+  }
 }
