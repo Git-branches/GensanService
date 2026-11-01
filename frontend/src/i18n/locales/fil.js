@@ -2,6 +2,7 @@
 // First draft: have a native speaker review it before relying on it.
 export default {
   common: {
+    notYetVerified: 'Hindi pa na-verify',
     skipToContent: 'Lumaktaw sa pangunahing nilalaman',
     opensInNewTab: '(magbubukas sa bagong tab)',
     loading: 'Naglo-load...',
@@ -211,6 +212,7 @@ items: [
     notVerified: 'Hindi pa na-verify ang detalye',
   },
   detail: {
+    englishNotice: 'Nasa Ingles pa ang gabay na ito sa ngayon.',
     pageTitle: 'Gabay sa serbisyo',
     loading: 'Nilo-load ang gabay...',
     unavailable: 'Hindi ma-load ang gabay na ito. Maaaring inilipat o hindi na nakalathala.',
@@ -225,7 +227,7 @@ items: [
     copySources: 'Kopyahin ang mga opisyal na link',
     sourcesCopied: 'Nakopya ang mga opisyal na link',
     related: 'Mga kaugnay na gabay',
-    atAGlance: 'Serbisyo ng Gobyerno',
+    atAGlance: 'Mabilisang detalye',
     agency: 'Ahensya',
     category: 'Kategorya',
     fee: 'Bayad',
@@ -256,8 +258,9 @@ items: [
     outdated: 'Maaaring luma na',
   },
   checklist: {
-    ready: '{ready} sa {total} dokumento ang handa na',
-    allSet: 'Handa na — nasa iyo na ang lahat ng nasa listahan',
+    undo: 'Ibalik',
+    ready: '{ready} sa {total} kinakailangan ang handa na',
+    allSet: 'Handa na — nasa iyo na ang lahat ng kinakailangan',
     progress: 'Progreso ng checklist',
     howToGet: 'Paano ito makukuha',
     ifApplicable: 'Kung naaangkop',

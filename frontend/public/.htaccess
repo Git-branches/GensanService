@@ -17,7 +17,7 @@ DirectorySlash Off
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    RewriteRule ^ index.html [L]
+    RewriteRule ^ shell.html [L]
 </IfModule>
 
 # Compress text files. The main script drops from about 420 KB to 125 KB.

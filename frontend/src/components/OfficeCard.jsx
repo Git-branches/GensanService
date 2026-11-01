@@ -20,6 +20,9 @@ export default function OfficeCard({ office, showAgency = true }) {
   const address = [office.address, office.barangay, office.city].filter(Boolean).join(', ')
   const verificationKnown = office.is_verified !== undefined
   const { t } = useI18n()
+  const notVerified = <span className="text-stone-500">{t('common.notYetVerified')}</span>
+  // A tel: link only works for one number, so a list of numbers stays plain text.
+  const callable = office.contact_number && !/[/,;]/.test(office.contact_number)
 
   return (
     <article className="flex h-full flex-col rounded-xl border border-stone-200 bg-white">
@@ -52,21 +55,21 @@ export default function OfficeCard({ office, showAgency = true }) {
         {office.description && <p className="mt-2 text-sm leading-relaxed text-stone-600">{office.description}</p>}
 
         <div className="mt-4 space-y-2.5 text-base text-stone-700 sm:text-sm">
-          {address && (
-            <InfoRow icon={MapPin} label={t('officeCard.address')}>
-              {address}
-            </InfoRow>
-          )}
-          {office.opening_hours && (
-            <InfoRow icon={Clock} label={t('officeCard.hours')}>
-              {office.opening_hours}
-            </InfoRow>
-          )}
-          {office.contact_number && (
-            <InfoRow icon={Phone} label={t('officeCard.phone')}>
-              {office.contact_number}
-            </InfoRow>
-          )}
+          <InfoRow icon={MapPin} label={t('officeCard.address')}>
+            {(office.address || office.barangay) ? address : notVerified}
+          </InfoRow>
+          <InfoRow icon={Clock} label={t('officeCard.hours')}>
+            {office.opening_hours || notVerified}
+          </InfoRow>
+          <InfoRow icon={Phone} label={t('officeCard.phone')}>
+            {callable ? (
+              <a href={`tel:${office.contact_number.replace(/[^\d+]/g, '')}`} className="inline-flex min-h-6 items-center font-semibold text-bay-700 hover:underline">
+                {office.contact_number}
+              </a>
+            ) : (
+              office.contact_number || notVerified
+            )}
+          </InfoRow>
           {office.email && (
             <InfoRow icon={Mail} label={t('officeCard.email')}>
               <a href={`mailto:${office.email}`} className="break-all text-bay-700 hover:underline">

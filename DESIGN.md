@@ -272,9 +272,10 @@ The system's one attention surface, for reminders and warnings a resident should
 
 ### Checklist
 
-The product's signature component, and the folder being filled. It comes first on a guide page, directly below the title, followed by the steps and where to go.
+The product's signature component, and the folder being filled. It comes first on a guide page, with the fee at the top of its card, followed by who can apply, the steps, and where to go.
 
-- **Progress:** A Bay Tint panel with plain words ("3 of 5 ready"), a percentage in tabular numerals, and a gold bar that turns Ready Green when complete.
+- **Progress:** A Bay Tint panel with plain words ("3 of 5 required items ready"), a percentage in tabular numerals, and a gold bar that turns Ready Green when complete. It counts required items only, and stays in view under the header on phones.
+- **Finish:** Completing the list shows a Ready Green block with links to what comes next. Reset offers an undo.
 - **Rows:** The whole row is the tap target. Ticked rows take a soft green fill with the text struck through, so what is left stands out.
 - **Honesty:** Optional items say so in a small gold badge, and progress is saved only on the device.
 
@@ -288,7 +289,7 @@ The product's signature component, and the folder being filled. It comes first o
 ### Do:
 
 - **Do** keep the checklist and steps as the most prominent content on a guide, with the checklist starting within the first phone screen.
-- **Do** show "Not yet verified" plainly wherever information is unconfirmed.
+- **Do** show "Not yet verified" plainly wherever information is unconfirmed. An empty fee, address, phone number, or office hours is never hidden.
 - **Do** use one icon style (lucide, outline) at one size within a group, and align list icons to the first line of text.
 - **Do** test every new layout at phone width in all four languages.
 - **Do** keep motion short and functional, under 300ms, with a reduced-motion alternative.

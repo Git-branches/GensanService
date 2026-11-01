@@ -25,16 +25,21 @@ const fontPreload = `<link rel="preload" href="/assets/${font}" as="font" type="
 
 const template = readFileSync(join(dist, 'index.html'), 'utf8')
 
-for (const { path, titleKey } of ROUTES) {
-  const html = template
-    .replace('<html lang="en">', `<html lang="en" data-route="${path}">`)
-    .replace('<title>Andam GenSan</title>', `${fontPreload}<title>${titleKey ? `${title(titleKey)} · ` : ''}Andam GenSan</title>`)
-    .replace('<div id="root"></div>', () => `<div id="root">${render(path)}</div>`)
+const page = (route, pageTitle) => template
+  .replace('<html lang="en">', `<html lang="en" data-route="${route}">`)
+  .replace('<title>Andam GenSan</title>', `${fontPreload}<title>${pageTitle ? `${pageTitle} · ` : ''}Andam GenSan</title>`)
+  .replace('<div id="root"></div>', () => `<div id="root">${render(route)}</div>`)
 
+for (const { path, titleKey } of ROUTES) {
+  const html = page(path, titleKey && title(titleKey))
   const folder = join(dist, path)
   mkdirSync(folder, { recursive: true })
   writeFileSync(join(folder, 'index.html'), html)
   console.log(`prerendered ${path} (${Math.round(html.length / 1024)} KB)`)
 }
+
+// Served for every other address, such as a guide. index.html hides its page, leaving the header and
+// footer, and this page has no photos, so a guide never downloads the home page's hero image.
+writeFileSync(join(dist, 'shell.html'), page('/shell'))
 
 rmSync(serverBuild, { recursive: true, force: true })

@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import {
   BadgeCheck,
   CircleCheck,
@@ -72,28 +72,21 @@ function AtAGlance({ service }) {
 
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-      <h2 className="border-b-4 border-sun-400 bg-bay-900 px-5 py-3 text-base font-bold text-white">{t('detail.atAGlance')}</h2>
+      <h2 className="border-b border-stone-100 px-5 py-3 text-base font-bold text-bay-950">{t('detail.atAGlance')}</h2>
       <dl className="divide-y divide-stone-100 px-5">
         <Fact icon={Landmark} label={t('detail.agency')}>
-          <Link to={`/agencies/${service.agency_slug}`} className="font-semibold text-bay-700 hover:underline">
+          <Link to={`/agencies/${service.agency_slug}`} className="inline-block min-h-6 font-semibold text-bay-700 hover:underline">
             {service.agency_name}
           </Link>
         </Fact>
         <Fact icon={LayoutGrid} label={t('detail.category')}>
-          <Link to={`/services?category=${service.category_slug}`} className="font-semibold text-bay-700 hover:underline">
+          <Link to={`/services?category=${service.category_slug}`} className="inline-block min-h-6 font-semibold text-bay-700 hover:underline">
             {service.category_name}
           </Link>
         </Fact>
-        {service.fee_description && (
-          <Fact icon={Receipt} label={t('detail.fee')}>
-            {service.fee_description}
-          </Fact>
-        )}
-        {service.processing_time_description && (
-          <Fact icon={Clock} label={t('detail.processing')}>
-            {service.processing_time_description}
-          </Fact>
-        )}
+        <Fact icon={Clock} label={t('detail.processing')}>
+          {service.processing_time_description || <span className="text-stone-500">{t('common.notYetVerified')}</span>}
+        </Fact>
         {service.last_verified_at && (
           <Fact icon={BadgeCheck} label={service.verification_status === 'verified' ? t('detail.lastVerified') : t('detail.lastChecked')}>
             {formatDate(service.last_verified_at, { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -106,7 +99,7 @@ function AtAGlance({ service }) {
             href={service.agency_website}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-bay-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bay-800"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50"
           >
             {t('detail.officialWebsite', { agency: service.agency_acronym || t('detail.agencyFallback') })} <ExternalLink size={15} aria-hidden="true" />
             <span className="sr-only">{t('common.opensInNewTab')}</span>
@@ -149,7 +142,7 @@ function GuideActions({ title }) {
   }
 
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-x-5 print:hidden">
+    <div className="mt-1 flex flex-wrap items-center gap-x-5 print:hidden sm:mt-2">
       {typeof navigator.share === 'function' && (
         <button type="button" onClick={share} className={ACTION_BUTTON}>
           <Share2 size={15} aria-hidden="true" /> {t('detail.share')}
@@ -166,13 +159,13 @@ function GuideActions({ title }) {
   )
 }
 
-function Sources({ sources }) {
+function Sources({ id, sources }) {
   const { t } = useI18n()
   const [notice, copy] = useCopy()
   if (!sources?.length) return null
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5">
+    <div id={id} className="scroll-mt-24 rounded-xl border border-stone-200 bg-white p-5">
       <h2 className="text-base font-bold text-bay-950">{t('detail.sources')}</h2>
       <ul className="mt-2 space-y-1">
         {sources.map((source) => (
@@ -201,6 +194,17 @@ function Sources({ sources }) {
       </button>
       <span role="status" className="ml-3 text-sm text-stone-600">{notice}</span>
     </div>
+  )
+}
+
+// Lets a phone call a number in a step, such as "hotline 1455".
+function StepText({ text }) {
+  return text.split(/(?<=hotline )(\d{3,})/i).map((part, index) =>
+    index % 2 ? (
+      <a key={part} href={`tel:${part}`} className="inline-block min-h-6 font-semibold text-bay-700 underline underline-offset-2">{part}</a>
+    ) : (
+      part
+    ),
   )
 }
 
@@ -236,8 +240,9 @@ function Reminder({ agencyAcronym }) {
 
 // loadGuide is set by the admin preview, which shows a guide residents may not see yet.
 export default function ServiceDetailPage({ loadGuide }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { slug } = useParams()
+  const { hash } = useLocation()
   const { data: service, error, loading } = useFetch(() => (loadGuide ? loadGuide() : getService(slug)), [slug, loadGuide])
   const preview = Boolean(loadGuide)
   usePageTitle(service?.title ?? t('detail.pageTitle'))
@@ -247,6 +252,11 @@ export default function ServiceDetailPage({ loadGuide }) {
     addRecentlyViewed({ slug: service.slug, title: service.title })
     if (isFirstViewThisVisit(service.slug)) recordView(service.slug).catch(() => {})
   }, [service, preview])
+
+  // The section a link points to only exists once the guide has loaded.
+  useEffect(() => {
+    if (service && hash) document.getElementById(hash.slice(1))?.scrollIntoView()
+  }, [service, hash])
 
   if (loading) return <LoadingState label={t('detail.loading')} fill />
   if (error) {
@@ -260,11 +270,20 @@ export default function ServiceDetailPage({ loadGuide }) {
 
   const sections = [
     service.requirements?.length && { id: 'checklist', label: t('detail.checklist') },
+    service.eligibility?.length && { id: 'eligibility', label: t('detail.eligibility') },
     service.steps?.length && { id: 'steps', label: t('detail.steps') },
     service.offices?.length && { id: 'offices', label: t('detail.whereToGo') },
-    service.eligibility?.length && { id: 'eligibility', label: t('detail.eligibility') },
     service.description && { id: 'about', label: t('detail.about') },
   ].filter(Boolean)
+
+  // Phones jump straight past the checklist, which is already on screen.
+  const phoneSections = [
+    ...sections.filter((section) => section.id !== 'checklist'),
+    { id: 'facts', label: t('detail.atAGlance') },
+    service.sources?.length && { id: 'sources', label: t('detail.sources') },
+  ].filter(Boolean)
+
+  const afterChecklist = sections.filter((section) => section.id === 'steps' || section.id === 'offices')
 
   return (
     <>
@@ -277,27 +296,77 @@ export default function ServiceDetailPage({ loadGuide }) {
         meta={[service.agency_acronym, service.agency_name].filter(Boolean).join(' — ')}
         title={service.title}
         description={service.summary}
+        contentLang="en"
+        compact
       >
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <VerificationBadge status={service.verification_status} date={service.last_verified_at} />
         </div>
         {service.verification_status !== 'verified' && (
           <p className="mt-2 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
         )}
+        {locale !== 'en' && <p className="mt-2 max-w-2xl text-sm font-semibold text-stone-700">{t('detail.englishNotice')}</p>}
         {!preview && <GuideActions title={service.title} />}
+        <nav aria-label={t('detail.onThisPage')} className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:mt-2 sm:flex-wrap sm:px-0 lg:hidden print:hidden">
+          {phoneSections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="inline-flex min-h-11 shrink-0 items-center rounded-lg bg-white px-3 text-sm font-semibold text-bay-700 ring-1 ring-bay-100 transition-colors hover:bg-bay-50"
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
       </PageHeader>
 
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-12">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
           <div className="space-y-6 lg:col-span-8">
             {service.requirements?.length > 0 && (
               <DetailSection id="checklist" icon={ListChecks} title={t('detail.checklist')}>
-                <Checklist key={service.slug} slug={service.slug} requirements={service.requirements} />
+                <p className="mb-4 flex items-start gap-2 text-stone-900">
+                  <Receipt size={18} aria-hidden="true" className="mt-1 shrink-0 text-bay-600" />
+                  <span>
+                    <strong className="font-bold">{t('detail.fee')}:</strong>{' '}
+                    {service.fee_description ? <span lang="en">{service.fee_description}</span> : <span className="text-stone-500">{t('common.notYetVerified')}</span>}
+                  </span>
+                </p>
+                <Checklist
+                  key={service.slug}
+                  slug={service.slug}
+                  requirements={service.requirements}
+                  next={afterChecklist.map((section) => ({ href: `#${section.id}`, label: section.label }))}
+                />
+              </DetailSection>
+            )}
+
+            {service.eligibility?.length > 0 && (
+              <DetailSection id="eligibility" icon={UserCheck} title={t('detail.eligibility')}>
+                <ul className="space-y-3">
+                  {service.eligibility.map((condition) => (
+                    <li key={condition} className="flex gap-3 text-stone-700">
+                      <CircleCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-600" />
+                      <span lang="en" className="leading-relaxed">{condition}</span>
+                    </li>
+                  ))}
+                </ul>
               </DetailSection>
             )}
 
             {service.steps?.length > 0 && (
               <DetailSection id="steps" icon={ListOrdered} title={t('detail.steps')}>
+                {service.agency_website && (
+                  <a
+                    href={service.agency_website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-bay-700 hover:underline print:hidden"
+                  >
+                    {t('detail.officialWebsite', { agency: service.agency_acronym || t('detail.agencyFallback') })} <ExternalLink size={14} aria-hidden="true" />
+                    <span className="sr-only">{t('common.opensInNewTab')}</span>
+                  </a>
+                )}
                 <ol className="space-y-6">
                   {service.steps.map((step, index) => (
                     <li key={step.step_number} className="relative flex gap-4">
@@ -308,8 +377,8 @@ export default function ServiceDetailPage({ loadGuide }) {
                         {step.step_number}
                       </span>
                       <div className="pt-1">
-                        <h3 className="font-bold text-bay-950">{step.title}</h3>
-                        {step.instructions && <p className="mt-1 leading-relaxed text-stone-600">{step.instructions}</p>}
+                        <h3 lang="en" className="font-bold text-bay-950">{step.title}</h3>
+                        {step.instructions && <p lang="en" className="mt-1 leading-relaxed text-stone-600"><StepText text={step.instructions} /></p>}
                       </div>
                     </li>
                   ))}
@@ -327,31 +396,18 @@ export default function ServiceDetailPage({ loadGuide }) {
               </DetailSection>
             )}
 
-            <div className="lg:hidden">
+            <div id="facts" className="scroll-mt-24 lg:hidden">
               <AtAGlance service={service} />
             </div>
 
             {service.description && (
               <DetailSection id="about" icon={Info} title={t('detail.about')}>
-                <p className="leading-relaxed text-stone-700">{service.description}</p>
-              </DetailSection>
-            )}
-
-            {service.eligibility?.length > 0 && (
-              <DetailSection id="eligibility" icon={UserCheck} title={t('detail.eligibility')}>
-                <ul className="space-y-3">
-                  {service.eligibility.map((condition) => (
-                    <li key={condition} className="flex gap-3 text-stone-700">
-                      <CircleCheck size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-600" />
-                      <span className="leading-relaxed">{condition}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p lang="en" className="max-w-xl leading-relaxed text-stone-700">{service.description}</p>
               </DetailSection>
             )}
 
             <div className="space-y-4 lg:hidden">
-              <Sources sources={service.sources} />
+              <Sources id="sources" sources={service.sources} />
               <Reminder agencyAcronym={service.agency_acronym} />
               {!preview && <ReportIssue slug={service.slug} serviceTitle={service.title} />}
             </div>

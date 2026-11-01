@@ -2,6 +2,7 @@
 // out; missing keys fall back to this file. Plural forms use { one, other } and receive {count}.
 export default {
   common: {
+    notYetVerified: 'Not yet verified',
     skipToContent: 'Skip to main content',
     opensInNewTab: '(opens in a new tab)',
     loading: 'Loading...',
@@ -213,6 +214,7 @@ items: [
     waze: 'Waze',
   },
   detail: {
+    englishNotice: 'This guide is in English for now.',
     pageTitle: 'Service guide',
     loading: 'Loading service guide...',
     unavailable: "This guide couldn't be loaded. It may have been moved or is no longer published.",
@@ -227,7 +229,7 @@ items: [
     copySources: 'Copy official links',
     sourcesCopied: 'Official links copied',
     related: 'Related guides',
-    atAGlance: 'Government Services',
+    atAGlance: 'Quick facts',
     agency: 'Agency',
     category: 'Category',
     fee: 'Fee',
@@ -258,8 +260,9 @@ items: [
     outdated: 'May be outdated',
   },
   checklist: {
-    ready: '{ready} of {total} documents ready',
-    allSet: 'All set — you have everything on the list',
+    undo: 'Undo',
+    ready: '{ready} of {total} required items ready',
+    allSet: 'All set — you have everything required',
     progress: 'Checklist progress',
     howToGet: 'How to get this',
     ifApplicable: 'If applicable',

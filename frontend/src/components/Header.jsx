@@ -49,7 +49,7 @@ export default function Header() {
           <p className="flex items-center gap-1.5">
             <Info size={14} aria-hidden="true" className="shrink-0 text-bay-700" />
             <span>
-              {t('topbar.independent')}<span className="hidden sm:inline">{t('topbar.notOfficial')}</span>
+              {t('topbar.independent')}{t('topbar.notOfficial')}
             </span>
           </p>
           <div className="flex items-center gap-4">

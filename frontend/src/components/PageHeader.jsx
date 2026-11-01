@@ -1,17 +1,20 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BayPattern from './BayPattern'
 import { useI18n } from '../i18n/context'
 
 export function Breadcrumbs({ items }) {
   const { t } = useI18n()
+  // Phones show one back link, so a long trail never wraps onto a second line.
+  const backIndex = items.findLastIndex((item) => item.to)
 
   return (
     <nav aria-label={t('common.breadcrumb')} className="text-sm text-stone-600">
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((item, index) => (
-          <li key={item.label} className="flex items-center gap-1.5">
-            {index > 0 && <ChevronRight size={14} aria-hidden="true" className="text-stone-500" />}
+          <li key={item.label} className={`items-center gap-1.5 ${index === backIndex ? 'flex' : 'hidden sm:flex'}`}>
+            {index === backIndex && <ChevronLeft size={14} aria-hidden="true" className="text-stone-500 sm:hidden" />}
+            {index > 0 && <ChevronRight size={14} aria-hidden="true" className="hidden text-stone-500 sm:block" />}
             {item.to ? (
               <Link to={item.to} className="inline-flex min-h-6 items-center hover:text-bay-700 hover:underline">
                 {item.label}
@@ -31,15 +34,17 @@ export function Breadcrumbs({ items }) {
 const SECTION_CLASS =
   'relative overflow-hidden border-b border-bay-100 bg-gradient-to-br from-bay-50 via-white to-sun-50/60'
 
-export default function PageHeader({ meta, title, description, breadcrumbs, image, children }) {
+// contentLang marks a title and description that stay in one language whatever the page language is.
+// compact tightens the header on phones, for pages whose main content should start on the first screen.
+export default function PageHeader({ meta, title, description, breadcrumbs, image, contentLang, compact = false, children }) {
   const intro = (
     <>
       {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
-      <h1 className={`${breadcrumbs ? 'mt-5' : ''} max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl`}>
+      <h1 lang={contentLang} className={`${breadcrumbs ? (compact ? 'mt-3 sm:mt-5' : 'mt-5') : ''} max-w-3xl font-extrabold leading-tight tracking-tight text-bay-950 sm:text-4xl ${compact ? 'text-2xl' : 'text-3xl'}`}>
         {title}
       </h1>
       {meta && <p className="mt-2 font-semibold text-bay-700">{meta}</p>}
-      {description && <p className="mt-3 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>}
+      {description && <p lang={contentLang} className={`max-w-2xl leading-relaxed text-stone-600 sm:mt-3 sm:text-lg ${compact ? 'mt-2 text-base' : 'mt-3 text-lg'}`}>{description}</p>}
     </>
   )
 
@@ -47,7 +52,7 @@ export default function PageHeader({ meta, title, description, breadcrumbs, imag
     return (
       <section className={SECTION_CLASS}>
         <BayPattern className="text-bay-200/60" />
-        <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className={`relative mx-auto max-w-6xl px-4 sm:px-6 sm:py-14 ${compact ? 'py-4' : 'py-10'}`}>
           {intro}
           {children}
         </div>

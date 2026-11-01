@@ -2,6 +2,7 @@
 // First draft: have a native speaker review it before relying on it.
 export default {
   common: {
+    notYetVerified: 'Wala pa na-verify',
     skipToContent: 'Lumpat sa panguna nga sulod',
     opensInNewTab: '(mabuksan sa bag-o nga tab)',
     loading: 'Ginakarga...',
@@ -211,6 +212,7 @@ items: [
     notVerified: 'Wala pa na-verify ang detalye',
   },
   detail: {
+    englishNotice: 'Sa English pa ini nga giya subong.',
     pageTitle: 'Giya sa serbisyo',
     loading: 'Ginakarga ang giya...',
     unavailable: 'Indi ma-load ini nga giya. Basi ginsaylo ukon wala na ginapublikar.',
@@ -225,7 +227,7 @@ items: [
     copySources: 'Kopyaha ang mga opisyal nga link',
     sourcesCopied: 'Nakopya ang mga opisyal nga link',
     related: 'May kaangtanan nga mga giya',
-    atAGlance: 'Serbisyo sang Gobyerno',
+    atAGlance: 'Madasig nga mga detalye',
     agency: 'Ahensya',
     category: 'Kategorya',
     fee: 'Bayad',
@@ -256,8 +258,9 @@ items: [
     outdated: 'Basi daan na',
   },
   checklist: {
-    ready: '{ready} sa {total} ka dokumento ang handa na',
-    allSet: 'Kompleto na — yara na sa imo ang tanan sa listahan',
+    undo: 'Bawion',
+    ready: '{ready} sa {total} ka kinahanglanon ang handa na',
+    allSet: 'Kompleto na — yara na sa imo ang tanan nga kinahanglanon',
     progress: 'Progreso sang checklist',
     howToGet: 'Paano ini makuha',
     ifApplicable: 'Kon kinahanglan',
