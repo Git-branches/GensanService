@@ -60,7 +60,7 @@ function LogoField({ agency, readOnly, onChange }) {
     <div>
       <p className="text-sm font-semibold text-stone-700">Logo</p>
       <div className="mt-1.5 flex flex-wrap items-center gap-4">
-        <AgencyLogo agency={{ ...agency, logo_url: logoUrl }} />
+        <AgencyLogo agency={{ ...agency, logo_url: logoUrl }} size="lg" />
         {!readOnly && (
           <div className="flex flex-wrap gap-2">
             <label

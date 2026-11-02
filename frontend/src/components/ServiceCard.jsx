@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
+import AgencyLogo from './AgencyLogo'
 import VerificationBadge from './VerificationBadge'
 import { renderCategoryIcon } from '../utils/icons'
 import { useI18n } from '../i18n/context'
 
 export default function ServiceCard({ service }) {
   const { t } = useI18n()
+  const agency = {
+    name: service.agency_name,
+    acronym: service.agency_acronym,
+    logo_url: service.agency_logo_url,
+    is_local_government: service.agency_is_local,
+  }
 
   return (
     <Link
@@ -18,10 +25,13 @@ export default function ServiceCard({ service }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-xs font-bold uppercase tracking-wide text-sun-700">
-          {service.agency_acronym || service.agency_name}
-        </p>
-        <h3 className="mt-1 text-lg font-bold leading-snug text-bay-950 group-hover:text-bay-700">{service.title}</h3>
+        <div className="flex items-center gap-3">
+          <AgencyLogo agency={agency} />
+          <p className="min-w-0 text-xs font-bold uppercase tracking-wide text-sun-700">
+            {service.agency_acronym || service.agency_name}
+          </p>
+        </div>
+        <h3 className="mt-3 text-lg font-bold leading-snug text-bay-950 group-hover:text-bay-700">{service.title}</h3>
         {service.summary && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-stone-600">{service.summary}</p>}
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">

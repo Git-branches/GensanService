@@ -1,6 +1,13 @@
 const SIZES = {
-  sm: 'h-9 w-9 rounded-md',
-  md: 'h-14 w-14 rounded-lg',
+  sm: 'h-11 w-11 rounded-md p-1',
+  md: 'h-14 w-14 rounded-lg p-1',
+  lg: 'h-18 w-18 rounded-xl p-1.5',
+}
+
+const BADGE_TEXT = {
+  sm: () => 'text-xs',
+  md: (length) => (length > 3 ? 'text-xs' : 'text-sm'),
+  lg: (length) => (length > 3 ? 'text-base' : 'text-lg'),
 }
 
 // Short text for the placeholder badge: the acronym when it is short ("SSS"), else its first
@@ -19,7 +26,7 @@ function monogram(agency) {
 export default function AgencyLogo({ agency, size = 'md' }) {
   if (agency.logo_url) {
     return (
-      <span className={`flex shrink-0 items-center justify-center bg-white p-1.5 ring-1 ring-stone-200 ${SIZES[size]}`}>
+      <span className={`flex shrink-0 items-center justify-center bg-white ring-1 ring-stone-200 ${SIZES[size]}`}>
         <img src={agency.logo_url} alt="" className="max-h-full max-w-full object-contain" />
       </span>
     )
@@ -32,7 +39,7 @@ export default function AgencyLogo({ agency, size = 'md' }) {
       aria-hidden="true"
       className={`flex shrink-0 items-center justify-center font-extrabold uppercase tracking-tight ring-1 ${SIZES[size]} ${
         local ? 'bg-sun-50 text-sun-800 ring-sun-200' : 'bg-bay-50 text-bay-800 ring-bay-100'
-      } ${size === 'sm' ? 'text-[11px]' : text.length > 3 ? 'text-sm' : 'text-base'}`}
+      } ${BADGE_TEXT[size](text.length)}`}
     >
       {text}
     </span>

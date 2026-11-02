@@ -10,7 +10,7 @@ import {
   Home,
   IdCard,
   Landmark,
-  Receipt,
+  ReceiptText,
   Shield,
 } from 'lucide-react'
 
@@ -20,7 +20,7 @@ const ICON_MAP = {
   'heart-pulse': HeartPulse,
   home: Home,
   briefcase: Briefcase,
-  receipt: Receipt,
+  receipt: ReceiptText,
   'id-card': IdCard,
   'hard-hat': HardHat,
   car: Car,

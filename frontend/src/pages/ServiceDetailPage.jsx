@@ -15,7 +15,7 @@ import {
   Lock,
   MapPin,
   Printer,
-  Receipt,
+  PhilippinePeso,
   RefreshCw,
   Share2,
   UserCheck,
@@ -326,7 +326,7 @@ export default function ServiceDetailPage({ loadGuide }) {
             {service.requirements?.length > 0 && (
               <DetailSection id="checklist" icon={ListChecks} title={t('detail.checklist')}>
                 <p className="mb-4 flex items-start gap-2 text-stone-900">
-                  <Receipt size={18} aria-hidden="true" className="mt-1 shrink-0 text-bay-600" />
+                  <PhilippinePeso size={18} aria-hidden="true" className="mt-1 shrink-0 text-bay-600" />
                   <span>
                     <strong className="font-bold">{t('detail.fee')}:</strong>{' '}
                     {service.fee_description ? <span lang="en">{service.fee_description}</span> : <span className="text-stone-500">{t('common.notYetVerified')}</span>}

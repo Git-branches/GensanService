@@ -46,7 +46,8 @@ class ServiceController
         $sql = 'SELECT s.id, s.title, s.slug, s.summary, s.fee_description, s.processing_time_description,
                        s.last_verified_at, s.verification_status,
                        c.name AS category_name, c.slug AS category_slug, c.icon AS category_icon,
-                       a.name AS agency_name, a.slug AS agency_slug, a.acronym AS agency_acronym
+                       a.name AS agency_name, a.slug AS agency_slug, a.acronym AS agency_acronym,
+                       a.logo_url AS agency_logo_url, a.is_local_government AS agency_is_local
                 FROM services s
                 JOIN categories c ON c.id = s.category_id
                 JOIN agencies a ON a.id = s.agency_id
@@ -175,7 +176,8 @@ class ServiceController
     {
         $columns = 'SELECT s.title, s.slug, s.summary, s.last_verified_at, s.verification_status,
                            c.name AS category_name, c.icon AS category_icon,
-                           a.name AS agency_name, a.acronym AS agency_acronym
+                           a.name AS agency_name, a.acronym AS agency_acronym,
+                           a.logo_url AS agency_logo_url, a.is_local_government AS agency_is_local
                     FROM services s
                     JOIN categories c ON c.id = s.category_id
                     JOIN agencies a ON a.id = s.agency_id';

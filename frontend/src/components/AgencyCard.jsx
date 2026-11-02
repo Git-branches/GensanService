@@ -41,7 +41,7 @@ export default function AgencyCard({ agency }) {
       className="group flex h-full flex-col rounded-xl border border-stone-200 bg-white p-5 transition-shadow hover:border-bay-300 hover:shadow-md"
     >
       <div className="flex flex-1 items-start gap-4">
-        <AgencyLogo agency={agency} />
+        <AgencyLogo agency={agency} size="lg" />
         <div className="min-w-0">
           {agency.acronym && (
             <p className="text-xs font-bold uppercase tracking-wide text-sun-700">{agency.acronym}</p>
