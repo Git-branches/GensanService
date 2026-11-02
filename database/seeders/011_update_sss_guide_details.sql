@@ -10,12 +10,14 @@ SET @service_id = (SELECT id FROM services WHERE slug = 'apply-for-sss-number');
 UPDATE services
 SET fee_description = 'None for the online application.',
     processing_time_description = 'About 20 minutes online without uploading documents, or 2 working days with uploaded documents.',
-    verification_notes = 'Fee and processing time come from the SSS Citizen''s Charter 2026, for the online application. Branch hours come from the SSS list as of January 2025, so confirm they still apply. The branch phone number is not confirmed: (083) 554-5751, 554-5752, and 554-5754 are listed for the OVP Mindanao South 2 office in the same building.'
+    verification_notes = 'Fee and processing time come from the SSS Citizen''s Charter 2026, for the online application. Branch hours come from the SSS list as of January 2025, so confirm they still apply. The branch phone and email come from the SSS Branch Locator, read by the site owner on 2026-11-01.'
 WHERE id = @service_id;
 
--- SSS Branches Business Hours as of January 2025.
+-- Hours: SSS Branches Business Hours as of January 2025. Phone and email: SSS Branch Locator.
 UPDATE offices
-SET opening_hours = 'Monday to Friday, 7:00 AM – 5:00 PM'
+SET opening_hours = 'Monday to Friday, 7:00 AM – 5:00 PM',
+    contact_number = '(083) 554-5751',
+    email = 'generalsantos@sss.gov.ph'
 WHERE name = 'SSS General Santos Branch';
 
 INSERT INTO service_sources (service_id, label, url, verified_at)
@@ -25,3 +27,7 @@ WHERE NOT EXISTS (SELECT 1 FROM service_sources WHERE service_id = @service_id A
 INSERT INTO service_sources (service_id, label, url, verified_at)
 SELECT @service_id, 'SSS Branches Business Hours as of January 2025', 'https://www.sss.gov.ph/news-and-updates/sss-branches-business-hours-as-of-january-2025/', '2026-11-01'
 WHERE NOT EXISTS (SELECT 1 FROM service_sources WHERE service_id = @service_id AND label = 'SSS Branches Business Hours as of January 2025');
+
+INSERT INTO service_sources (service_id, label, url, verified_at)
+SELECT @service_id, 'SSS Branch Locator', 'https://member.sss.gov.ph/member/sss/branchloc', '2026-11-01'
+WHERE NOT EXISTS (SELECT 1 FROM service_sources WHERE service_id = @service_id AND label = 'SSS Branch Locator');

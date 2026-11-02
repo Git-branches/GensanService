@@ -434,7 +434,7 @@ export default function AdminServiceEditorPage() {
           <Card title="Fees and processing time" description="Only fill these in when confirmed by an official source.">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field id="fee_description" label="Fee" error={errors.fee_description}>
-                <TextInput id="fee_description" value={form.fee_description} maxLength={255} placeholder="e.g. PHP 365 per copy" onChange={(e) => update({ fee_description: e.target.value })} />
+                <TextInput id="fee_description" value={form.fee_description} maxLength={255} placeholder="e.g. PHP 330 per copy" onChange={(e) => update({ fee_description: e.target.value })} />
               </Field>
               <Field id="processing_time_description" label="Processing time" error={errors.processing_time_description}>
                 <TextInput id="processing_time_description" value={form.processing_time_description} maxLength={255} placeholder="e.g. 3 to 8 working days" onChange={(e) => update({ processing_time_description: e.target.value })} />
