@@ -23,7 +23,7 @@ class OfficeController
                     (SELECT COUNT(*) FROM service_offices so WHERE so.office_id = o.id) AS service_count
              FROM offices o
              JOIN agencies a ON a.id = o.agency_id
-             ORDER BY o.is_active DESC, a.name, o.name'
+             ORDER BY o.is_active DESC, a.name, ' . \App\Controllers\OfficeController::NAME_ORDER
         )->fetchAll();
 
         Response::success($rows);

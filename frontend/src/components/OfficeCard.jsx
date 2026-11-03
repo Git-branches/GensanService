@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Clock, Mail, MapPin, Navigation, Phone } from 'lucide-react'
+import AgencyLogo from './AgencyLogo'
 import VerifiedBadge from './VerifiedBadge'
 import { mapsUrl, wazeUrl } from '../utils/format'
 import { useI18n } from '../i18n/context'
@@ -16,7 +17,13 @@ function InfoRow({ icon: Icon, label, children }) {
   )
 }
 
-export default function OfficeCard({ office, showAgency = true }) {
+export default function OfficeCard({ office, agency, showAgency = true }) {
+  const logoAgency = agency ?? {
+    name: office.agency_name,
+    acronym: office.agency_acronym,
+    logo_url: office.agency_logo_url,
+    is_local_government: office.agency_is_local,
+  }
   const address = [office.address, office.barangay, office.city].filter(Boolean).join(', ')
   const verificationKnown = office.is_verified !== undefined
   const { t } = useI18n()
@@ -48,11 +55,16 @@ export default function OfficeCard({ office, showAgency = true }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-bold leading-snug text-bay-950">{office.name}</h3>
-        {office.branch_type && (
-          <p className="mt-0.5 text-xs font-semibold text-stone-500">{t(`officeCard.${office.branch_type}`)}</p>
-        )}
-        {office.description && <p className="mt-2 text-sm leading-relaxed text-stone-600">{office.description}</p>}
+        <div className="flex items-start gap-3">
+          <AgencyLogo agency={logoAgency} />
+          <div className="min-w-0">
+            <h3 className="text-lg font-bold leading-snug text-bay-950">{office.name}</h3>
+            {office.branch_type && (
+              <p className="mt-0.5 text-xs font-semibold text-stone-500">{t(`officeCard.${office.branch_type}`)}</p>
+            )}
+          </div>
+        </div>
+        {office.description && <p className="mt-3 text-sm leading-relaxed text-stone-600">{office.description}</p>}
 
         <div className="mt-4 space-y-2.5 text-base text-stone-700 sm:text-sm">
           <InfoRow icon={MapPin} label={t('officeCard.address')}>

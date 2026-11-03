@@ -111,7 +111,8 @@ class ServiceController
                     c.id AS category_id, c.name AS category_name, c.slug AS category_slug,
                     c.icon AS category_icon,
                     a.id AS agency_id, a.name AS agency_name, a.slug AS agency_slug,
-                    a.acronym AS agency_acronym, a.official_website AS agency_website
+                    a.acronym AS agency_acronym, a.official_website AS agency_website,
+                    a.logo_url AS agency_logo_url, a.is_local_government AS agency_is_local
              FROM services s
              JOIN categories c ON c.id = s.category_id
              JOIN agencies a ON a.id = s.agency_id

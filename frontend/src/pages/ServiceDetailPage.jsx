@@ -390,7 +390,11 @@ export default function ServiceDetailPage({ loadGuide }) {
               <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')} bare>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {service.offices.map((office) => (
-                    <OfficeCard key={office.id} office={office} showAgency={false} />
+                    <OfficeCard
+                      key={office.id}
+                      office={{ ...office, agency_name: service.agency_name, agency_acronym: service.agency_acronym, agency_logo_url: service.agency_logo_url, agency_is_local: service.agency_is_local }}
+                      showAgency={false}
+                    />
                   ))}
                 </div>
               </DetailSection>
