@@ -60,8 +60,33 @@ export default function PageHeader({ meta, title, description, breadcrumbs, imag
     )
   }
 
-  // Same composition as the home hero: text left, people right, standing on the header's bottom edge.
-  // Any search/filter form (children) moves just below the header so the photo stays flush.
+  // A scene fills the right of the header and fades out behind the text. On phones it sits below the text.
+  // Drawn scenes stop short of the header top and are width-capped so wide screens never crop them.
+  // fullHeight is for edge-to-edge art, such as a map, that would look cut off with a gap above it.
+  if (image.scene) {
+    return (
+      <>
+        <section className={SECTION_CLASS}>
+          <BayPattern className="text-bay-200/60" />
+          <div className="relative z-10 mx-auto flex max-w-6xl items-center px-4 pt-10 pb-6 sm:px-6 sm:pt-12 lg:min-h-88 lg:py-10">
+            <div className="lg:w-1/2">{intro}</div>
+          </div>
+          <img
+            src={image.src}
+            alt={image.alt}
+            width={image.width}
+            height={image.height}
+            draggable="false"
+            className={`relative block h-52 w-full select-none object-cover ${image.fullHeight ? 'lg:h-full' : 'lg:h-[86%] lg:max-w-[1000px]'} object-right-bottom sm:h-64 lg:absolute lg:bottom-0 lg:right-0 lg:w-[70%] lg:mask-[linear-gradient(to_right,transparent,black_28%)]`}
+          />
+        </section>
+        {children && <div className="mx-auto max-w-6xl px-4 sm:px-6">{children}</div>}
+      </>
+    )
+  }
+
+  // Same composition as the home hero: text left, illustration right, standing on the header's bottom edge.
+  // Any search/filter form (children) moves just below the header so the illustration stays flush.
   return (
     <>
       <section className={SECTION_CLASS}>
@@ -69,7 +94,7 @@ export default function PageHeader({ meta, title, description, breadcrumbs, imag
         <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-4 pt-10 sm:px-6 sm:pt-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-6 lg:pb-14">{intro}</div>
           <div className="self-end lg:col-span-6">
-            {/* Transparent cutout: the people sit in front of the header pattern. */}
+            {/* Transparent background: the illustration sits in front of the header pattern. */}
             <img
               src={image.src}
               alt={image.alt}

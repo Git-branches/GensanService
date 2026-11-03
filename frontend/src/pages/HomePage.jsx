@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Search,
 } from 'lucide-react'
-import faqTeamImage from '../assets/page-faq.webp'
+import faqScene from '../assets/illust-faq-scene.svg'
 import BayPattern from '../components/BayPattern'
 import HeroPhoto from '../components/HeroPhoto'
 import SectionHeading from '../components/SectionHeading'
@@ -436,9 +436,9 @@ export default function HomePage() {
       </section>
 
       {faqs.data?.length > 0 && (
-        <section className="py-14 sm:py-20">
+        <section className="relative overflow-hidden py-14 sm:py-20">
           <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+            <div className="relative z-10 lg:col-span-7">
               <SectionHeading title={t('home.faq.title')} action={{ to: '/faq', label: t('home.faq.all') }} />
               <div className="mt-6 divide-y divide-stone-200 border-y border-stone-200">
                 {faqs.data.slice(0, FAQ_PREVIEW).map((faq) => (
@@ -447,17 +447,18 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Larger screens only: the negative margin stands the people on the footer's gold line. */}
-            <img
-              src={faqTeamImage}
-              alt={t('faq.heroAlt')}
-              width="612"
-              height="408"
-              loading="lazy"
-              draggable="false"
-              className="hidden h-auto w-full select-none self-end lg:col-span-5 lg:-mb-20 lg:block"
-            />
           </div>
+
+          {/* Larger screens only: the FAQ page's scene stands on the footer's gold line and fades out toward the questions. */}
+          <img
+            src={faqScene}
+            alt=""
+            width="1400"
+            height="420"
+            loading="lazy"
+            draggable="false"
+            className="pointer-events-none absolute right-0 bottom-0 hidden h-[78%] w-[46%] max-w-225 select-none object-cover object-right-bottom mask-[linear-gradient(to_right,transparent,black_30%)] lg:block"
+          />
         </section>
       )}
     </>

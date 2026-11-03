@@ -64,7 +64,9 @@ As of 2026-10-31, the live database holds 6 published guides, 6 agencies with lo
 
 There are no testimonials, usage figures, press mentions, or partner or government endorsements. Do not imply any of them.
 
-Real assets: agency logos in `docs/agency-logos/`, and photography in `frontend/src/assets/` (`hero-people.webp`, `page-services.webp`, `page-agencies.webp`, `page-offices.webp`).
+Real assets: agency logos in `docs/agency-logos/`. There is no real photography yet. The only image of people, `page-services.webp` on the home hero, is AI-generated and must keep its visible caption. Other page headers use the `illust-*.svg` illustrations. The Offices header uses `page-offices-map.webp`, a decorative map whose street and place labels are not accurate, so it must not be used for directions.
+
+Imagery rules: never show AI-generated people as residents, staff, or an Andam GenSan team, and never show them in government uniforms, IDs, or insignia. Use agency logos to identify agencies. Use real photos of people only with their consent, and real office photos only when the office is confirmed.
 
 ## Product Principles
 

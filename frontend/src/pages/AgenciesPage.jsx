@@ -1,5 +1,5 @@
 import PageHeader from '../components/PageHeader'
-import staffImage from '../assets/page-agencies.webp'
+import headerIllustration from '../assets/illust-agencies.svg'
 import AgencyCard from '../components/AgencyCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -24,10 +24,11 @@ export default function AgenciesPage() {
         title={t('agencies.heading')}
         description={t('agencies.description')}
         image={{
-          src: staffImage,
-          alt: t('agencies.heroAlt'),
-          width: 800,
-          height: 496,
+          src: headerIllustration,
+          alt: '',
+          width: 1400,
+          height: 420,
+          scene: true,
         }}
       />
 

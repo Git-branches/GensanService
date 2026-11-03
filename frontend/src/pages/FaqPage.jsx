@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
-import faqTeamImage from '../assets/page-faq.webp'
+import headerIllustration from '../assets/illust-faq-scene.svg'
 import FaqItem from '../components/FaqItem'
 import PageHeader from '../components/PageHeader'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
@@ -30,10 +30,11 @@ export default function FaqPage() {
         title={t('faq.pageTitle')}
         description={t('faq.description')}
         image={{
-          src: faqTeamImage,
-          alt: t('faq.heroAlt'),
-          width: 612,
-          height: 408,
+          src: headerIllustration,
+          alt: '',
+          width: 1400,
+          height: 420,
+          scene: true,
         }}
       />
 

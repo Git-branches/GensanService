@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 100 1400 420" fill="none">
+  <defs>
+    <pattern id="w1" width="20" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="13" height="11" rx="1.5" fill="#85b5dd"/></pattern>
+    <pattern id="w2" width="20" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="13" height="11" rx="1.5" fill="#bfe3d8"/></pattern>
+  </defs>
+  <path d="M480 392c130-60 230-180 320-258 34-30 64-38 96-10 80 72 170 184 330 268Z" fill="#b5c6e6"/>
+  <path d="M760 392c60-50 110-130 170-176 22-16 42-14 62 4 56 52 110 120 210 172Z" fill="#9db2da"/>
+  <path d="M250 520c90-92 210-132 400-140l750-22v162Z" fill="#cfe9df"/>
+  <path d="M430 520c70-62 150-98 300-106l670-26v132Z" fill="#3f9d8a"/>
+  <g stroke="#fff" stroke-width="9" stroke-linecap="round">
+    <path d="M560 452 1400 420M640 520l130-112M900 520l60-118M1130 520l10-126"/>
+  </g>
+  <ellipse cx="500" cy="462" rx="110" ry="30" fill="#eef5fb" stroke="#fff" stroke-width="8"/>
+  <ellipse cx="500" cy="462" rx="62" ry="14" fill="#cfe9df"/>
+  <path d="M330 520c110-22 190-20 262-62 40-24 90-44 158-50" stroke="#153d69" stroke-width="30" stroke-linecap="round"/>
+  <path d="M340 516c104-20 182-20 252-58 40-24 90-42 156-48" stroke="#fff" stroke-width="3" stroke-dasharray="16 14" stroke-linecap="round"/>
+
+  <g>
+    <rect x="1198" y="150" width="96" height="290" fill="#102f54"/>
+    <rect x="1198" y="150" width="96" height="290" fill="url(#w1)"/>
+    <rect x="1276" y="96" width="86" height="344" fill="#2a8676"/>
+    <rect x="1276" y="96" width="86" height="344" fill="url(#w2)"/>
+    <rect x="1340" y="180" width="70" height="260" fill="#194b80"/>
+    <rect x="1340" y="180" width="70" height="260" fill="url(#w1)"/>
+  </g>
+
+  <g>
+    <path d="M702 256v-52" stroke="#57534e" stroke-width="3"/>
+    <rect x="702" y="205" width="30" height="9" fill="#194b80"/>
+    <rect x="702" y="214" width="30" height="9" fill="#c8312b"/>
+    <path d="m702 205 12 9-12 9Z" fill="#fff"/>
+    <path d="m618 266 84-14 84 14Z" fill="#102f54"/>
+    <rect x="628" y="266" width="148" height="134" fill="#eef5fb"/>
+    <rect x="628" y="266" width="148" height="134" fill="url(#w1)" opacity=".9"/>
+    <rect x="590" y="312" width="44" height="88" fill="#d9e8f5"/>
+    <rect x="770" y="312" width="44" height="88" fill="#d9e8f5"/>
+    <rect x="590" y="312" width="44" height="88" fill="url(#w2)"/>
+    <rect x="770" y="312" width="44" height="88" fill="url(#w2)"/>
+    <rect x="644" y="272" width="116" height="30" rx="3" fill="#102f54"/>
+    <text x="702" y="285" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#fff">GENERAL SANTOS</text>
+    <text x="702" y="297" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#fff">CITY HALL</text>
+    <rect x="682" y="356" width="40" height="44" rx="3" fill="#153d69"/>
+    <rect x="578" y="400" width="248" height="12" rx="3" fill="#102f54"/>
+  </g>
+
+  <g transform="translate(632 76) scale(.82)">
+    <path d="M400 70 196 186a8 8 0 0 0 4 15h400a8 8 0 0 0 4-15Z" fill="#102f54"/>
+    <circle cx="400" cy="150" r="22" fill="#f5b301"/>
+    <rect x="210" y="212" width="380" height="24" rx="6" fill="#194b80"/>
+    <g fill="#fff" stroke="#85b5dd" stroke-width="3">
+      <rect x="238" y="244" width="40" height="212" rx="6"/>
+      <rect x="312" y="244" width="40" height="212" rx="6"/>
+      <rect x="448" y="244" width="40" height="212" rx="6"/>
+      <rect x="522" y="244" width="40" height="212" rx="6"/>
+    </g>
+    <rect x="372" y="330" width="56" height="126" rx="28" fill="#153d69"/>
+    <rect x="196" y="456" width="408" height="26" rx="6" fill="#194b80"/>
+    <rect x="164" y="482" width="472" height="36" rx="6" fill="#102f54"/>
+  </g>
+
+  <g transform="translate(250 60) scale(.8)">
+    <path d="M1136 498h76l-12-74h-52Z" fill="#102f54"/>
+    <rect x="1124" y="494" width="100" height="14" rx="4" fill="#153d69"/>
+    <text x="1174" y="464" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#fff">TUNA</text>
+    <g transform="rotate(-62 1172 372)">
+      <path d="M1104 372c34-34 92-44 136-14 10 8 14 12 14 14s-4 6-14 14c-44 30-102 20-136-14Z" fill="#35577f"/>
+      <path d="M1112 376c34 24 88 28 128 6 4-2 10-8 14-10-4 6-10 10-14 14-44 30-102 20-128-10Z" fill="#d9e8f5"/>
+      <path d="m1108 372-34-28 10 28-10 28Z" fill="#102f54"/>
+      <path d="m1186 342 20-34 2 42Z" fill="#f5b301"/>
+      <path d="m1178 398 12 26 8-30Z" fill="#f5b301"/>
+      <circle cx="1234" cy="366" r="4" fill="#fff"/>
+    </g>
+  </g>
+
+  <g transform="translate(250 94) scale(.8)">
+    <rect x="1228" y="440" width="176" height="56" rx="8" fill="#eef5fb"/>
+    <rect x="1220" y="430" width="196" height="12" rx="6" fill="#2a8676"/>
+    <rect x="1236" y="470" width="168" height="10" fill="#f5b301"/>
+    <g fill="#153d69"><rect x="1242" y="447" width="30" height="20" rx="3"/><rect x="1280" y="447" width="30" height="20" rx="3"/><rect x="1318" y="447" width="30" height="20" rx="3"/><rect x="1356" y="447" width="30" height="20" rx="3"/></g>
+    <circle cx="1264" cy="498" r="15" fill="#0a1f3a"/><circle cx="1264" cy="498" r="6" fill="#d9e8f5"/>
+    <circle cx="1372" cy="498" r="15" fill="#0a1f3a"/><circle cx="1372" cy="498" r="6" fill="#d9e8f5"/>
+  </g>
+
+  <g fill="#0a1f3a">
+    <path d="M626 466c-20-24-32-40-32-56a32 32 0 0 1 64 0c0 16-12 32-32 56Z"/>
+    <path d="M1300 390c-16-20-26-32-26-46a26 26 0 0 1 52 0c0 14-10 26-26 46Z"/>
+  </g>
+  <circle cx="626" cy="410" r="12" fill="#f5b301"/>
+  <circle cx="1300" cy="344" r="10" fill="#f5b301"/>
+
+  <rect x="666" y="428" width="126" height="26" rx="13" fill="#35577f"/>
+  <text x="729" y="446" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="600" fill="#fff">Pioneer Avenue</text>
+</svg>

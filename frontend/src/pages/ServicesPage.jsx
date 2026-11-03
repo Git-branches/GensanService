@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Search, X } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import residentsImage from '../assets/page-services.webp'
+import headerIllustration from '../assets/illust-services.svg'
 import SearchBox from '../components/SearchBox'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
@@ -87,10 +87,11 @@ export default function ServicesPage() {
         title={t('services.heading')}
         description={t('services.description')}
         image={{
-          src: residentsImage,
-          alt: t('services.heroAlt'),
-          width: 759,
-          height: 550,
+          src: headerIllustration,
+          alt: '',
+          width: 1400,
+          height: 420,
+          scene: true,
         }}
       >
         <form

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import officeStaffImage from '../assets/page-offices.webp'
+import headerMap from '../assets/page-offices-map.webp'
 import OfficeCard from '../components/OfficeCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -37,10 +37,12 @@ export default function OfficesPage() {
         title={t('offices.heading')}
         description={t('offices.description')}
         image={{
-          src: officeStaffImage,
-          alt: t('offices.heroAlt'),
-          width: 732,
-          height: 489,
+          src: headerMap,
+          alt: '',
+          width: 1778,
+          height: 592,
+          scene: true,
+          fullHeight: true,
         }}
       >
         <div className="mt-8 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-bay-900/5 sm:grid-cols-[1.6fr_1fr] sm:p-5">
