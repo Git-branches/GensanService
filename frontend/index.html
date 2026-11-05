@@ -6,10 +6,13 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#102f54" />
-    <meta
-      name="description"
-      content="Independent guide to government service requirements, document checklists, and offices in General Santos City."
-    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="description" content="Independent guide to government service requirements, document checklists, and offices in General Santos City." />
+    <meta property="og:site_name" content="Andam GenSan" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Andam GenSan" />
+    <meta property="og:description" content="Know the requirements before you go. An independent guide to government services in General Santos City." />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Andam GenSan</title>
     <style>
       html.other-language #root { visibility: hidden; }
@@ -21,6 +24,15 @@
       // Keep this in step with initialLocale() in src/i18n/I18nProvider.jsx.
       (function () {
         var html = document.documentElement
+
+        // Saved text size and contrast. Keep in step with src/utils/display.js.
+        try {
+          var display = JSON.parse(localStorage.getItem('andam-gensan-display')) || {}
+          if (display.size === 'large') html.classList.add('text-large')
+          if (display.size === 'larger') html.classList.add('text-larger')
+          if (display.contrast === true) html.classList.add('high-contrast')
+        } catch (error) {}
+
         var route = html.dataset.route
         if (!route) return
 

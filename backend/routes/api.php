@@ -2,6 +2,7 @@
 
 use App\Controllers\Admin\ActivityController as AdminActivityController;
 use App\Controllers\Admin\AdminUserController;
+use App\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Controllers\Admin\AgencyController as AdminAgencyController;
 use App\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Controllers\Admin\AuthController as AdminAuthController;
@@ -12,6 +13,7 @@ use App\Controllers\Admin\OfficeController as AdminOfficeController;
 use App\Controllers\Admin\ReportController as AdminReportController;
 use App\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Controllers\AgencyController;
+use App\Controllers\AnalyticsController;
 use App\Controllers\AnnouncementController;
 use App\Controllers\CategoryController;
 use App\Controllers\FaqController;
@@ -19,6 +21,8 @@ use App\Controllers\OfficeController;
 use App\Controllers\ReportController;
 use App\Controllers\SearchController;
 use App\Controllers\ServiceController;
+use App\Controllers\ShareController;
+use App\Controllers\SitemapController;
 use App\Controllers\StatsController;
 use App\Response;
 use App\Router;
@@ -45,6 +49,12 @@ $router->post('/api/services/{slug}/view', [new ServiceController(), 'recordView
 $router->get('/api/search', [new SearchController(), 'index']);
 $router->get('/api/faqs', [new FaqController(), 'index']);
 $router->get('/api/announcements', [new AnnouncementController(), 'index']);
+$router->post('/api/analytics/view', [new AnalyticsController(), 'record']);
+
+// Served at the site root (/sitemap.xml, /robots.txt, and link previews) by frontend/public/.htaccess.
+$router->get('/api/sitemap.xml', [new SitemapController(), 'sitemap']);
+$router->get('/api/robots.txt', [new SitemapController(), 'robots']);
+$router->get('/api/share', [new ShareController(), 'page']);
 
 // Administrator API — every handler enforces sign-in, role, and CSRF checks itself via Auth::requireAdmin().
 $adminAuth = new AdminAuthController();
@@ -56,6 +66,7 @@ $router->post('/api/admin/account/password', [$adminAuth, 'changePassword']);
 $router->get('/api/admin/dashboard', [new AdminDashboardController(), 'index']);
 $router->get('/api/admin/notifications', [new AdminDashboardController(), 'notifications']);
 $router->get('/api/admin/activity', [new AdminActivityController(), 'index']);
+$router->get('/api/admin/analytics', [new AdminAnalyticsController(), 'index']);
 
 $adminReports = new AdminReportController();
 $router->get('/api/admin/reports', [$adminReports, 'index']);

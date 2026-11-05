@@ -39,6 +39,23 @@ export default {
     independent: 'Independenteng giya',
     notOfficial: ' — dili opisyal nga website sa gobyerno',
   },
+  display: {
+    button: 'Gidak-on sa teksto ug contrast',
+    textSize: 'Gidak-on sa teksto',
+    sizeNormal: 'Normal',
+    sizeLarge: 'Dako',
+    sizeLarger: 'Mas dako',
+    contrast: 'Taas nga contrast',
+    contrastHint: 'Mas itom nga teksto ug may linya ang mga link',
+    reset: 'I-reset',
+  },
+  offline: {
+    banner: 'Offline ka. Magamit gihapon ang mga giya nga imong naabli o na-save na.',
+    save: 'I-save offline',
+    saving: 'Gi-save…',
+    saved: 'Na-save niining phone',
+    saveFailed: 'Wala ma-save. Sulayi pag-usab kung naa nay signal.',
+  },
   logo: {
     subtitle: 'Pangandam Karon. Makig-transaksyon nga Masaligon.',
   },

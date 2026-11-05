@@ -1,5 +1,6 @@
 // Writes each public page's frame and fixed text into plain HTML, so people on slow connections
 // see the page before the JavaScript arrives. Guides and lists still load their data in the browser.
+import { createHash } from 'node:crypto'
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -41,5 +42,19 @@ for (const { path, titleKey } of ROUTES) {
 // Served for every other address, such as a guide. index.html hides its page, leaving the header and
 // footer, and this page has no photos, so a guide never downloads the home page's hero image.
 writeFileSync(join(dist, 'shell.html'), page('/shell'))
+
+// The offline worker stores the app and the public pages when it installs. Admin screens, other font
+// alphabets, and large images are left out; pictures are saved later, as they are viewed.
+const assets = readdirSync(join(dist, 'assets')).filter((name) =>
+  (/\.(js|css)$/.test(name) && !/^Admin/.test(name)) || name === font,
+)
+const precache = [...ROUTES.map(({ path }) => path), '/shell.html', '/manifest.webmanifest', '/favicon.png', '/icons/icon-192.png', ...assets.map((name) => `/assets/${name}`)]
+const version = createHash('sha256').update(precache.join('\n')).digest('hex').slice(0, 12)
+const worker = readFileSync(join(dist, 'sw.js'), 'utf8')
+  .replace("const VERSION = 'dev'", `const VERSION = '${version}'`)
+  .replace('const PRECACHE = []', `const PRECACHE = ${JSON.stringify(precache)}`)
+if (!worker.includes(version)) throw new Error('dist/sw.js did not take the build version.')
+writeFileSync(join(dist, 'sw.js'), worker)
+console.log(`offline worker ${version}: ${precache.length} files`)
 
 rmSync(serverBuild, { recursive: true, force: true })

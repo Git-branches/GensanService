@@ -37,6 +37,7 @@ Run any migrations your database doesn't have yet, in order:
 | `018_add_review_workflow_verification_and_revisions.sql` | Guide review statuses, verification, and version history |
 | `019_add_resident_features.sql` | Search keywords, agency presence, office branch types, daily guide views, and the FAQ |
 | `020_add_admin_tools.sql` | Failed sign-ins in the activity log, agency verification, review notes, report resolutions, and notices |
+| `021_add_site_analytics.sql` | Anonymous daily page counts (page type, language, and screen size only) for the admin analytics page |
 
 ## Default local admin account
 

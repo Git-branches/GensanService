@@ -46,7 +46,7 @@ export default function AgencyDetailPage() {
   const { slug } = useParams()
   const { data: agency, error, loading } = useFetch(() => getAgency(slug), [slug])
   const services = useFetch(() => getServices({ agency: slug }), [slug])
-  usePageTitle(agency?.name ?? t('agencyDetail.pageTitle'))
+  usePageTitle(agency?.name ?? t('agencyDetail.pageTitle'), agency?.description)
 
   if (loading) return <LoadingState label={t('agencyDetail.loading')} fill />
   if (error) {

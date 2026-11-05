@@ -54,6 +54,9 @@ For residents (no account needed):
 - Popular guides, recently updated guides, and guides you recently viewed on your device.
 - A searchable FAQ in four languages and a privacy policy.
 - Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
+- Larger text (two extra sizes) and a high-contrast mode, from the "Aa" button in the top bar. The choice is remembered on the device and applied before the page first appears.
+- Offline use: the site can be installed on a phone, and pages and guides already opened keep working without signal. "Save offline" on a guide stores it ahead of time. A banner shows when the phone is offline.
+- Link previews: a guide shared on Facebook, Messenger, Viber, or X shows its title, summary, and the share image. The site also has `sitemap.xml` and `robots.txt` for search engines.
 
 For administrators (`/admin`):
 
@@ -66,6 +69,7 @@ For administrators (`/admin`):
 - Manage the FAQ in all four languages. A language left blank shows the English text.
 - Post notices that show as a banner across the public site, with optional start and end times. A super admin can also replace the whole site with a maintenance notice, which must have an end time. The admin panel keeps working during maintenance.
 - Review residents' reports and record how each was resolved. See an activity log of every sign-in, failed sign-in, and change, filtered by date. Passwords are never logged.
+- See anonymous analytics: visits per day, by kind of page, language, and screen size, plus the most opened guides, for the last 7, 30, or 90 days. Only those counts are stored, with no IP address, cookie, or visitor ID, and browsers that ask not to be tracked are not counted.
 - Manage admin accounts and roles (super admins only), and change your own password.
 
 | Role | Can do |
@@ -204,6 +208,9 @@ node --test "backend/tests/*.test.mjs"
    ```
 
 5. Create the database from `database/schema.sql`, run only the seeders you need, and back the database up regularly (for example, a nightly `mysqldump`).
+   Copy `backend/public/uploads/` from your current install too, because agency logos are not in Git.
+   Optionally set `SITE_URL` in `backend/.env` to the public address, such as `https://andamgensan.ph`, for link previews and the sitemap. Left empty, each request's own address is used. If the built frontend is not at `../frontend/dist` next to `backend/`, set `FRONTEND_DIST` to its folder.
+   Link previews, `/sitemap.xml`, and `/robots.txt` are served by the API through the rules in `frontend/public/.htaccess`, so they need `mod_rewrite` and the `/api` path shown above.
 6. Sign in, change the default password, create named accounts for your staff, and deactivate any accounts you don't need.
 
 ## Roadmap
@@ -220,6 +227,8 @@ node --test "backend/tests/*.test.mjs"
 - [x] Guide review workflow, verification status, and version history
 - [x] Site-wide search, FAQ, privacy policy, and share and print actions
 - [x] Admin version history, preview, FAQ and notice management, agency verification, and alerts
+- [x] Offline use and app install, larger text and high contrast, link previews and sitemap, and anonymous analytics
+- [ ] Choose hosting and deploy
 - [ ] Automated tests for the rest of the API
 - [ ] Add and verify real service guides and office details
 

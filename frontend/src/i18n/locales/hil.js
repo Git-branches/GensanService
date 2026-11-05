@@ -39,6 +39,23 @@ export default {
     independent: 'Independiente nga giya',
     notOfficial: ' — indi opisyal nga website sang gobyerno',
   },
+  display: {
+    button: 'Kadakuon sang teksto kag contrast',
+    textSize: 'Kadakuon sang teksto',
+    sizeNormal: 'Normal',
+    sizeLarge: 'Dako',
+    sizeLarger: 'Mas dako',
+    contrast: 'Mataas nga contrast',
+    contrastHint: 'Mas itom nga teksto kag may linya ang mga link',
+    reset: 'I-reset',
+  },
+  offline: {
+    banner: 'Offline ka. Magamit gihapon ang mga giya nga ginbuksan ukon gin-save mo na.',
+    save: 'I-save offline',
+    saving: 'Ginasave…',
+    saved: 'Na-save sa sini nga phone',
+    saveFailed: 'Wala na-save. Tilawan liwat kon may signal na.',
+  },
   logo: {
     subtitle: 'Mag-andam Subong. Magtransaksyon nga May Kumpiyansa.',
   },

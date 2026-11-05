@@ -69,6 +69,7 @@ export const adminApi = {
   notifications: () => request('/notifications'),
   setServiceVerification: (id, data) => request(`/services/${encodeURIComponent(id)}/verification`, { method: 'POST', body: data }),
   dashboard: () => request('/dashboard'),
+  analytics: (days) => request(`/analytics${query({ days: String(days) })}`),
   activity: ({ page, type, adminId, from, to } = {}) => request(`/activity${query({ page: page > 1 ? String(page) : '', type, admin_id: adminId, from, to })}`),
   reports: (status) => request(`/reports${query({ status })}`),
   updateReport: (id, data) => request(`/reports/${encodeURIComponent(id)}`, { method: 'PUT', body: data }),

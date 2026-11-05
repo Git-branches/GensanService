@@ -95,6 +95,40 @@
   }
 }
 
+/* Reading settings (components/DisplaySettings.jsx). Sizes are in rem, so the root size scales the page. */
+html.text-large {
+  font-size: 112.5%;
+}
+
+html.text-larger {
+  font-size: 125%;
+}
+
+/* Darker grays and blues for text and borders, underlined links, and a thicker focus ring. */
+html.high-contrast {
+  --color-stone-100: #e7e5e4;
+  --color-stone-200: #a8a29e;
+  --color-stone-300: #78716c;
+  --color-stone-400: #57534e;
+  --color-stone-500: #44403c;
+  --color-stone-600: #292524;
+  --color-stone-700: #1c1917;
+  --color-line: #a8a29e;
+  --color-bay-600: #14477a;
+  --color-bay-700: #0d3866;
+  --color-sun-700: #6b4506;
+  --color-sun-800: #523404;
+}
+
+html.high-contrast main a:not([class*="bg-"]) {
+  text-decoration-line: underline;
+  text-underline-offset: 3px;
+}
+
+html.high-contrast :focus-visible {
+  outline-width: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -156,6 +156,17 @@ CREATE TABLE IF NOT EXISTS service_daily_views (
     KEY idx_daily_views_date (view_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Anonymous daily page counts: page type, language, and screen size only. No IP, cookie, or visitor ID.
+CREATE TABLE IF NOT EXISTS site_daily_views (
+    view_date DATE NOT NULL,
+    page VARCHAR(20) NOT NULL,
+    locale VARCHAR(10) NOT NULL,
+    device VARCHAR(10) NOT NULL,
+    views INT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (view_date, page, locale, device),
+    KEY idx_site_views_date (view_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS faqs (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(30) NOT NULL,

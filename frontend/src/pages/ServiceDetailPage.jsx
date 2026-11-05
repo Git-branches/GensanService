@@ -4,6 +4,7 @@ import {
   BadgeCheck,
   CircleCheck,
   Clock,
+  CloudDownload,
   Copy,
   ExternalLink,
   Info,
@@ -33,6 +34,7 @@ import { useI18n } from '../i18n/context'
 import { getService, recordView } from '../services/api'
 import { addRecentlyViewed, isFirstViewThisVisit } from '../utils/deviceHistory'
 import { formatDate } from '../utils/format'
+import { isSaved, offlineSupported, saveGuideOffline } from '../utils/offline'
 
 // bare leaves off the card for sections whose content is already made of cards.
 function DetailSection({ id, icon: Icon, title, bare = false, children }) {
@@ -128,7 +130,44 @@ function useCopy() {
   return [notice, copy]
 }
 
-function GuideActions({ title }) {
+// Stores the guide on this phone now, so it opens without signal. Shown only where offline support works.
+// Guide pages are drawn in the browser, so these checks can run on the first render.
+function SaveOffline({ slug }) {
+  const { t } = useI18n()
+  const [supported] = useState(offlineSupported)
+  const [state, setState] = useState(() => (isSaved(slug) ? 'saved' : 'idle'))
+
+  if (!supported) return null
+
+  async function save() {
+    setState('saving')
+    try {
+      await saveGuideOffline(slug)
+      setState('saved')
+    } catch {
+      setState('failed')
+    }
+  }
+
+  if (state === 'saved') {
+    return (
+      <span className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-emerald-700">
+        <CircleCheck size={15} aria-hidden="true" /> {t('offline.saved')}
+      </span>
+    )
+  }
+
+  return (
+    <>
+      <button type="button" onClick={save} disabled={state === 'saving'} className={`${ACTION_BUTTON} disabled:opacity-60`}>
+        <CloudDownload size={15} aria-hidden="true" /> {state === 'saving' ? t('offline.saving') : t('offline.save')}
+      </button>
+      {state === 'failed' && <span role="status" className="text-sm text-red-700">{t('offline.saveFailed')}</span>}
+    </>
+  )
+}
+
+function GuideActions({ title, slug }) {
   const { t } = useI18n()
   const [notice, copy] = useCopy()
   const url = window.location.href.split('?')[0]
@@ -154,6 +193,7 @@ function GuideActions({ title }) {
       <button type="button" onClick={() => window.print()} className={ACTION_BUTTON}>
         <Printer size={15} aria-hidden="true" /> {t('detail.print')}
       </button>
+      {slug && <SaveOffline key={slug} slug={slug} />}
       <span role="status" className="text-sm text-stone-600">{notice}</span>
     </div>
   )
@@ -245,7 +285,7 @@ export default function ServiceDetailPage({ loadGuide }) {
   const { hash } = useLocation()
   const { data: service, error, loading } = useFetch(() => (loadGuide ? loadGuide() : getService(slug)), [slug, loadGuide])
   const preview = Boolean(loadGuide)
-  usePageTitle(service?.title ?? t('detail.pageTitle'))
+  usePageTitle(service?.title ?? t('detail.pageTitle'), service?.summary)
 
   useEffect(() => {
     if (!service || preview) return
@@ -306,7 +346,7 @@ export default function ServiceDetailPage({ loadGuide }) {
           <p className="mt-2 max-w-2xl text-sm text-stone-600">{t('detail.verificationNote')}</p>
         )}
         {locale !== 'en' && <p className="mt-2 max-w-2xl text-sm font-semibold text-stone-700">{t('detail.englishNotice')}</p>}
-        {!preview && <GuideActions title={service.title} />}
+        {!preview && <GuideActions title={service.title} slug={service.slug} />}
         <nav aria-label={t('detail.onThisPage')} className="-mx-4 mt-1 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:mt-2 sm:flex-wrap sm:px-0 lg:hidden print:hidden">
           {phoneSections.map((section) => (
             <a

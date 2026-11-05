@@ -2,20 +2,27 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
+import EmergencyNotice from './EmergencyNotice'
 import NoticeBanner from './NoticeBanner'
+import OfflineBanner from './OfflineBanner'
 import { useFetch } from '../hooks/useFetch'
 import { useI18n } from '../i18n/context'
 import { getAnnouncements } from '../services/api'
+import { countPageView } from '../utils/analytics'
 
 export default function Layout() {
   const { pathname } = useLocation()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { data: notices } = useFetch(getAnnouncements, [])
   const fullPage = notices?.find((notice) => notice.full_page)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname])
+
+  useEffect(() => {
+    countPageView(pathname, locale)
+  }, [pathname, locale])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,9 +33,11 @@ export default function Layout() {
         {t('common.skipToContent')}
       </a>
       <Header />
-      {notices?.filter((notice) => !notice.full_page).map((notice) => (
+      <OfflineBanner />
+      {notices?.filter((notice) => !notice.full_page && notice.type !== 'emergency').map((notice) => (
         <NoticeBanner key={notice.id} notice={notice} />
       ))}
+      {notices && <EmergencyNotice notices={notices.filter((notice) => !notice.full_page && notice.type === 'emergency')} />}
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         {fullPage ? (
           <section className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">

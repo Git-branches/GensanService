@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
+  ChartColumn,
   ExternalLink,
   FileText,
   Flag,
@@ -45,6 +46,7 @@ const NAV_GROUPS = [
   {
     label: 'System',
     items: [
+      { to: '/admin/analytics', label: 'Analytics', icon: ChartColumn },
       { to: '/admin/activity', label: 'Activity log', icon: History },
       { to: '/admin/admins', label: 'Admin accounts', icon: Users, superAdminOnly: true },
     ],

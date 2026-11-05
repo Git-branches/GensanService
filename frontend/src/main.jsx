@@ -30,3 +30,8 @@ if (container.hasChildNodes() && matches) {
   flushSync(() => root.render(app))
   html.classList.remove('other-language', 'other-page')
 }
+
+// Offline support for pages and guides already opened. The development server has no built worker.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}))
+}

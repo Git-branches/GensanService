@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Clock, Info, Menu, Search, X } from 'lucide-react'
 import Logo from './Logo'
+import DisplaySettings from './DisplaySettings'
 import LanguageSwitcher from './LanguageSwitcher'
 import PhilippineTime from './PhilippineTime'
 import { useI18n } from '../i18n/context'
@@ -57,6 +58,7 @@ export default function Header() {
               <Clock size={14} aria-hidden="true" className="shrink-0 text-bay-700" />
               <PhilippineTime />
             </p>
+            <DisplaySettings />
             <LanguageSwitcher />
           </div>
         </div>

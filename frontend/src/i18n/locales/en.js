@@ -39,6 +39,23 @@ export default {
     independent: 'Independent guide',
     notOfficial: ' — not an official government website',
   },
+  display: {
+    button: 'Text size and contrast',
+    textSize: 'Text size',
+    sizeNormal: 'Normal',
+    sizeLarge: 'Large',
+    sizeLarger: 'Larger',
+    contrast: 'High contrast',
+    contrastHint: 'Darker text and underlined links',
+    reset: 'Reset',
+  },
+  offline: {
+    banner: 'You\'re offline. Guides you already opened or saved still work.',
+    save: 'Save offline',
+    saving: 'Saving…',
+    saved: 'Saved on this phone',
+    saveFailed: 'Could not save. Try again when you have signal.',
+  },
   logo: {
     subtitle: 'Prepare Today. Transact with Confidence.',
   },
@@ -340,7 +357,9 @@ items: [
       {
         heading: 'What we count',
         paragraphs: [
-          'When a guide is opened, we add one to that guide\'s total for the day. We use these totals to show popular guides. They do not include your IP address or anything that identifies you, and we do not use advertising or tracking cookies.',
+          'When a guide is opened, we add one to that guide\'s total for the day. We use these totals to show popular guides.',
+          'We also count page visits by type of page, language, and screen size (phone, tablet, or computer), so we know which parts of the site help people most. If your browser asks sites not to track you, we do not count your visits.',
+          'These counts do not include your IP address or anything that identifies you, and we do not use advertising or tracking cookies.',
         ],
       },
       {

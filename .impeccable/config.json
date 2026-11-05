@@ -14,6 +14,15 @@
         ],
         "createdAt": "2026-10-31T03:29:55.270Z",
         "reason": "User confirmed: soft fill with one 4px left accent is the owner's callout style (DESIGN.md, The One Accent Rule)"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "frontend/src/pages/ServiceDetailPage.jsx"
+        ],
+        "createdAt": "2026-11-05T08:58:05.407Z",
+        "reason": "user confirmed 2026-10-31: the 4px left accent is the project's callout style (DESIGN.md, The One Accent Rule); here it is the Reminder callout"
       }
     ]
   }

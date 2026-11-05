@@ -39,6 +39,23 @@ export default {
     independent: 'Independiyenteng gabay',
     notOfficial: ' — hindi opisyal na website ng gobyerno',
   },
+  display: {
+    button: 'Laki ng text at contrast',
+    textSize: 'Laki ng text',
+    sizeNormal: 'Karaniwan',
+    sizeLarge: 'Malaki',
+    sizeLarger: 'Mas malaki',
+    contrast: 'Mataas na contrast',
+    contrastHint: 'Mas maitim na text at may salungguhit ang mga link',
+    reset: 'I-reset',
+  },
+  offline: {
+    banner: 'Offline ka. Gumagana pa rin ang mga gabay na nabuksan o na-save mo na.',
+    save: 'I-save offline',
+    saving: 'Sine-save…',
+    saved: 'Naka-save sa phone na ito',
+    saveFailed: 'Hindi na-save. Subukan ulit kapag may signal.',
+  },
   logo: {
     subtitle: 'Maghanda Ngayon. Makipagtransaksyon nang May Kumpiyansa.',
   },

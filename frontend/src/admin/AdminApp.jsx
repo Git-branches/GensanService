@@ -13,6 +13,7 @@ import AdminNoticesPage from './pages/AdminNoticesPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import AdminActivityPage from './pages/AdminActivityPage'
+import AdminAnalyticsPage from './pages/AdminAnalyticsPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AdminAccountPage from './pages/AdminAccountPage'
 
@@ -31,6 +32,7 @@ export default function AdminApp() {
           <Route index element={<AdminDashboardPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="activity" element={<AdminActivityPage />} />
+          <Route path="analytics" element={<AdminAnalyticsPage />} />
           <Route path="admins" element={<AdminUsersPage />} />
           <Route path="account" element={<AdminAccountPage />} />
           <Route path="services" element={<AdminServicesPage />} />
