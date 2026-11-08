@@ -1,10 +1,9 @@
 import { useMemo, useState, useSyncExternalStore } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   ArrowRight,
   BadgeCheck,
   BookOpenText,
-  ChevronDown,
   Info,
   Link2,
   Lock,
@@ -18,14 +17,13 @@ import SectionHeading from '../components/SectionHeading'
 import CategoryTile from '../components/CategoryTile'
 import AgencyCard from '../components/AgencyCard'
 import FaqItem from '../components/FaqItem'
-import SearchBox from '../components/SearchBox'
 import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { useI18n } from '../i18n/context'
 import { usePageTitle } from '../hooks/usePageTitle'
-import { getAgencies, getCategories, getFaqs, getServices, getStats } from '../services/api'
-import { addRecentSearch, getRecentlyViewed, recentlyViewedSnapshot } from '../utils/deviceHistory'
+import { getAgencies, getCategories, getFaqs, getLifeEvents, getServices } from '../services/api'
+import { getRecentlyViewed, recentlyViewedSnapshot } from '../utils/deviceHistory'
 
 // Icons for home.accuracy.points and home.reminders.items, in the same order as the messages.
 const ACCURACY_ICONS = [Link2, BadgeCheck, BookOpenText]
@@ -38,90 +36,6 @@ const nothingViewed = () => ''
 
 // Same tile for both columns of the "Our approach" section; each column adds its own tint.
 const ICON_TILE = 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1'
-
-function GuideSearch({ categories, quickPicks }) {
-  const { t } = useI18n()
-  const navigate = useNavigate()
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const params = new URLSearchParams()
-    const q = String(form.get('q') || '').trim()
-    const category = String(form.get('category') || '')
-    addRecentSearch(q)
-    if (q) params.set('q', q)
-    if (category) params.set('category', category)
-    const query = params.toString()
-    navigate(`/services${query ? `?${query}` : ''}`)
-  }
-
-  return (
-    <form
-      role="search"
-      onSubmit={handleSubmit}
-      className="rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-bay-900/5 sm:p-5"
-    >
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end md:grid-cols-[1.6fr_1fr_auto]">
-        <div className="sm:col-span-2 md:col-span-1">
-          <label htmlFor="hero-q" className="text-sm font-semibold text-stone-700">
-            {t('home.directory.whatDoYouNeed')}
-          </label>
-          <div className="relative mt-1.5">
-            <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
-            <SearchBox
-              id="hero-q"
-              placeholder={t('common.searchPlaceholder')}
-              className="w-full rounded-lg border border-stone-300 bg-white py-3 pl-10 pr-3 text-base placeholder:text-stone-500 focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
-            />
-          </div>
-        </div>
-        <div>
-          <label htmlFor="hero-category" className="text-sm font-semibold text-stone-700">
-            {t('common.category')}
-          </label>
-          <div className="relative mt-1.5">
-            <select
-              id="hero-category"
-              name="category"
-              defaultValue=""
-              className="w-full cursor-pointer appearance-none rounded-lg border border-stone-300 bg-white py-3 pl-3 pr-9 text-base focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20"
-            >
-              <option value="">{t('common.allCategories')}</option>
-              {categories?.map((category) => (
-                <option key={category.id} value={category.slug}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-500" />
-          </div>
-        </div>
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800"
-        >
-          {t('home.directory.searchGuides')}
-        </button>
-      </div>
-
-      {quickPicks.length > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-100 pt-4 text-sm">
-          <span className="font-medium text-stone-500">{t('home.directory.popularAgencies')}</span>
-          {quickPicks.map((agency) => (
-            <Link
-              key={agency.id}
-              to={`/services?agency=${agency.slug}`}
-              className="inline-flex min-h-11 items-center rounded-md bg-bay-50 px-3 font-semibold text-bay-800 ring-1 ring-bay-100 transition-colors hover:bg-bay-100"
-            >
-              {agency.acronym}
-            </Link>
-          ))}
-        </div>
-      )}
-    </form>
-  )
-}
 
 function HowItWorks() {
   const { t } = useI18n()
@@ -148,12 +62,6 @@ function HowItWorks() {
             </li>
           ))}
         </ol>
-        <Link
-          to="/services"
-          className="mt-10 inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-5 text-sm font-bold text-bay-800 transition-colors hover:bg-sun-100"
-        >
-          {t('home.how.startBrowsing')} <ArrowRight size={16} aria-hidden="true" />
-        </Link>
       </div>
     </section>
   )
@@ -224,26 +132,13 @@ export default function HomePage() {
 
   const categories = useFetch(getCategories, [])
   const agencies = useFetch(getAgencies, [])
-  const { data: stats } = useFetch(getStats, [])
   const recent = useFetch(() => getServices({ sort: 'recent', limit: 6 }), [])
   const popular = useFetch(() => getServices({ sort: 'popular', limit: 3 }), [])
   const faqs = useFetch(() => getFaqs(locale), [locale])
+  const lifeEvents = useFetch(getLifeEvents, [])
   // Empty on pre-built pages, which know nothing about this device.
   const viewedText = useSyncExternalStore(neverChanges, recentlyViewedSnapshot, nothingViewed)
   const viewed = useMemo(() => (viewedText ? getRecentlyViewed() : []), [viewedText])
-
-  const quickPicks = (agencies.data ?? [])
-    .filter((agency) => agency.acronym)
-    .sort((a, b) => b.service_count - a.service_count || a.name.localeCompare(b.name))
-    .slice(0, 5)
-
-  const statItems = stats
-    ? [
-        { value: stats.services, label: t('home.directory.statGuides') },
-        { value: stats.agencies, label: t('home.directory.statAgencies') },
-        { value: stats.offices, label: t('home.directory.statOffices') },
-      ]
-    : []
 
   return (
     <>
@@ -267,18 +162,12 @@ export default function HomePage() {
               {t('home.intro')}
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#find-a-guide"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800 lg:px-5 xl:px-6"
+            <div className="mt-8 flex">
+              <Link
+                to="/services"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800"
               >
                 <Search size={18} aria-hidden="true" /> {t('home.findGuide')}
-              </a>
-              <Link
-                to="/agencies"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-700 transition-colors hover:bg-stone-50 lg:px-5 xl:px-6"
-              >
-                {t('home.browseAgencies')} <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
 
@@ -298,36 +187,10 @@ export default function HomePage() {
 
       <HowItWorks />
 
-      <section id="find-a-guide" aria-labelledby="find-a-guide-title" className="scroll-mt-20 bg-white py-14 sm:py-20">
+      <section aria-labelledby="browse-guides-title" className="bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <div className="lg:col-span-9">
-              <h2
-                id="find-a-guide-title"
-                className="text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl"
-              >
-                {t('home.directory.title')}
-              </h2>
-              <p className="mt-2 text-stone-600">{t('home.directory.description')}</p>
-              <div className="mt-6">
-                <GuideSearch categories={categories.data} quickPicks={quickPicks} />
-              </div>
-            </div>
-
-            {statItems.length > 0 && (
-              <dl className="grid grid-cols-3 gap-4 lg:col-span-3 lg:grid-cols-1 lg:gap-5 lg:border-l lg:border-stone-200 lg:pl-8">
-                {statItems.map((item) => (
-                  <div key={item.label} className="flex flex-col border-l-4 border-sun-400 pl-3">
-                    <dt className="text-sm text-stone-600">{item.label}</dt>
-                    <dd className="order-first text-3xl font-extrabold tabular-nums text-bay-900">{item.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-          </div>
-
-          <div className="mt-14 flex flex-wrap items-end justify-between gap-4 border-t border-stone-200 pt-10">
-            <h3 className="text-xl font-extrabold tracking-tight text-bay-950">{t('home.directory.orBrowse')}</h3>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 id="browse-guides-title" className="text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl">{t('home.directory.browseLabel')}</h2>
             <Link
               to="/agencies"
               className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-bay-700 hover:text-bay-800 hover:underline"
@@ -344,6 +207,34 @@ export default function HomePage() {
           />
         </div>
       </section>
+
+      {lifeEvents.data?.length > 0 && (
+        <section id="life-events" aria-labelledby="life-events-title" className="scroll-mt-20 border-t border-stone-200 bg-mist py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="max-w-2xl">
+              <h2 id="life-events-title" className="text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl">{t('home.lifeEvents.title')}</h2>
+              <p className="mt-2 text-stone-600">{t('home.lifeEvents.description')}</p>
+            </div>
+            <ul className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+              {lifeEvents.data.map((event) => (
+                <li key={event.slug}>
+                  <Link
+                    to={`/life-events/${event.slug}`}
+                    className="group flex h-full flex-col rounded-xl border border-stone-200 bg-white p-5 transition-colors hover:border-bay-300 sm:p-6"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-wide text-sun-700">{t('home.lifeEvents.steps', { count: event.step_count })}</span>
+                    <span lang="en" className="mt-1.5 text-lg font-bold leading-snug text-bay-950 group-hover:text-bay-700">{event.title}</span>
+                    {event.summary && <span lang="en" className="mt-1.5 leading-relaxed text-stone-600">{event.summary}</span>}
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-bay-700">
+                      {t('home.lifeEvents.open')} <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {popular.data?.length > 0 && (
         <section className="pt-14 sm:pt-20">

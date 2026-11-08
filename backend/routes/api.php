@@ -9,6 +9,7 @@ use App\Controllers\Admin\AuthController as AdminAuthController;
 use App\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Controllers\Admin\FaqController as AdminFaqController;
+use App\Controllers\Admin\LifeEventController as AdminLifeEventController;
 use App\Controllers\Admin\OfficeController as AdminOfficeController;
 use App\Controllers\Admin\ReportController as AdminReportController;
 use App\Controllers\Admin\ServiceController as AdminServiceController;
@@ -17,6 +18,7 @@ use App\Controllers\AnalyticsController;
 use App\Controllers\AnnouncementController;
 use App\Controllers\CategoryController;
 use App\Controllers\FaqController;
+use App\Controllers\LifeEventController;
 use App\Controllers\OfficeController;
 use App\Controllers\ReportController;
 use App\Controllers\SearchController;
@@ -46,6 +48,9 @@ $router->get('/api/services', [new ServiceController(), 'index']);
 $router->get('/api/services/{slug}', [new ServiceController(), 'show']);
 $router->post('/api/services/{slug}/reports', [new ReportController(), 'store']);
 $router->post('/api/services/{slug}/view', [new ServiceController(), 'recordView']);
+$router->post('/api/services/{slug}/feedback', [new ServiceController(), 'recordFeedback']);
+$router->get('/api/life-events', [new LifeEventController(), 'index']);
+$router->get('/api/life-events/{slug}', [new LifeEventController(), 'show']);
 $router->get('/api/search', [new SearchController(), 'index']);
 $router->get('/api/faqs', [new FaqController(), 'index']);
 $router->get('/api/announcements', [new AnnouncementController(), 'index']);
@@ -93,7 +98,7 @@ $router->get('/api/admin/services/{id}/revisions/{revisionId}', [$adminServices,
 $router->post('/api/admin/services/{id}/revisions/{revisionId}/restore', [$adminServices, 'restoreRevision']);
 
 $adminAgencies = new AdminAgencyController();
-foreach (['agencies' => $adminAgencies, 'offices' => new AdminOfficeController(), 'categories' => new AdminCategoryController(), 'faqs' => new AdminFaqController(), 'notices' => new AdminAnnouncementController()] as $resource => $controller) {
+foreach (['agencies' => $adminAgencies, 'offices' => new AdminOfficeController(), 'categories' => new AdminCategoryController(), 'faqs' => new AdminFaqController(), 'notices' => new AdminAnnouncementController(), 'life-events' => new AdminLifeEventController()] as $resource => $controller) {
     $router->get("/api/admin/{$resource}", [$controller, 'index']);
     $router->post("/api/admin/{$resource}", [$controller, 'store']);
     $router->put("/api/admin/{$resource}/{id}", [$controller, 'update']);

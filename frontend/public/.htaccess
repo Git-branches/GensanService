@@ -13,9 +13,10 @@ DirectorySlash Off
     RewriteRule ^sitemap\.xml$ /api/sitemap.xml [L]
     RewriteRule ^robots\.txt$ /api/robots.txt [L]
 
-    # Link previews (Facebook, Messenger, Viber, X, and others) do not run JavaScript, so they get the page
-    # with its title, summary, and share image filled in by the API. People get the same page as always.
-    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|facebookcatalog|Facebot|Twitterbot|LinkedInBot|Slackbot|WhatsApp|TelegramBot|Discordbot|Viber|SkypeUriPreview|Pinterest|redditbot|Applebot|Embedly) [NC]
+    # Link previews and search engines (Facebook, Messenger, Viber, X, Google, Bing, and others) do not run
+    # JavaScript, so they get the page with its title, summary, and share image filled in by the API.
+    # People get the same page as always.
+    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|facebookcatalog|Facebot|Twitterbot|LinkedInBot|Slackbot|WhatsApp|TelegramBot|Discordbot|Viber|SkypeUriPreview|Pinterest|redditbot|Applebot|Embedly|Googlebot|Bingbot) [NC]
     RewriteCond %{REQUEST_URI} !\.[a-z0-9]+$ [NC]
     RewriteCond %{REQUEST_URI} !^/admin
     RewriteRule ^(.*)$ /api/share?path=/$1 [L,QSA]
@@ -40,6 +41,14 @@ DirectorySlash Off
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "DENY"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # The page has one small inline script and style that hide the wrong pre-built page before the
+    # first paint, so those need 'unsafe-inline'. Everything else is loaded from this origin.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+    # Browsers ignore HSTS on plain HTTP, so only send it when the request already arrived over HTTPS.
+    <If "%{HTTPS} == 'on'">
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    </If>
 
     # Built assets have content hashes in their names, so they can be cached for a long time.
     <If "%{REQUEST_URI} =~ m#^/assets/#">

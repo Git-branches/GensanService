@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Database;
+use App\Request;
 use App\Response;
+use App\Services\PublicRateLimit;
 use App\Services\ServiceSearch;
 
 class ServiceController
@@ -11,6 +13,8 @@ class ServiceController
     private const POPULAR = 'SELECT service_id, SUM(views) AS total FROM service_daily_views
                              WHERE view_date >= (CURDATE() - INTERVAL 30 DAY) GROUP BY service_id';
     private const RELATED_LIMIT = 4;
+    private const UPDATES_LIMIT = 5;
+    public const FEEDBACK_REASONS = ['outdated', 'missing', 'unclear', 'other'];
 
     public function index(): void
     {
@@ -74,6 +78,10 @@ class ServiceController
     /** Adds one to today's total for a guide. No IP address or visitor identifier is stored. */
     public function recordView(array $params): void
     {
+        if (preg_match(AnalyticsController::BOTS, (string) Request::header('User-Agent'))) {
+            Response::success(['recorded' => false]);
+        }
+
         $pdo = Database::connection();
         $stmt = $pdo->prepare("SELECT id FROM services WHERE slug = :slug AND status = 'published'");
         $stmt->execute(['slug' => $params['slug']]);
@@ -82,10 +90,52 @@ class ServiceController
             Response::notFound('Service not found');
         }
 
+        if (PublicRateLimit::exceeded('guide_view', PublicRateLimit::key(Request::ip(), $params['slug']), 30)) {
+            Response::success(['recorded' => false]);
+        }
+
         $pdo->prepare(
             'INSERT INTO service_daily_views (service_id, view_date, views) VALUES (:id, CURDATE(), 1)
              ON DUPLICATE KEY UPDATE views = views + 1'
         )->execute(['id' => $id]);
+
+        Response::success(['recorded' => true]);
+    }
+
+    /**
+     * Adds one "Did this guide help?" answer to today's total for the guide.
+     * No IP address or visitor identifier is stored; the browser remembers that it answered.
+     */
+    public function recordFeedback(array $params): void
+    {
+        $body = Request::json();
+        $helpful = $body['helpful'] ?? null;
+        $reason = (string) ($body['reason'] ?? '');
+        if (!is_bool($helpful) || ($helpful && $reason !== '') || (!$helpful && $reason !== '' && !in_array($reason, self::FEEDBACK_REASONS, true))) {
+            Response::error('Choose yes or no, and a reason from the list.', 422);
+        }
+
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare("SELECT id FROM services WHERE slug = :slug AND status = 'published'");
+        $stmt->execute(['slug' => $params['slug']]);
+        $id = $stmt->fetchColumn();
+        if (!$id) {
+            Response::notFound('Service not found');
+        }
+
+        if (preg_match(AnalyticsController::BOTS, (string) Request::header('User-Agent'))) {
+            Response::success(['recorded' => false]);
+        }
+
+        if (PublicRateLimit::exceeded('guide_feedback', PublicRateLimit::key(Request::ip(), $params['slug']), 10)) {
+            Response::success(['recorded' => false]);
+        }
+
+        $pdo->prepare(
+            'INSERT INTO service_feedback_daily (service_id, feedback_date, helpful, reason, answers)
+             VALUES (:id, CURDATE(), :helpful, :reason, 1)
+             ON DUPLICATE KEY UPDATE answers = answers + 1'
+        )->execute(['id' => $id, 'helpful' => $helpful ? 1 : 0, 'reason' => $reason === '' ? 'none' : $reason]);
 
         Response::success(['recorded' => true]);
     }
@@ -107,7 +157,7 @@ class ServiceController
 
         $stmt = $pdo->prepare(
             'SELECT s.id, s.title, s.slug, s.summary, s.description, s.fee_description,
-                    s.processing_time_description, s.last_verified_at, s.verification_status,
+                    s.processing_time_description, s.renewal_reminder, s.last_verified_at, s.verification_status,
                     c.id AS category_id, c.name AS category_name, c.slug AS category_slug,
                     c.icon AS category_icon,
                     a.id AS agency_id, a.name AS agency_name, a.slug AS agency_slug,
@@ -159,7 +209,7 @@ class ServiceController
 
         $officesStmt = $pdo->prepare(
             'SELECT o.id, o.name, o.address, o.barangay, o.city, o.contact_number, o.email,
-                    o.opening_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at
+                    o.opening_hours, o.weekly_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at
              FROM offices o
              JOIN service_offices so ON so.office_id = o.id
              WHERE so.service_id = :id AND o.is_active = 1
@@ -167,6 +217,15 @@ class ServiceController
         );
         $officesStmt->execute(['id' => $serviceId]);
         $service['offices'] = $officesStmt->fetchAll();
+
+        // Notes editors wrote for residents when they changed the guide, newest first.
+        $updatesStmt = $pdo->prepare(
+            'SELECT public_note AS note, DATE(created_at) AS date
+             FROM service_revisions WHERE service_id = :id AND public_note IS NOT NULL
+             ORDER BY id DESC LIMIT ' . self::UPDATES_LIMIT
+        );
+        $updatesStmt->execute(['id' => $serviceId]);
+        $service['updates'] = $updatesStmt->fetchAll();
         $service['related'] = $this->related($pdo, (int) $serviceId, (int) $service['category_id']);
 
         Response::success($service);

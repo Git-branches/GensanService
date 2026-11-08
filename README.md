@@ -30,8 +30,8 @@ The project started as *GenSan Service Navigator*. The GitHub repository (`Gensa
 - Admin sessions use HttpOnly, SameSite cookies, a new session ID at sign-in and after password changes, and a 2-hour idle timeout. Cookies are marked Secure in production.
 - Every admin request that changes data needs a CSRF token. Roles are checked on the server for every request.
 - All input is validated on the server, and all queries use PDO prepared statements.
-- The public report form has a honeypot field and a limit of 5 reports per hour per IP address.
-- In production, errors are logged to `backend/storage/logs/app.log` instead of being shown. The API sends `nosniff`, `X-Frame-Options`, `Referrer-Policy`, and (in production) HSTS headers.
+- The public report form has a honeypot field and a limit of 5 reports per hour per IP address. Anonymous page views, guide views, and guide feedback are also capped per visitor and hour.
+- In production, errors are logged to `backend/storage/logs/app.log` instead of being shown. The API and the built site send `nosniff`, `X-Frame-Options`, `Referrer-Policy`, and a Content Security Policy; HSTS is sent over HTTPS in production.
 - The site never asks for government account passwords or one-time PINs (OTPs).
 
 Do not open a public issue for security problems. Email the maintainer instead (see [Maintainers](#maintainers)).
@@ -47,10 +47,15 @@ For residents (no account needed):
 - Search across guides, agencies, offices, and categories, with suggestions as you type and your recent searches. Search also covers the documents a guide requires, each guide's keywords, and common local words and old names, such as "sedula", "pulis", "lisensya", and "NSO".
 - Service guides with eligibility, a document checklist, application steps, fees, processing times, offices, and official sources.
 - A document checklist with a progress bar that saves on the device.
+- Life events: step-by-step paths for one situation, such as starting a business or looking for work, that put the guides in order. Steps can be ticked off, and progress saves on the device.
+- "Did this guide help?" on every guide: an anonymous yes or no, with a reason for no. Each browser answers a guide once.
+- "Set a renewal reminder" on guides for permits and cards that expire: the resident enters the expiry date and gets a Google Calendar event or a calendar file two weeks before it. Nothing is sent to the site.
+- "What changed" on a guide, from the notes editors write for residents when they update it.
+- "Open now" on offices with confirmed weekly hours, in Philippine time. Offices that are not verified never show it.
 - Agency and office directories with hotlines, emails, Facebook pages, and Google Maps and Waze links.
 - Checklist items can link to the guide that explains how to get that document.
 - A "Report incorrect information" form on every guide.
-- Share, copy, and print actions on every guide, plus related guides.
+- Share and copy-link actions on every guide, plus related guides.
 - Popular guides, recently updated guides, and guides you recently viewed on your device.
 - A searchable FAQ in four languages and a privacy policy.
 - Interface in English, Bisaya, Filipino, or Hiligaynon (see [Languages](#languages)).
@@ -66,6 +71,10 @@ For administrators (`/admin`):
 - Every change to a guide keeps the previous version. Anyone can compare versions, and a super admin can restore one. Restoring keeps a copy of what it replaces.
 - Preview a guide as residents will see it before it is published, duplicate a guide as a new unverified draft, and leave a note when sending a guide back.
 - Manage agencies (with logos), offices, and categories. Records are deactivated, never deleted. Agencies have their own verification status.
+- Manage life events: their steps, the guide each step links to, and an official source for steps without a guide.
+- Mark a guide for renewal reminders, and add a note for residents when saving a change.
+- Set an office's regular weekly hours.
+- See "Did this guide help?" answers per guide on the analytics page, with the guides that got the most No answers first.
 - Manage the FAQ in all four languages. A language left blank shows the English text.
 - Post notices that show as a banner across the public site, with optional start and end times. A super admin can also replace the whole site with a maintenance notice, which must have an end time. The admin panel keeps working during maintenance.
 - Review residents' reports and record how each was resolved. See an activity log of every sign-in, failed sign-in, and change, filtered by date. Passwords are never logged.
@@ -146,7 +155,7 @@ npm install
 
 To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, `019_add_resident_features.sql`, and `020_add_admin_tools.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, `019_add_resident_features.sql`, `020_add_admin_tools.sql`, `021_add_site_analytics.sql`, `022_add_life_events_feedback_reminders_updates_and_hours.sql`, and `023_add_public_rate_limits.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
 
 ## Usage
 
@@ -171,8 +180,11 @@ Before committing, run the checks:
 ```bash
 cd frontend
 npm run lint
+npm test
 npm run build
 ```
+
+`npm test` runs the small unit tests and checks that every language shown in the switcher has all of the English strings.
 
 The API tests create accounts and guides, so run them against a throwaway database, never a real one. Create it from `database/schema.sql` and the seeders, start the API with `DB_DATABASE` set to it, and run this from the project root:
 
@@ -182,9 +194,9 @@ node --test "backend/tests/*.test.mjs"
 
 ## Deployment
 
-1. Build the frontend with `npm run build` in `frontend/`. The build also pre-renders the public pages, so visitors on slow connections see them before the JavaScript loads. On a server other than Apache, send any address with no matching file to `shell.html`. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
+1. Build the frontend with `npm run build` in `frontend/`. The build also pre-renders the public pages and, when the API is reachable, every published guide and life event with its own title and description, so visitors on slow connections and search engines see them before the JavaScript loads. It reads `http://127.0.0.1:8000/api` by default; set `PRERENDER_API_URL` to build against another address. Without the API the build still succeeds with the fixed pages and the shell. On a server other than Apache, send any address with no matching file to `shell.html`. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
 2. Copy `backend/` to the server, outside the public web folder if possible, and run `composer install --no-dev --optimize-autoloader`.
-3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. Make `backend/storage/logs/` and `backend/public/uploads/` writable by the web server. Uploaded agency logos are saved in `uploads/`, whose `.htaccess` blocks scripts from running there.
+3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. If a CDN or reverse proxy sits in front of the site, set `TRUSTED_PROXIES` to its IPs or CIDRs so rate limits and sign-in throttling see the real visitor. Make `backend/storage/logs/` and `backend/public/uploads/` writable by the web server. Uploaded agency logos are saved in `uploads/`, whose `.htaccess` blocks scripts from running there.
 4. Serve both from one HTTPS domain: the frontend at `/` and the API's `public/` folder at `/api`. Enable `mod_rewrite`. `mod_headers` is recommended, and so is `mod_deflate`, which compresses pages for visitors on mobile data:
 
    ```apache
@@ -225,7 +237,7 @@ node --test "backend/tests/*.test.mjs"
 - [ ] Native-speaker review of the Bisaya, Filipino, and Hiligaynon text
 - [ ] Blaan, Maguindanaon, and Maranao translations
 - [x] Guide review workflow, verification status, and version history
-- [x] Site-wide search, FAQ, privacy policy, and share and print actions
+- [x] Site-wide search, FAQ, privacy policy, and share actions
 - [x] Admin version history, preview, FAQ and notice management, agency verification, and alerts
 - [x] Offline use and app install, larger text and high contrast, link previews and sitemap, and anonymous analytics
 - [ ] Choose hosting and deploy

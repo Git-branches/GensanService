@@ -43,7 +43,7 @@ class AgencyController
         }
 
         $officesStmt = $pdo->prepare(
-            'SELECT id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours,
+            'SELECT id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours, weekly_hours,
                     latitude, longitude, is_verified, last_verified_at
              FROM offices o
              WHERE agency_id = :agency_id AND is_active = 1

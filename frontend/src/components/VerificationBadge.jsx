@@ -11,14 +11,14 @@ const STYLES = {
 }
 
 export default function VerificationBadge({ status, date }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { icon: Icon, tone } = STYLES[status] ?? STYLES.unverified
   const label = t(`verification.${STYLES[status] ? status : 'unverified'}`)
 
   return (
     <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold ring-1 ${tone}`}>
       <Icon size={14} aria-hidden="true" />
-      {status === 'verified' && date ? `${label} ${formatDate(date)}` : label}
+      {status === 'verified' && date ? `${label} ${formatDate(date, undefined, locale)}` : label}
     </span>
   )
 }

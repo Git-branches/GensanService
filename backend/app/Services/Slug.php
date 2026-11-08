@@ -7,7 +7,7 @@ use PDO;
 
 class Slug
 {
-    private const TABLES = ['services', 'agencies', 'categories'];
+    private const TABLES = ['services', 'agencies', 'categories', 'life_events'];
 
     public static function make(string $text, int $max = 200): string
     {

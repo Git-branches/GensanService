@@ -4,6 +4,7 @@ const PAGES = [
   [/^\/$/, 'home'],
   [/^\/services\/?$/, 'services'],
   [/^\/services\/[^/]+$/, 'guide'],
+  [/^\/life-events\/[^/]+$/, 'life_event'],
   [/^\/agencies\/?$/, 'agencies'],
   [/^\/agencies\/[^/]+$/, 'agency'],
   [/^\/offices\/?$/, 'offices'],

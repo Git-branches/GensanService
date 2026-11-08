@@ -127,6 +127,11 @@ export default function RevisionHistory({ service, canRestore, onRestored }) {
                   <History size={15} aria-hidden="true" className="shrink-0 text-stone-500" />
                   {revision.change_summary || 'Guide changed'}
                 </span>
+                {revision.public_note && (
+                  <span className="mt-0.5 block text-xs text-stone-700">
+                    <span className="font-semibold">Shown to residents:</span> {revision.public_note}
+                  </span>
+                )}
                 <span className="block text-xs text-stone-500">
                   {timeAgo(revision.created_at)}
                   {revision.admin_name ? ` by ${revision.admin_name}` : ''}

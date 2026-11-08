@@ -1,0 +1,33 @@
+agency_slug,official_name,acronym,category,is_local_government,official_website,in_andam_db,gensan_office_status,notes
+social-security-system,Social Security System,SSS,National Agency,0,https://www.sss.gov.ph,yes,confirmed_by_official_source,
+philhealth,Philippine Health Insurance Corporation,PhilHealth,National Agency,0,https://www.philhealth.gov.ph,yes,confirmed_by_official_source,Two addresses published for the LHIO
+pag-ibig-fund,Home Development Mutual Fund (Pag-IBIG Fund),Pag-IBIG,National Agency,0,https://www.pagibigfund.gov.ph,yes,not_confirmed,Official site blocks automated reading
+philippine-statistics-authority,Philippine Statistics Authority,PSA,National Agency,0,https://psa.gov.ph,yes,confirmed_by_official_source,
+bureau-of-internal-revenue,Bureau of Internal Revenue,BIR,National Agency,0,https://www.bir.gov.ph,yes,confirmed_by_official_source,
+national-bureau-of-investigation,National Bureau of Investigation,NBI,National Agency,0,https://nbi.gov.ph,yes,confirmed_by_official_source,The GenSan office is the Sarangani District Office
+philippine-national-police,Philippine National Police,PNP,Public Safety,0,https://pnp.gov.ph,yes,confirmed_by_official_social_media,
+city-government-of-general-santos,City Government of General Santos,LGU-GenSan,Local Government,1,https://gensantos.gov.ph,yes,confirmed_by_official_source,
+department-of-labor-and-employment,Department of Labor and Employment,DOLE,National Agency,0,https://ro12.dole.gov.ph,no,confirmed_by_official_source,Two street addresses published
+technical-education-and-skills-development-authority,Technical Education and Skills Development Authority,TESDA,National Agency,0,https://www.tesda.gov.ph,no,confirmed_by_official_source,
+land-transportation-office,Land Transportation Office,LTO,National Agency,0,https://lto.gov.ph,no,confirmed_by_official_source,Three GenSan locations
+land-registration-authority,Land Registration Authority,LRA,National Agency,0,https://lra.gov.ph,no,confirmed_by_official_source,Registry of Deeds; address not published in the source
+department-of-education,Department of Education,DepEd,Education,0,https://www.deped.gov.ph,no,confirmed_by_official_source,Schools Division Office
+department-of-social-welfare-and-development,Department of Social Welfare and Development,DSWD,National Agency,0,https://fo12.dswd.gov.ph,no,confirmed_by_official_source,Field Office XII and a crisis intervention satellite are in GenSan
+department-of-the-interior-and-local-government,Department of the Interior and Local Government,DILG,National Agency,0,https://region12.dilg.gov.ph,no,confirmed_by_official_source,City field office
+cooperative-development-authority,Cooperative Development Authority,CDA,National Agency,0,https://cda.gov.ph,no,confirmed_by_official_source,Office type not stated
+commission-on-elections,Commission on Elections,COMELEC,National Agency,0,https://comelec.gov.ph,no,listed_not_confirmed,Listed on the city directory; address only from a third-party site
+government-service-insurance-system,Government Service Insurance System,GSIS,National Agency,0,https://www.gsis.gov.ph,no,listed_not_confirmed,Branch named in news; address only from a third-party site
+bureau-of-immigration,Bureau of Immigration,BI,National Agency,0,https://immigration.gov.ph,no,listed_not_confirmed,Address only from a third-party site
+bureau-of-fire-protection,Bureau of Fire Protection,BFP,Public Safety,0,https://bfp.gov.ph,no,listed_not_confirmed,Address only from a third-party site
+philippine-ports-authority,Philippine Ports Authority,PPA,Transport,0,https://www.ppa.com.ph,no,listed_not_confirmed,PMO SOCSARGEN at Makar Wharf; contact details not found
+judiciary,Supreme Court of the Philippines (trial courts),RTC / MTCC,Judicial,0,https://judiciary.gov.ph,no,listed_not_confirmed,Courts listed on the city directory; Hall of Justice in Lagao per news
+department-of-justice,Department of Justice (Office of the City Prosecutor),DOJ,Judicial,0,https://www.doj.gov.ph,no,listed_not_confirmed,Listed on the city directory
+public-attorneys-office,Public Attorney's Office,PAO,Judicial,0,https://pao.gov.ph,no,listed_not_confirmed,Listed on the city directory
+parole-and-probation-administration,Parole and Probation Administration,PPA (DOJ),Judicial,0,https://probation.gov.ph,no,listed_not_confirmed,Listed on the city directory
+commission-on-audit,Commission on Audit,COA,National Agency,0,https://www.coa.gov.ph,no,listed_not_confirmed,Listed on the city directory; not a resident service office
+national-commission-on-muslim-filipinos,National Commission on Muslim Filipinos,NCMF,National Agency,0,https://ncmf.gov.ph,no,listed_not_confirmed,Listed on the city directory
+department-of-trade-and-industry,Department of Trade and Industry,DTI,National Agency,0,https://www.dti.gov.ph,no,not_confirmed,Only an old article about a planned field office
+civil-service-commission,Civil Service Commission,CSC,National Agency,0,https://www.csc.gov.ph,no,not_confirmed,A GenSan testing center is mentioned with no address
+department-of-migrant-workers,Department of Migrant Workers,DMW,National Agency,0,https://dmw.gov.ph,no,no_gensan_office_found,Region XII office is in Koronadal City
+department-of-foreign-affairs,Department of Foreign Affairs,DFA,National Agency,0,https://dfa.gov.ph,no,no_gensan_office_found,No consular office in GenSan was found in this research
+overseas-workers-welfare-administration,Overseas Workers Welfare Administration,OWWA,National Agency,0,https://owwa.gov.ph,no,no_gensan_office_found,Region XII office is in Koronadal City per a third-party page

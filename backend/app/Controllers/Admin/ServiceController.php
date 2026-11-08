@@ -115,9 +115,9 @@ class ServiceController
         try {
             $pdo->prepare(
                 "INSERT INTO services (category_id, agency_id, title, slug, summary, description, search_keywords, fee_description,
-                                       processing_time_description, status, created_by, updated_by)
+                                       processing_time_description, renewal_reminder, status, created_by, updated_by)
                  VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :keywords, :fee,
-                         :processing, 'draft', :admin, :admin2)"
+                         :processing, :renewal, 'draft', :admin, :admin2)"
             )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'admin2' => $admin['id']]);
 
             $id = (int) $pdo->lastInsertId();
@@ -142,7 +142,8 @@ class ServiceController
         $body = Request::json();
         $data = $this->validate($body, $id);
         $summary = trim((string) ($body['change_summary'] ?? ''));
-        $this->replaceContent($id, $current, $data, $admin, mb_substr($summary, 0, 255) ?: null);
+        $publicNote = trim((string) ($body['public_change_note'] ?? ''));
+        $this->replaceContent($id, $current, $data, $admin, mb_substr($summary, 0, 255) ?: null, mb_substr($publicNote, 0, 255) ?: null);
         ActivityLogger::log((int) $admin['id'], 'service.updated', 'service', $id, ['title' => $data['title']]);
 
         Response::success($this->load($id));
@@ -172,9 +173,9 @@ class ServiceController
         try {
             $pdo->prepare(
                 "INSERT INTO services (category_id, agency_id, title, slug, summary, description, search_keywords, fee_description,
-                                       processing_time_description, status, created_by, updated_by)
+                                       processing_time_description, renewal_reminder, status, created_by, updated_by)
                  VALUES (:category_id, :agency_id, :title, :slug, :summary, :description, :keywords, :fee,
-                         :processing, 'draft', :admin, :admin2)"
+                         :processing, :renewal, 'draft', :admin, :admin2)"
             )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'admin2' => $admin['id']]);
             $id = (int) $pdo->lastInsertId();
             $this->syncChildren($pdo, $id, $data);
@@ -195,7 +196,7 @@ class ServiceController
         $this->load($id);
 
         $stmt = Database::connection()->prepare(
-            'SELECT r.id, r.change_summary, r.created_at, a.name AS admin_name
+            'SELECT r.id, r.change_summary, r.public_note, r.created_at, a.name AS admin_name
              FROM service_revisions r
              LEFT JOIN admins a ON a.id = r.admin_id
              WHERE r.service_id = :id
@@ -225,7 +226,9 @@ class ServiceController
         }
 
         $revision = $this->findRevision($id, (int) $params['revisionId']);
-        $data = $this->validate((array) json_decode($revision['snapshot'], true), $id);
+        // Versions saved before renewal reminders existed keep the guide's current setting.
+        $snapshot = (array) json_decode($revision['snapshot'], true) + ['renewal_reminder' => $current['renewal_reminder']];
+        $data = $this->validate($snapshot, $id);
 
         // The current content is saved as a revision too, so a restore can itself be undone.
         $this->replaceContent($id, $current, $data, $admin, 'Before restoring the version from ' . $revision['created_at']);
@@ -343,25 +346,26 @@ class ServiceController
     }
 
     /** Saves new content, keeping the content it replaces as a revision. */
-    private function replaceContent(int $id, array $current, array $data, array $admin, ?string $summary): void
+    private function replaceContent(int $id, array $current, array $data, array $admin, ?string $summary, ?string $publicNote = null): void
     {
         $pdo = Database::connection();
         $pdo->beginTransaction();
         try {
             $pdo->prepare(
-                'INSERT INTO service_revisions (service_id, admin_id, snapshot, change_summary)
-                 VALUES (:id, :admin, :snapshot, :summary)'
+                'INSERT INTO service_revisions (service_id, admin_id, snapshot, change_summary, public_note)
+                 VALUES (:id, :admin, :snapshot, :summary, :public_note)'
             )->execute([
                 'id' => $id,
                 'admin' => $admin['id'],
                 'snapshot' => json_encode($current, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 'summary' => $summary,
+                'public_note' => $publicNote,
             ]);
 
             $pdo->prepare(
                 'UPDATE services SET category_id = :category_id, agency_id = :agency_id, title = :title, slug = :slug,
                         summary = :summary, description = :description, search_keywords = :keywords, fee_description = :fee,
-                        processing_time_description = :processing, updated_by = :admin,
+                        processing_time_description = :processing, renewal_reminder = :renewal, updated_by = :admin,
                         verification_status = IF(verification_status = \'verified\', \'needs_review\', verification_status)
                  WHERE id = :id'
             )->execute($this->serviceColumns($data) + ['admin' => $admin['id'], 'id' => $id]);
@@ -397,7 +401,7 @@ class ServiceController
         $pdo = Database::connection();
         $stmt = $pdo->prepare(
             'SELECT s.id, s.category_id, s.agency_id, s.title, s.slug, s.summary, s.description, s.search_keywords, s.fee_description,
-                    s.processing_time_description, s.status, s.last_verified_at, s.verification_status,
+                    s.processing_time_description, s.renewal_reminder, s.status, s.last_verified_at, s.verification_status,
                     s.next_review_at, s.verification_notes, s.review_note, s.published_at, s.archived_at,
                     s.created_at, s.updated_at, c.slug AS category_slug, u.name AS updated_by_name
              FROM services s
@@ -458,6 +462,7 @@ class ServiceController
             'search_keywords' => $v->string($body['search_keywords'] ?? null, 'search_keywords', 500),
             'fee_description' => $v->string($body['fee_description'] ?? null, 'fee_description', 255),
             'processing_time_description' => $v->string($body['processing_time_description'] ?? null, 'processing_time_description', 255),
+            'renewal_reminder' => $v->bool($body['renewal_reminder'] ?? false),
             'category_id' => $v->id($body['category_id'] ?? null, 'category_id'),
             'agency_id' => $v->id($body['agency_id'] ?? null, 'agency_id'),
         ];
@@ -554,6 +559,7 @@ class ServiceController
             'keywords' => $data['search_keywords'],
             'fee' => $data['fee_description'],
             'processing' => $data['processing_time_description'],
+            'renewal' => $data['renewal_reminder'],
         ];
     }
 

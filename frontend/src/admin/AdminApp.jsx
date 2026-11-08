@@ -8,6 +8,7 @@ import AdminAgenciesPage from './pages/AdminAgenciesPage'
 import AdminOfficesPage from './pages/AdminOfficesPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AdminFaqPage from './pages/AdminFaqPage'
+import AdminLifeEventsPage from './pages/AdminLifeEventsPage'
 import AdminGuidePreviewPage from './pages/AdminGuidePreviewPage'
 import AdminNoticesPage from './pages/AdminNoticesPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
@@ -43,6 +44,7 @@ export default function AdminApp() {
           <Route path="offices" element={<AdminOfficesPage />} />
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="faqs" element={<AdminFaqPage />} />
+          <Route path="life-events" element={<AdminLifeEventsPage />} />
           <Route path="notices" element={<AdminNoticesPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />

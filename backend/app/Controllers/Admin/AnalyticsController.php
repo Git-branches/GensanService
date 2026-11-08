@@ -49,6 +49,32 @@ class AnalyticsController
         );
         $guides->execute($range);
 
+        // "Did this guide help?" answers per guide, with the reasons people gave for "No".
+        $feedback = $pdo->prepare(
+            "SELECT s.title, s.slug, f.helpful, f.reason, SUM(f.answers) AS answers
+             FROM service_feedback_daily f JOIN services s ON s.id = f.service_id
+             WHERE f.feedback_date BETWEEN :from AND :to
+             GROUP BY s.id, s.title, s.slug, f.helpful, f.reason"
+        );
+        $feedback->execute($range);
+        $byGuide = [];
+        foreach ($feedback->fetchAll() as $row) {
+            $guide = &$byGuide[$row['slug']];
+            $guide ??= ['title' => $row['title'], 'slug' => $row['slug'], 'yes' => 0, 'no' => 0, 'reasons' => []];
+            $count = (int) $row['answers'];
+            if ($row['helpful']) {
+                $guide['yes'] += $count;
+            } else {
+                $guide['no'] += $count;
+                if ($row['reason'] !== 'none') {
+                    $guide['reasons'][$row['reason']] = ($guide['reasons'][$row['reason']] ?? 0) + $count;
+                }
+            }
+            unset($guide);
+        }
+        // Guides with the most "No" answers first, since those are the ones to fix.
+        usort($byGuide, fn ($a, $b) => [$b['no'], $b['yes']] <=> [$a['no'], $a['yes']]);
+
         Response::success([
             'days' => $days,
             'from' => $range['from'],
@@ -60,6 +86,7 @@ class AnalyticsController
             'locales' => $group('locale'),
             'devices' => $group('device'),
             'top_guides' => array_map(fn ($row) => ['title' => $row['title'], 'slug' => $row['slug'], 'views' => (int) $row['views']], $guides->fetchAll()),
+            'feedback' => array_values(array_map(fn ($guide) => ['reasons' => (object) $guide['reasons']] + $guide, $byGuide)),
         ]);
     }
 }

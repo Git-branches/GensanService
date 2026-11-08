@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "vite build && vite build --ssr src/entry-prerender.jsx --outDir dist-ssr --emptyOutDir && node scripts/prerender.mjs",
     "lint": "eslint .",
+    "test": "node --test && node scripts/check-i18n.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

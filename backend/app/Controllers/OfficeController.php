@@ -16,7 +16,7 @@ class OfficeController
 
         $stmt = $pdo->query(
             'SELECT o.id, o.name, o.branch_type, o.description, o.address, o.barangay, o.city, o.province, o.contact_number, o.email,
-                    o.opening_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at,
+                    o.opening_hours, o.weekly_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at,
                     a.id AS agency_id, a.name AS agency_name, a.acronym AS agency_acronym, a.slug AS agency_slug,
                     a.logo_url AS agency_logo_url, a.is_local_government AS agency_is_local
              FROM offices o

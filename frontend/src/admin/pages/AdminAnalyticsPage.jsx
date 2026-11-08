@@ -14,6 +14,7 @@ const PAGE_LABELS = {
   home: 'Home',
   services: 'Service guides list',
   guide: 'A guide',
+  life_event: 'A life event',
   agencies: 'Agencies list',
   agency: 'An agency',
   offices: 'Offices',
@@ -23,6 +24,8 @@ const PAGE_LABELS = {
 }
 const LOCALE_LABELS = { en: 'English', ceb: 'Bisaya', fil: 'Filipino', hil: 'Hiligaynon', blaan: 'Blaan', mdh: 'Maguindanaon', mrw: 'Maranao' }
 const DEVICE_LABELS = { phone: 'Phone', tablet: 'Tablet', desktop: 'Computer' }
+
+const REASON_LABELS = { outdated: 'Outdated', missing: 'Something missing', unclear: 'Hard to understand', other: 'Something else' }
 
 const number = (value) => value.toLocaleString('en-PH')
 const day = (iso, options) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-PH', options)
@@ -170,6 +173,44 @@ export default function AdminAnalyticsPage() {
                   </li>
                 ))}
               </ol>
+            )}
+          </section>
+
+          <section className={`mt-6 p-5 ${SURFACE}`}>
+            <h2 className="text-base font-bold text-bay-950">Did this guide help?</h2>
+            <p className="mt-1 text-sm text-stone-600">Answers from residents, with the guides that got the most No answers first. Each browser answers a guide once.</p>
+            {data.feedback.length === 0 ? (
+              <p className="mt-3 text-sm text-stone-600">No answers in this period.</p>
+            ) : (
+              <div className="mt-3 overflow-x-auto">
+                <table className="w-full min-w-xl text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-stone-200 text-xs uppercase tracking-wide text-stone-500">
+                      <th scope="col" className="py-2 pr-4 font-semibold">Guide</th>
+                      <th scope="col" className="py-2 pr-4 text-right font-semibold">Yes</th>
+                      <th scope="col" className="py-2 pr-4 text-right font-semibold">No</th>
+                      <th scope="col" className="py-2 font-semibold">Reasons for No</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {data.feedback.map((guide) => {
+                      const reasons = Object.entries(guide.reasons).sort((a, b) => b[1] - a[1])
+                      return (
+                        <tr key={guide.slug}>
+                          <td className="py-2.5 pr-4">
+                            <Link to={`/services/${guide.slug}`} className="font-semibold text-bay-700 hover:underline">{guide.title}</Link>
+                          </td>
+                          <td className="py-2.5 pr-4 text-right tabular-nums text-stone-700">{number(guide.yes)}</td>
+                          <td className="py-2.5 pr-4 text-right tabular-nums font-semibold text-stone-900">{number(guide.no)}</td>
+                          <td className="py-2.5 text-stone-600">
+                            {reasons.length ? reasons.map(([reason, count]) => `${REASON_LABELS[reason] ?? reason} (${count})`).join(', ') : '—'}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         </>

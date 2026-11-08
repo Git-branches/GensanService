@@ -17,6 +17,7 @@ import {
   MessageCircleQuestion,
   ShieldAlert,
   Users,
+  Signpost,
   X,
 } from 'lucide-react'
 import { LogoMark } from '../components/Logo'
@@ -36,6 +37,7 @@ const NAV_GROUPS = [
     label: 'Content',
     items: [
       { to: '/admin/services', label: 'Service guides', icon: FileText, badge: (n) => n.for_review + n.approved, badgeLabel: 'guides waiting' },
+      { to: '/admin/life-events', label: 'Life events', icon: Signpost },
       { to: '/admin/agencies', label: 'Agencies', icon: Landmark },
       { to: '/admin/offices', label: 'Offices', icon: MapPin },
       { to: '/admin/categories', label: 'Categories', icon: LayoutGrid },

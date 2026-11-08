@@ -7,12 +7,12 @@ import ServiceCard from '../components/ServiceCard'
 import { CardGridSkeleton, EmptyState, ErrorState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
 import { usePageTitle } from '../hooks/usePageTitle'
-import { getAgencies, getCategories, getServices, search } from '../services/api'
+import { getAgencies, getCategories, getServices, getStats, search } from '../services/api'
 import { addRecentSearch } from '../utils/deviceHistory'
 import { useI18n } from '../i18n/context'
 
 const FIELD_CLASS =
-  'w-full rounded-lg border border-stone-300 bg-white py-2.5 text-base focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20'
+  'w-full rounded-lg border border-stone-300 bg-white py-3 text-base focus:border-bay-500 focus:outline-none focus:ring-2 focus:ring-bay-500/20'
 
 function SelectField({ id, label, value, onChange, children }) {
   return (
@@ -46,6 +46,7 @@ export default function ServicesPage() {
 
   const { data: categories } = useFetch(getCategories, [])
   const { data: agencies } = useFetch(getAgencies, [])
+  const { data: stats } = useFetch(getStats, [])
   const { data: services, error, loading } = useFetch(
     () => getServices({ q, category: categorySlug, agency: agencySlug }),
     [q, categorySlug, agencySlug]
@@ -71,6 +72,20 @@ export default function ServicesPage() {
     setParam('q', text)
   }
 
+  // The agencies with the most guides, as one-tap filters.
+  const quickPicks = (agencies ?? [])
+    .filter((agency) => agency.acronym)
+    .sort((a, b) => b.service_count - a.service_count || a.name.localeCompare(b.name))
+    .slice(0, 5)
+
+  const statItems = stats
+    ? [
+        { value: stats.services, label: t('services.process.statGuides') },
+        { value: stats.agencies, label: t('services.process.statAgencies') },
+        { value: stats.offices, label: t('services.process.statOffices') },
+      ]
+    : []
+
   const activeCategory = categories?.find((category) => category.slug === categorySlug)
   const activeAgency = agencies?.find((agency) => agency.slug === agencySlug)
 
@@ -93,51 +108,83 @@ export default function ServicesPage() {
           height: 420,
           scene: true,
         }}
-      >
-        <form
-          role="search"
-          onSubmit={handleSearch}
-          className="mt-8 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-bay-900/5 sm:p-5 lg:grid-cols-[1.6fr_1fr_1fr_auto] lg:items-end"
-        >
-          <div>
-            <label htmlFor="services-q" className="text-sm font-semibold text-stone-700">
-              {t('services.keyword')}
-            </label>
-            <div className="relative mt-1.5">
-              <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
-              <SearchBox
-                key={q}
-                id="services-q"
-                defaultValue={q}
-                placeholder={t('common.searchPlaceholder')}
-                className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-500`}
-              />
-            </div>
+      />
+
+      <section aria-labelledby="process-title" className="border-b border-stone-200 bg-white py-10 sm:py-14">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:items-end lg:gap-10">
+          <div className="lg:col-span-9">
+            <h2 id="process-title" className="text-2xl font-extrabold tracking-tight text-bay-950 sm:text-3xl">{t('services.process.title')}</h2>
+            <p className="mt-2 text-stone-600">{t('services.process.description')}</p>
+
+            <form role="search" onSubmit={handleSearch} className="mt-6 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-bay-900/5 sm:p-5">
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end md:grid-cols-[1.6fr_1fr_auto]">
+                <div className="sm:col-span-2 md:col-span-1">
+                  <label htmlFor="services-q" className="text-sm font-semibold text-stone-700">
+                    {t('services.process.whatDoYouNeed')}
+                  </label>
+                  <div className="relative mt-1.5">
+                    <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
+                    <SearchBox
+                      key={q}
+                      id="services-q"
+                      defaultValue={q}
+                      placeholder={t('common.searchPlaceholder')}
+                      className={`${FIELD_CLASS} pl-10 pr-3 placeholder:text-stone-500`}
+                    />
+                  </div>
+                </div>
+                <SelectField id="services-category" label={t('common.category')} value={categorySlug} onChange={(v) => setParam('category', v)}>
+                  <option value="">{t('common.allCategories')}</option>
+                  {categories?.map((category) => (
+                    <option key={category.id} value={category.slug}>
+                      {category.name}
+                    </option>
+                  ))}
+                </SelectField>
+                <button
+                  type="submit"
+                  className="inline-flex min-h-11 items-center justify-center rounded-lg bg-bay-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-bay-800"
+                >
+                  {t('services.process.searchGuides')}
+                </button>
+              </div>
+
+              {quickPicks.length > 0 && (
+                <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-100 pt-4 text-sm">
+                  <span className="font-medium text-stone-500">{t('services.process.popularAgencies')}</span>
+                  {quickPicks.map((agency) => {
+                    const active = agency.slug === agencySlug
+                    return (
+                      <button
+                        key={agency.id}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setParam('agency', active ? '' : agency.slug)}
+                        className={`inline-flex min-h-11 items-center rounded-md px-3 font-semibold ring-1 transition-colors ${
+                          active ? 'bg-bay-700 text-white ring-bay-700' : 'bg-bay-50 text-bay-800 ring-bay-100 hover:bg-bay-100'
+                        }`}
+                      >
+                        {agency.acronym}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </form>
           </div>
-          <SelectField id="services-category" label={t('common.category')} value={categorySlug} onChange={(v) => setParam('category', v)}>
-            <option value="">{t('common.allCategories')}</option>
-            {categories?.map((category) => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </SelectField>
-          <SelectField id="services-agency" label={t('common.agency')} value={agencySlug} onChange={(v) => setParam('agency', v)}>
-            <option value="">{t('common.allAgencies')}</option>
-            {agencies?.map((agency) => (
-              <option key={agency.id} value={agency.slug}>
-                {agency.acronym || agency.name}
-              </option>
-            ))}
-          </SelectField>
-          <button
-            type="submit"
-            className="min-h-11 rounded-lg bg-bay-700 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-bay-800"
-          >
-            {t('services.search')}
-          </button>
-        </form>
-      </PageHeader>
+
+          {statItems.length > 0 && (
+            <dl className="grid grid-cols-3 gap-4 lg:col-span-3 lg:grid-cols-1 lg:gap-5 lg:border-l lg:border-stone-200 lg:pl-8">
+              {statItems.map((item) => (
+                <div key={item.label} className="flex flex-col border-l-4 border-sun-400 pl-3">
+                  <dt className="text-sm text-stone-600">{item.label}</dt>
+                  <dd className="order-first text-3xl font-extrabold tabular-nums text-bay-900">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      </section>
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4">

@@ -2,7 +2,7 @@
 // Run them the same way as workflow.test.mjs, against a throwaway database.
 import assert from 'node:assert/strict'
 import { before, test } from 'node:test'
-import { client, PASSWORD, publish, SEED_ADMIN } from './helpers.mjs'
+import { API, client, PASSWORD, publish, SEED_ADMIN } from './helpers.mjs'
 
 const stamp = Date.now()
 const admin = client()
@@ -178,4 +178,20 @@ test('offices show their branch type only when it is stated', async () => {
   assert.equal(branch.branch_type, 'satellite')
   assert.equal(branch.description, 'Near the market')
   assert.equal(offices.find((o) => o.name === `Plain ${stamp}`).branch_type, null)
+})
+
+test('guide views stop counting after the hourly limit', async () => {
+  const { slug } = await published(`View limit ${stamp}`)
+  for (let i = 0; i < 30; i += 1) {
+    assert.equal((await visitor.post(`/services/${slug}/view`)).json.data.recorded, true)
+  }
+  assert.equal((await visitor.post(`/services/${slug}/view`)).json.data.recorded, false)
+})
+
+test('public reads are cacheable and admin responses are not', async () => {
+  const publicRead = await fetch(`${API}/services?limit=1`)
+  assert.match(publicRead.headers.get('cache-control') ?? '', /max-age=60/)
+
+  const adminRead = await fetch(`${API}/admin/me`)
+  assert.match(adminRead.headers.get('cache-control') ?? '', /no-store/)
 })

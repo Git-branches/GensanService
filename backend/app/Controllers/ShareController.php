@@ -33,7 +33,10 @@ class ShareController
         $path = preg_replace('#[^a-z0-9/_-]#i', '', $path) ?: '/';
         $dist = rtrim($config['frontend_dist'], '/\\');
 
-        $file = in_array($path, self::STATIC_ROUTES, true) ? $dist . ($path === '/' ? '' : $path) . '/index.html' : $dist . '/shell.html';
+        // A pre-built page for this address, when the build found it in the database. A guide added
+        // after the build falls back to the shell, which still gets the title and summary below.
+        $pageFile = $dist . ($path === '/' ? '' : $path) . '/index.html';
+        $file = is_file($pageFile) ? $pageFile : $dist . '/shell.html';
         $html = is_file($file) ? file_get_contents($file) : false;
         if ($html === false) {
             http_response_code(404);
@@ -52,6 +55,8 @@ class ShareController
             [$status, $title, $description] = $this->guide($m[1], $title, $description);
         } elseif (preg_match('#^/agencies/([a-z0-9-]+)$#', $path, $m)) {
             [$status, $title, $description] = $this->agency($m[1], $title, $description);
+        } elseif (preg_match('#^/life-events/([a-z0-9-]+)$#', $path, $m)) {
+            [$status, $title, $description] = $this->lifeEvent($m[1], $title, $description);
         } elseif (!in_array($path, self::STATIC_ROUTES, true)) {
             $status = 404;
         }
@@ -116,5 +121,18 @@ class ShareController
         $name = $agency['acronym'] ? "{$agency['name']} ({$agency['acronym']})" : $agency['name'];
         $about = trim((string) $agency['description']) ?: "Service guides and General Santos City offices for {$agency['name']}.";
         return [200, "{$name} · " . self::SITE_NAME, $about];
+    }
+
+    /** @return array{int, string, string} */
+    private function lifeEvent(string $slug, string $title, string $description): array
+    {
+        $stmt = Database::connection()->prepare("SELECT title, summary FROM life_events WHERE slug = :slug AND status = 'published'");
+        $stmt->execute(['slug' => $slug]);
+        $event = $stmt->fetch();
+        if (!$event) {
+            return [404, $title, $description];
+        }
+        $summary = trim((string) $event['summary']) ?: 'The guides to follow, in order, in General Santos City.';
+        return [200, "{$event['title']} · " . self::SITE_NAME, $summary];
     }
 }

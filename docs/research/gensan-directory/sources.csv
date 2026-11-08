@@ -1,0 +1,51 @@
+source_id,title,url,source_type,checked_on,notes
+S01,SSS Branch Locator,https://member.sss.gov.ph/member/sss/branchloc,official_directory,2026-11-01,Read by the site owner in a browser
+S02,SSS Branches Business Hours as of January 2025,https://www.sss.gov.ph/news-and-updates/sss-branches-business-hours-as-of-january-2025/,official_announcement,2026-11-01,Hours list dated January 2025
+S03,PhilHealth Regional Offices Directory,https://www.philhealth.gov.ph/about_us/directory/,official_directory,2026-11-05,
+S04,PhilHealth regional office map (older page),https://www.philhealth.gov.ph/about_us/map/index.html,official_directory,2026-11-05,Gives an older LHIO address that conflicts with S03
+S05,BIR Citizen's Charter 2026,https://bir-cdn.bir.gov.ph/BIR/pdf/BIR%20Citizen%27s%20Charter%20(2026%20Edition)%20final.pdf,official_document,2026-11-01,
+S06,DOLE Region XII: General Santos City Field Office,https://ro12.dole.gov.ph/general-santos-city-field-office,official_website,2026-11-05,
+S07,DOLE Region XII: Contact Us,https://ro12.dole.gov.ph/contact-us/,official_website,2026-11-05,Gives a different street address from S06
+S08,TESDA Technology Institutes Directory,https://www.tesda.gov.ph/Directory/TTI,official_directory,2026-11-05,
+S09,LTO Directory,https://lto.gov.ph/directory/,official_directory,2026-11-05,
+S10,LTO Region XII Directory 2025,https://lto.gov.ph/wp-content/uploads/2025/01/LTO-R12-Directory-2025.pdf,official_document,2026-11-05,Chief-of-office names differ from S09
+S11,NBI Regional and District Offices,https://nbi.gov.ph/regional-district-offices/,official_directory,2026-11-05,
+S12,LRA Directory,https://lra.gov.ph/wp-content/uploads/2026/07/Land-Registration-Authority_-Directory-2023.xlsx-Directory.pdf,official_document,2026-11-05,File name says 2023
+S13,DepEd Regional and Division Offices Directory,https://www.deped.gov.ph/contact-us/regional-division-offices-directory/,official_directory,2026-11-05,
+S14,DSWD Field Office XII: Crisis Intervention Section offices,https://fo12.dswd.gov.ph/swad-leaders/,official_website,2026-11-05,
+S15,DILG Region XII: Offices,https://region12.dilg.gov.ph/offices,official_directory,2026-11-05,
+S16,CDA Region XII: Contact Us,https://cda.gov.ph/region-12/contact-us/,official_website,2026-11-05,
+S17,City Government of General Santos: Departments,https://gensantos.gov.ph/departments/,official_directory,2026-11-05,Its general contact number is a placeholder; also lists some national offices and courts
+S18,GenSan Local Civil Registry: Contacts,http://lcr.gensantos.gov.ph/contacts/,official_website,2026-11-05,
+S19,Sangguniang Panlungsod of General Santos: Contact Us (hotlines),https://sp.gensantos.gov.ph/contact-us/,official_website,2026-11-02,Copyright line dated 2022
+S20,Office of the Building Official,http://obo.gensantos.gov.ph/Home,official_website,2026-11-05,
+S21,BPLD Citizen's Charter 2026,https://hrmdo.gensantos.gov.ph/uploads/services/6e3d973bfab34189221760fe39af68b1.pdf,official_document,2026-10-28,
+S22,GSCPO official Facebook page,https://www.facebook.com/GSCPO.PRO12/,official_social_media,2026-11-02,
+S23,PNP GenSan police station Facebook pages,https://www.facebook.com/gscpops1,official_social_media,2026-11-02,One page per station; all links are in database/seeders/013_add_pnp_gensan_offices_and_guides.sql
+S24,WikiProcedure: COMELEC General Santos,https://wikiprocedure.com/index.php/General_Santos_-_Transfer_of_Voter_Registration_Record,third_party,2026-11-05,Not an official source
+S25,WikiProcedure: GSIS General Santos,https://wikiprocedure.com/index.php/General_Santos_-_Apply_for_Government_Service_Insurance_System_(GSIS)_eCard,third_party,2026-11-05,Not an official source
+S26,WikiProcedure: Bureau of Immigration General Santos,https://www.wikiprocedure.com/extensions/Amp/ampfiles/General_Santos_-_Apply_for_Provisional_Work_Permit.html,third_party,2026-11-05,Not an official source
+S27,Grace's List: General Santos City services,https://graceslist.org/services/locations/general-santos-city,third_party,2026-11-05,Not an official source
+S28,MindaNews: GenSan Hall of Justice and RTC branches,https://mindanews.com/?p=62195,news,2026-11-05,Older article
+S29,Philippine Ports Authority,https://www.ppa.com.ph/node/13022,official_website,2026-11-05,Not opened directly; seen in search results
+S30,Context.ph: Makar Port resumes limited operations (June 2026),https://context.ph/2026/06/18/makar-port-in-general-santos-resumes-limited-operations-after-earthquake/,news,2026-11-05,
+S31,ClinicFinder: Dr. Jorge P. Royeca City Hospital,https://www.clinicfinderph.com/clinic/general-santos-dr-jorge-p-royeca-city-hospital,third_party,2026-11-05,Not an official source
+S32,DTI news: field office groundbreaking in GenSan,https://www.dti.gov.ph/archives/news-archives/trade-chief-spearheads-dti-field-offices/,official_announcement,2026-11-05,Old article; does not confirm the office is open
+S33,DMW regional offices directory (June 2022),https://mwosingapore.dmw.gov.ph/wp-content/uploads/2023/10/Directory-Regional-Offices_OSSCO-as-of-June-2022.pdf,official_document,2026-11-05,Region XII office is in Koronadal City
+S34,CSC Regional Office XII,https://www.csc.gov.ph/regional-offices/region-xii,official_website,2026-11-05,Mentions a GenSan testing center without an address
+S35,Andam GenSan database seeder 006 (official directories checked 2026-10-29),database/seeders/006_update_gensan_office_details.sql,internal_record,2026-10-29,PSA and BIR office details already in the database
+S36,LGU-GenSan Citizen's Charter page,https://gensantos.gov.ph/?slug=citizen-s-charter,official_directory,2026-11-05,Links a charter PDF for each city service
+S38,CTO charter: Payment of Cedula/Community Tax Certificate (Individual and Corporate),https://hrmdo.gensantos.gov.ph/uploads/services/38344d921841db1d9874cff0b1257097.pdf,official_document,2026-11-05,
+S39,PDAO charter: Request for Issuance of Persons with Disability Identification Card,https://hrmdo.gensantos.gov.ph/uploads/services/761_409fd64e802fd204f1329b06a654d23c.pdf,official_document,2026-11-05,
+S40,CSWDO charter: Issuance of Solo Parent Identification Card,https://hrmdo.gensantos.gov.ph/uploads/services/44d8bc7b3347c5ab3010c37a5a597444.pdf,official_document,2026-11-05,
+S41,LCR charter R3: Issuance of Certified Copy of Civil Registry Document,https://hrmdo.gensantos.gov.ph/uploads/services/73e09070811725598676e46e96983d77.pdf,official_document,2026-11-05,
+S42,"LCR charter R24: Request for PSA Copy of Birth, Death, Marriage Certificate, CENOMAR and CENODEATH",https://hrmdo.gensantos.gov.ph/uploads/services/998bf1be431136d0c54de3fd15bc7dd3.pdf,official_document,2026-11-05,
+S43,LCR charter B4: Delayed Registration of Birth (born at home),https://hrmdo.gensantos.gov.ph/uploads/services/f8c4868676b6284f335d81a4f7bf7d15.pdf,official_document,2026-11-05,
+S44,LCR charter M4: Issuance of Marriage License,https://hrmdo.gensantos.gov.ph/uploads/services/a5c46fddc7991d74dd50a9fc0fbd1017.pdf,official_document,2026-11-05,
+S45,CHO charter: Issuance of Health Certificate,https://hrmdo.gensantos.gov.ph/uploads/services/36fdbfb4b166374d39649228fca20b36.pdf,official_document,2026-11-05,
+S46,CHO charter: Issuance of Sanitary Permit to Operate,https://hrmdo.gensantos.gov.ph/uploads/services/9f3287791b7f7300e9969bcab85da3cd.pdf,official_document,2026-11-05,
+S47,PESO charter: Issuance of Referral Slip and PESLA ID,https://hrmdo.gensantos.gov.ph/uploads/services/738_6409eb6d555c1b110e94b733278d63d9.pdf,official_document,2026-11-05,
+S48,CTO charter: Payment of Real Property Tax,https://hrmdo.gensantos.gov.ph/uploads/services/f73ca1ac29279c909d8a60f9cbbe7e5c.pdf,official_document,2026-11-05,
+S49,CSWDO charter: Permit to Travel for Minors Travelling Within the Philippines,https://hrmdo.gensantos.gov.ph/uploads/services/faaf2dc320a8a59929d793c7974262ff.pdf,official_document,2026-11-05,
+S50,CSWDO charter: Certificate of Indigency to Access Legal Services from the Public Attorney's Office,https://hrmdo.gensantos.gov.ph/uploads/services/71474523a461c377719ff961c7177e07.pdf,official_document,2026-11-05,
+S51,BPLD charter: Issuance of Business Permit (Renewal) – eBOSS,https://hrmdo.gensantos.gov.ph/uploads/services/0c4d9ca97f626cc1d530042f76b9201d.pdf,official_document,2026-11-05,"Renewal through Filipizen all year; the permit can be printed at home, sent by courier, or printed at the BPLD"

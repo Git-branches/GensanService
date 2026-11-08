@@ -22,6 +22,7 @@ const EMPTY_FORM = {
   search_keywords: '',
   fee_description: '',
   processing_time_description: '',
+  renewal_reminder: false,
   eligibility: [],
   requirements: [],
   steps: [],
@@ -57,6 +58,7 @@ function fromService(service) {
     search_keywords: service.search_keywords ?? '',
     fee_description: service.fee_description ?? '',
     processing_time_description: service.processing_time_description ?? '',
+    renewal_reminder: Boolean(Number(service.renewal_reminder)),
     eligibility: service.eligibility.map((text) => withKey({ text })),
     requirements: service.requirements.map((item) =>
       withKey({ id: item.id, requirement_text: item.requirement_text, notes: item.notes ?? '', is_optional: item.is_optional, linked_service_id: item.linked_service_id ?? null })
@@ -87,6 +89,7 @@ function toPayload(form) {
     search_keywords: form.search_keywords,
     fee_description: form.fee_description,
     processing_time_description: form.processing_time_description,
+    renewal_reminder: form.renewal_reminder,
     eligibility: form.eligibility.map((item) => item.text),
     requirements: form.requirements.map(stripKey),
     steps: form.steps.map(stripKey),
@@ -128,6 +131,7 @@ export default function AdminServiceEditorPage() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [dirty, setDirty] = useState(false)
   const [changeSummary, setChangeSummary] = useState('')
+  const [publicNote, setPublicNote] = useState('')
   const [reviewNote, setReviewNote] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
   const [errors, setErrors] = useState({})
@@ -240,12 +244,13 @@ export default function AdminServiceEditorPage() {
       let saved = service
       if (!service || dirty) {
         saved = service
-          ? await adminApi.updateService(service.id, { ...toPayload(form), change_summary: changeSummary })
+          ? await adminApi.updateService(service.id, { ...toPayload(form), change_summary: changeSummary, public_change_note: publicNote })
           : await adminApi.createService(toPayload(form))
       }
       if (nextStatus) saved = await adminApi.setServiceStatus(saved.id, nextStatus, reviewNote)
       setDirty(false)
       setChangeSummary('')
+      setPublicNote('')
       setReviewNote('')
 
       if (!service) {
@@ -442,6 +447,16 @@ export default function AdminServiceEditorPage() {
             </div>
           </Card>
 
+          <Card title="Renewal reminder" description="For permits and cards that expire. Residents enter their own expiry date, so the guide never states a deadline.">
+            <label className="flex items-start gap-2.5 text-sm">
+              <input type="checkbox" checked={form.renewal_reminder} onChange={(e) => update({ renewal_reminder: e.target.checked })} className="mt-0.5 h-4 w-4 accent-bay-700" />
+              <span>
+                <span className="block font-semibold text-stone-800">Show "Set a renewal reminder" on this guide</span>
+                <span className="block text-xs text-stone-500">Adds Google Calendar and calendar file buttons that remind the resident two weeks before the date they enter.</span>
+              </span>
+            </label>
+          </Card>
+
           <Card title="Who can apply" description="Eligibility conditions, one per line item.">
             <ListEditor
               items={form.eligibility}
@@ -576,6 +591,14 @@ export default function AdminServiceEditorPage() {
               </ul>
             )}
           </Card>
+          {service && (
+            <Card title="Tell residents what changed" description="Optional. Shown on the guide under What changed, with the date you save. Leave it empty for small fixes such as typos.">
+              <Field id="public_change_note" label="Note for residents" hint={`${publicNote.length}/255. Example: The fee for a new non-food handler card is now PHP 165.`}>
+                <textarea id="public_change_note" rows={2} maxLength={255} value={publicNote} onChange={(e) => { setPublicNote(e.target.value); setDirty(true) }} className={inputClass} />
+              </Field>
+            </Card>
+          )}
+
           <Card title="Related guides" description="Shown at the end of the guide. If none are chosen, residents see other guides in the same category.">
             {errors.related_ids && <InlineError message={errors.related_ids} />}
             {relatedOptions.length === 0 ? (

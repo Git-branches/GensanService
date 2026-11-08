@@ -5,6 +5,7 @@ import { LoadingState } from '../components/StateMessage'
 import HomePage from '../pages/HomePage'
 import ServicesPage from '../pages/ServicesPage'
 import ServiceDetailPage from '../pages/ServiceDetailPage'
+import LifeEventPage from '../pages/LifeEventPage'
 import AgenciesPage from '../pages/AgenciesPage'
 import AgencyDetailPage from '../pages/AgencyDetailPage'
 import OfficesPage from '../pages/OfficesPage'
@@ -31,6 +32,7 @@ export default function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="services/:slug" element={<ServiceDetailPage />} />
+        <Route path="life-events/:slug" element={<LifeEventPage />} />
         <Route path="agencies" element={<AgenciesPage />} />
         <Route path="agencies/:slug" element={<AgencyDetailPage />} />
         <Route path="offices" element={<OfficesPage />} />

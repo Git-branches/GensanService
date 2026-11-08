@@ -19,6 +19,10 @@ class SitemapController
         foreach ($guides as $guide) {
             $urls[] = ['loc' => "{$origin}/services/{$guide['slug']}", 'lastmod' => substr((string) $guide['updated_at'], 0, 10)];
         }
+        $events = $pdo->query("SELECT slug, updated_at FROM life_events WHERE status = 'published' ORDER BY display_order, title");
+        foreach ($events as $event) {
+            $urls[] = ['loc' => "{$origin}/life-events/{$event['slug']}", 'lastmod' => substr((string) $event['updated_at'], 0, 10)];
+        }
         $agencies = $pdo->query('SELECT slug, updated_at FROM agencies WHERE is_active = 1 ORDER BY name');
         foreach ($agencies as $agency) {
             $urls[] = ['loc' => "{$origin}/agencies/{$agency['slug']}", 'lastmod' => substr((string) $agency['updated_at'], 0, 10)];

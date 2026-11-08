@@ -5,15 +5,16 @@ namespace App\Controllers;
 use App\Database;
 use App\Request;
 use App\Response;
+use App\Services\PublicRateLimit;
 
 class AnalyticsController
 {
-    public const PAGES = ['home', 'services', 'guide', 'agencies', 'agency', 'offices', 'faq', 'privacy', 'not_found'];
+    public const PAGES = ['home', 'services', 'guide', 'life_event', 'agencies', 'agency', 'offices', 'faq', 'privacy', 'not_found'];
     public const LOCALES = ['en', 'ceb', 'fil', 'hil', 'blaan', 'mdh', 'mrw'];
     public const DEVICES = ['phone', 'tablet', 'desktop'];
 
     // Crawlers, link previews, and test browsers are not people reading the site.
-    private const BOTS = '/bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|python|curl|wget/i';
+    public const BOTS ='/bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|python|curl|wget/i';
 
     /**
      * Adds one to today's count for a page type, language, and screen size.
@@ -31,6 +32,10 @@ class AnalyticsController
         }
 
         if (preg_match(self::BOTS, (string) Request::header('User-Agent'))) {
+            Response::success(['recorded' => false]);
+        }
+
+        if (PublicRateLimit::exceeded('page_view', PublicRateLimit::key(Request::ip()), 120)) {
             Response::success(['recorded' => false]);
         }
 

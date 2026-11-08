@@ -8,6 +8,9 @@ return [
     'timezone' => $_ENV['APP_TIMEZONE'] ?? 'Asia/Manila',
     // Only needed when the frontend is served from a different origin (e.g. the Vite dev server). Leave empty in production.
     'cors_allowed_origin' => $_ENV['CORS_ALLOWED_ORIGIN'] ?? '',
+    // Comma-separated IPs or CIDRs of reverse proxies/CDNs you control. Leave empty when the site is
+    // served directly; forwarded headers are only trusted from these peers.
+    'trusted_proxies' => array_values(array_filter(array_map('trim', explode(',', $_ENV['TRUSTED_PROXIES'] ?? '')))),
     'log_path' => __DIR__ . '/../storage/logs/app.log',
     // The public address of the site, such as https://andamgensan.ph, used in link previews and the sitemap.
     // Leave empty to use the address each request came to.

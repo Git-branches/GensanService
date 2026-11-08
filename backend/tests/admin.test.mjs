@@ -29,6 +29,12 @@ const faq = (extra = {}) => ({
   ...extra,
 })
 const notice = (extra = {}) => ({ title: `Notice ${stamp}`, message: 'Testing a notice.', type: 'info', is_published: true, ...extra })
+const lifeEvent = (extra = {}) => ({
+  title: `Life event ${stamp}`,
+  summary: 'A test life event.',
+  steps: [{ title: 'First step' }],
+  ...extra,
+})
 const local = (offsetHours) => new Date(Date.now() + offsetHours * 3600000 + 8 * 3600000).toISOString().slice(0, 16)
 const liveNotices = async () => (await visitor.get('/announcements')).json.data
 
@@ -196,4 +202,12 @@ test('reports keep a resolution, and new ones show in the sidebar count', async 
   assert.equal(saved.status, 200, JSON.stringify(saved.json))
   const after = (await admin.get('/admin/reports?status=resolved')).json.data.reports.find((r) => r.id === report.id)
   assert.equal(after.resolution, 'Updated the fee.')
+})
+
+test('only a super admin can publish a life event when creating it', async () => {
+  assert.equal((await editor.post('/admin/life-events', lifeEvent({ status: 'published' }))).status, 403)
+  assert.equal((await editor.post('/admin/life-events', lifeEvent({ title: `Draft event ${stamp}` }))).status, 201)
+
+  const publishedEvent = await admin.post('/admin/life-events', lifeEvent({ title: `Published event ${stamp}`, status: 'published' }))
+  assert.equal(publishedEvent.status, 201, JSON.stringify(publishedEvent.json))
 })

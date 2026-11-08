@@ -1,0 +1,40 @@
+service_key,agency_slug,service_name,where_handled,status,andam_guide_slug,source_ids,notes
+sss-number,social-security-system,Apply for an SS Number,Online through SSS; permanent number at an SSS branch,Published guide (verified),apply-for-sss-number,S01;S02,The site owner says the branch also takes walk-ins; the 2026 charter entries found describe online application
+psa-birth-certificate,philippine-statistics-authority,Request a PSA Birth Certificate,Online through PSA Serbilis,Published guide (verified),request-psa-birth-certificate,,Walk-in at a PSA outlet not confirmed
+bir-tin,bureau-of-internal-revenue,Apply for a TIN (BIR Form 1904),Online through ORUS or the BIR Revenue District Office,Published guide (verified),apply-for-tin-bir-form-1904,S05,
+philhealth-registration,philhealth,Register as a PhilHealth Member,PhilHealth Local Health Insurance Office,Published guide (verified),register-as-philhealth-member,S03,
+pagibig-registration,pag-ibig-fund,Register for Pag-IBIG Fund Membership,Online or a Pag-IBIG branch,Published guide (not yet verified),register-for-pag-ibig-membership,,Official site could not be read
+new-business-permit,city-government-of-general-santos,Apply for a New Business Permit,Online through Filipizen; payment at the City Treasurer's Office,Published guide (verified),new-business-permit-general-santos,S21,The site owner says the BPLD takes walk-in applications; the charter documents online application only
+national-police-clearance,philippine-national-police,Get a National Police Clearance,Online through pnpclearance.ph; the applicant picks the police station,Published guide (verified),get-national-police-clearance,,
+police-blotter,philippine-national-police,Report an Incident to the Police (Police Blotter),A police station,Draft guide,report-an-incident-police-blotter,,Which stations take reports is not confirmed
+lost-document-report,philippine-national-police,Report a Lost Document to the Police,A police station,Draft guide,report-a-lost-document-to-the-police,,
+police-assistance,philippine-national-police,Ask the Police for Assistance,911 or a police station,Draft guide,ask-the-police-for-assistance,S19,
+nbi-clearance,national-bureau-of-investigation,Get an NBI Clearance,Online application and an NBI clearance center,Draft guide,get-nbi-clearance,S11,Whether NBI SARDO processes clearances is not confirmed
+barangay-clearance,city-government-of-general-santos,Get a Barangay Clearance,The resident's barangay hall,Draft guide (must not be published yet),get-barangay-clearance,,Needs a barangay hall to confirm requirements and fee
+cedula,city-government-of-general-santos,Get a Cedula (Community Tax Certificate),City Treasurer's Office or barangay,Draft guide,get-cedula-community-tax-certificate,S21;S38,The CTO charter is the source to finish this draft
+lto-license,land-transportation-office,Student permit and driver's license,LTO General Santos District Office or Licensing Center,Candidate – needs verification,,S09,Requirements must come from the LTO Citizen's Charter
+lto-registration,land-transportation-office,Vehicle registration and renewal,LTO General Santos District Office,Candidate – needs verification,,S09,
+philsys-id,philippine-statistics-authority,PhilSys (National ID) registration,PhilSys registration center,Candidate – needs verification,,,The GenSan registration center address is not confirmed
+voter-registration,commission-on-elections,Voter registration and transfer,COMELEC Office of the Election Officer,Candidate – needs verification,,S24,Registration only runs during set periods
+dswd-aics,department-of-social-welfare-and-development,Assistance to Individuals in Crisis Situation (AICS),DSWD XII Crisis Intervention Section satellite office,Candidate – needs verification,,S14,
+civil-registry-copies,city-government-of-general-santos,Certified copies of civil registry documents,Local Civil Registrar,Candidate – official charter found,,S18;S41,
+building-permit,city-government-of-general-santos,Building permit,Office of the Building Official,Candidate – needs verification,,S20,
+senior-citizen-id,city-government-of-general-santos,Senior citizen ID,Office of the Senior Citizens Affairs,Candidate – needs verification,,S17,
+pwd-id,city-government-of-general-santos,PWD ID,Persons with Disability Affairs Office,Candidate – official charter found,,S17;S39,
+peso-job-referral,city-government-of-general-santos,Referral slip and PESLA ID,Public Employment Services Office,Candidate – official charter found,,S17;S47,
+tesda-training,technical-education-and-skills-development-authority,Skills training and assessment,TESDA Provincial Training Center,Candidate – needs verification,,S08,
+gsis-services,government-service-insurance-system,GSIS member services (eCard and loans),GSIS General Santos Branch,Candidate – needs verification,,S25,Branch address is third-party only
+rod-title-copy,land-registration-authority,Certified true copy of a land title,Registry of Deeds – General Santos City,Candidate – needs verification,,S12,
+pao-legal-aid,public-attorneys-office,Free legal assistance,Public Attorney's Office,Candidate – needs verification,,S17,
+cooperative-registration,cooperative-development-authority,Cooperative registration,CDA General Santos office,Candidate – needs verification,,S16,
+dfa-passport,department-of-foreign-affairs,Passport application,No DFA office in GenSan confirmed,Candidate – needs verification,,,No GenSan DFA consular office was found in this research
+business-permit-renewal,city-government-of-general-santos,Renew a Business Permit,Online through Filipizen; printing at the BPLD,Published guide (not yet verified),renew-business-permit-general-santos,S51,The site owner says the BPLD takes walk-in business permit applications; the charter describes online renewal only
+psa-copy-at-lcr,city-government-of-general-santos,Request a PSA copy through the Local Civil Registrar,Local Civil Registrar,Candidate – official charter found,,S42,A local option beside PSA Serbilis
+delayed-birth-registration,city-government-of-general-santos,Delayed registration of birth (born at home),Local Civil Registrar,Candidate – official charter found,,S43,
+marriage-license,city-government-of-general-santos,Marriage license,Local Civil Registrar,Candidate – official charter found,,S44,
+solo-parent-id,city-government-of-general-santos,Solo Parent ID,City Social Welfare & Development Office,Candidate – official charter found,,S40,
+minor-travel-permit,city-government-of-general-santos,Permit to travel for minors (within the Philippines),City Social Welfare & Development Office,Candidate – official charter found,,S49,
+certificate-of-indigency,city-government-of-general-santos,Certificate of indigency for PAO legal services,City Social Welfare & Development Office,Candidate – official charter found,,S50,
+health-certificate,city-government-of-general-santos,Health certificate,City Health Office,Published guide (not yet verified),get-health-certificate-general-santos,S45,The charter documents both walk-in and online appointment
+sanitary-permit,city-government-of-general-santos,Sanitary permit to operate,City Health Office,Candidate – official charter found,,S46,
+real-property-tax,city-government-of-general-santos,Pay real property tax,City Treasurer's Office,Candidate – official charter found,,S48,

@@ -18,7 +18,7 @@ class OfficeController
         Auth::requireAdmin();
         $rows = Database::connection()->query(
             'SELECT o.id, o.agency_id, o.name, o.branch_type, o.description, o.address, o.barangay, o.city, o.province, o.contact_number, o.email,
-                    o.opening_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at, o.is_active,
+                    o.opening_hours, o.weekly_hours, o.latitude, o.longitude, o.is_verified, o.last_verified_at, o.is_active,
                     a.name AS agency_name, a.acronym AS agency_acronym,
                     (SELECT COUNT(*) FROM service_offices so WHERE so.office_id = o.id) AS service_count
              FROM offices o
@@ -36,9 +36,9 @@ class OfficeController
 
         $pdo = Database::connection();
         $pdo->prepare(
-            'INSERT INTO offices (agency_id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours,
+            'INSERT INTO offices (agency_id, name, branch_type, description, address, barangay, city, province, contact_number, email, opening_hours, weekly_hours,
                                   latitude, longitude, is_verified, last_verified_at, is_active)
-             VALUES (:agency_id, :name, :branch_type, :description, :address, :barangay, :city, :province, :contact_number, :email, :opening_hours,
+             VALUES (:agency_id, :name, :branch_type, :description, :address, :barangay, :city, :province, :contact_number, :email, :opening_hours, :weekly_hours,
                      :latitude, :longitude, :is_verified, :last_verified_at, :is_active)'
         )->execute($data);
         $id = (int) $pdo->lastInsertId();
@@ -61,7 +61,7 @@ class OfficeController
         $data = $this->validate(Request::json());
         Database::connection()->prepare(
             'UPDATE offices SET agency_id = :agency_id, name = :name, branch_type = :branch_type, description = :description, address = :address, barangay = :barangay, city = :city,
-                    province = :province, contact_number = :contact_number, email = :email, opening_hours = :opening_hours,
+                    province = :province, contact_number = :contact_number, email = :email, opening_hours = :opening_hours, weekly_hours = :weekly_hours,
                     latitude = :latitude, longitude = :longitude, is_verified = :is_verified,
                     last_verified_at = :last_verified_at, is_active = :is_active
              WHERE id = :id'
@@ -88,6 +88,7 @@ class OfficeController
             'contact_number' => $v->string($body['contact_number'] ?? null, 'contact_number', 50),
             'email' => $v->email($body['email'] ?? null, 'email'),
             'opening_hours' => $v->string($body['opening_hours'] ?? null, 'opening_hours', 255),
+            'weekly_hours' => self::weeklyHours($body['weekly_hours'] ?? null, $v),
             'latitude' => $v->coordinate($body['latitude'] ?? null, 'latitude', 90),
             'longitude' => $v->coordinate($body['longitude'] ?? null, 'longitude', 180),
             'is_verified' => $v->bool($body['is_verified'] ?? false),
@@ -111,5 +112,36 @@ class OfficeController
 
         $v->failIfErrors();
         return $data;
+    }
+
+    /**
+     * Regular hours as {"1": ["08:00", "17:00"], ...}, 1 = Monday to 7 = Sunday. Days left out are closed.
+     * Returns the JSON to store, or null when no day has hours.
+     */
+    private static function weeklyHours(mixed $value, Validator $v): ?string
+    {
+        if ($value === null || $value === '' || $value === []) {
+            return null;
+        }
+        if (!is_array($value)) {
+            $v->add('weekly_hours', 'Enter the hours for each day the office is open.');
+            return null;
+        }
+
+        $time = '/^([01]\d|2[0-3]):[0-5]\d$/';
+        $hours = [];
+        foreach ($value as $day => $times) {
+            $day = filter_var($day, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 7]]);
+            $open = is_array($times) ? (string) ($times[0] ?? '') : '';
+            $close = is_array($times) ? (string) ($times[1] ?? '') : '';
+            if ($day === false || !preg_match($time, $open) || !preg_match($time, $close) || $open >= $close) {
+                $v->add('weekly_hours', 'Each open day needs an opening time earlier than its closing time.');
+                return null;
+            }
+            $hours[(string) $day] = [$open, $close];
+        }
+        ksort($hours);
+
+        return $hours === [] ? null : json_encode($hours, JSON_THROW_ON_ERROR);
     }
 }

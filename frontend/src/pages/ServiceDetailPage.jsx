@@ -7,6 +7,7 @@ import {
   CloudDownload,
   Copy,
   ExternalLink,
+  History,
   Info,
   Landmark,
   LayoutGrid,
@@ -15,7 +16,6 @@ import {
   ListOrdered,
   Lock,
   MapPin,
-  Printer,
   PhilippinePeso,
   RefreshCw,
   Share2,
@@ -26,6 +26,8 @@ import Checklist from '../components/Checklist'
 import OfficeCard from '../components/OfficeCard'
 import VerificationBadge from '../components/VerificationBadge'
 import ReportIssue from '../components/ReportIssue'
+import HelpfulFeedback from '../components/HelpfulFeedback'
+import RenewalReminder from '../components/RenewalReminder'
 import ServiceCard from '../components/ServiceCard'
 import { ErrorState, LoadingState } from '../components/StateMessage'
 import { useFetch } from '../hooks/useFetch'
@@ -70,7 +72,7 @@ function Fact({ icon: Icon, label, children }) {
 }
 
 function AtAGlance({ service }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
@@ -91,7 +93,7 @@ function AtAGlance({ service }) {
         </Fact>
         {service.last_verified_at && (
           <Fact icon={BadgeCheck} label={service.verification_status === 'verified' ? t('detail.lastVerified') : t('detail.lastChecked')}>
-            {formatDate(service.last_verified_at, { year: 'numeric', month: 'long', day: 'numeric' })}
+            {formatDate(service.last_verified_at, { year: 'numeric', month: 'long', day: 'numeric' }, locale)}
           </Fact>
         )}
       </dl>
@@ -190,9 +192,6 @@ function GuideActions({ title, slug }) {
       <button type="button" onClick={() => copy(url, t('detail.linkCopied'))} className={ACTION_BUTTON}>
         <Link2 size={15} aria-hidden="true" /> {t('detail.copyLink')}
       </button>
-      <button type="button" onClick={() => window.print()} className={ACTION_BUTTON}>
-        <Printer size={15} aria-hidden="true" /> {t('detail.print')}
-      </button>
       {slug && <SaveOffline key={slug} slug={slug} />}
       <span role="status" className="text-sm text-stone-600">{notice}</span>
     </div>
@@ -200,7 +199,7 @@ function GuideActions({ title, slug }) {
 }
 
 function Sources({ id, sources }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [notice, copy] = useCopy()
   if (!sources?.length) return null
 
@@ -220,7 +219,7 @@ function Sources({ id, sources }) {
               <span className="sr-only">{t('common.opensInNewTab')}</span>
             </a>
             {source.verified_at && (
-              <span className="block text-xs text-stone-500">{t('detail.checked', { date: formatDate(source.verified_at) })}</span>
+              <span className="block text-xs text-stone-500">{t('detail.checked', { date: formatDate(source.verified_at, undefined, locale) })}</span>
             )}
           </li>
         ))}
@@ -314,6 +313,7 @@ export default function ServiceDetailPage({ loadGuide }) {
     service.steps?.length && { id: 'steps', label: t('detail.steps') },
     service.offices?.length && { id: 'offices', label: t('detail.whereToGo') },
     service.description && { id: 'about', label: t('detail.about') },
+    service.updates?.length && { id: 'updates', label: t('detail.updates') },
   ].filter(Boolean)
 
   // Phones jump straight past the checklist, which is already on screen.
@@ -427,18 +427,21 @@ export default function ServiceDetailPage({ loadGuide }) {
             )}
 
             {service.offices?.length > 0 && (
-              <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')} bare>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <DetailSection id="offices" icon={MapPin} title={t('detail.whereToGo')}>
+                <div className="divide-y divide-stone-100 [&>*]:py-6 [&>*:first-child]:pt-0 [&>*:last-child]:pb-0">
                   {service.offices.map((office) => (
                     <OfficeCard
                       key={office.id}
                       office={{ ...office, agency_name: service.agency_name, agency_acronym: service.agency_acronym, agency_logo_url: service.agency_logo_url, agency_is_local: service.agency_is_local }}
                       showAgency={false}
+                      embedded
                     />
                   ))}
                 </div>
               </DetailSection>
             )}
+
+            {Boolean(service.renewal_reminder) && <RenewalReminder title={service.title} slug={service.slug} />}
 
             <div id="facts" className="scroll-mt-24 lg:hidden">
               <AtAGlance service={service} />
@@ -449,6 +452,23 @@ export default function ServiceDetailPage({ loadGuide }) {
                 <p lang="en" className="max-w-xl leading-relaxed text-stone-700">{service.description}</p>
               </DetailSection>
             )}
+
+            {service.updates?.length > 0 && (
+              <DetailSection id="updates" icon={History} title={t('detail.updates')}>
+                <ol className="space-y-3">
+                  {service.updates.map((update, index) => (
+                    <li key={`${update.date}-${index}`} className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
+                      <time dateTime={update.date} className="shrink-0 text-sm font-bold text-bay-800 sm:w-32">
+                        {formatDate(update.date, { year: 'numeric', month: 'short', day: 'numeric' }, locale)}
+                      </time>
+                      <p lang="en" className="leading-relaxed text-stone-700">{update.note}</p>
+                    </li>
+                  ))}
+                </ol>
+              </DetailSection>
+            )}
+
+            {!preview && <HelpfulFeedback key={service.slug} slug={service.slug} />}
 
             <div className="space-y-4 lg:hidden">
               <Sources id="sources" sources={service.sources} />

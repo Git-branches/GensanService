@@ -34,6 +34,22 @@ export function recordView(slug) {
   return request(`/services/${encodeURIComponent(slug)}/view`, { method: 'POST' })
 }
 
+// helpful is true or false; reason is one of outdated, missing, unclear, other, and only goes with false.
+export function sendFeedback(slug, helpful, reason) {
+  return request(`/services/${encodeURIComponent(slug)}/feedback`, {
+    method: 'POST',
+    body: JSON.stringify(reason ? { helpful, reason } : { helpful }),
+  })
+}
+
+export function getLifeEvents() {
+  return request('/life-events')
+}
+
+export function getLifeEvent(slug) {
+  return request(`/life-events/${encodeURIComponent(slug)}`)
+}
+
 export function getAnnouncements() {
   return request('/announcements')
 }

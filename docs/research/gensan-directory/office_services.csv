@@ -1,0 +1,34 @@
+office_key,service_key,link_status,source_ids,notes
+sss-gensan-branch,sss-number,confirmed,S01;S02,The guide says to submit the permanent-number documents to SSS; the branch is linked in the database
+philhealth-lhio-gensan,philhealth-registration,confirmed,S03,Linked in the database
+bir-rdo-gensan,bir-tin,confirmed,S05,The charter names the RDO covering the applicant's residence
+psa-gensan,psa-birth-certificate,needs_verification,,Linked in the database; walk-in requests at this office are not confirmed
+lgu-bpld,new-business-permit,confirmed,S21,
+lgu-cto,new-business-permit,confirmed,S21,Over-the-counter payment
+lgu-cto,cedula,confirmed,S21;S38,The BPLD charter mentions a cedula order of payment at the City Treasurer's Office
+lto-gensan-do,lto-registration,needs_verification,S09,
+lto-gensan-licensing,lto-license,needs_verification,S09,
+psa-philsys-frc-sargen,philsys-id,needs_verification,,
+comelec-oeo-gensan,voter-registration,needs_verification,S24,
+dswd-cis-gensan,dswd-aics,needs_verification,S14,
+lgu-lcr,civil-registry-copies,confirmed,S18;S41,
+lgu-obo,building-permit,needs_verification,S20,
+lgu-osca,senior-citizen-id,needs_verification,S17,
+lgu-pdao,pwd-id,confirmed,S17;S39,
+lgu-peso,peso-job-referral,confirmed,S17;S47,
+tesda-ptc-gensan,tesda-training,needs_verification,S08,
+gsis-gensan-branch,gsis-services,needs_verification,S25,
+lra-rod-gensan,rod-title-copy,needs_verification,S12,
+pao-gensan,pao-legal-aid,needs_verification,S17,
+cda-gensan,cooperative-registration,needs_verification,S16,
+nbi-sardo,nbi-clearance,needs_verification,S11,
+lgu-bpld,business-permit-renewal,confirmed,S51,
+lgu-lcr,psa-copy-at-lcr,confirmed,S42,
+lgu-lcr,delayed-birth-registration,confirmed,S43,
+lgu-lcr,marriage-license,confirmed,S44,
+lgu-cswdo,solo-parent-id,confirmed,S40,
+lgu-cswdo,minor-travel-permit,confirmed,S49,
+lgu-cswdo,certificate-of-indigency,confirmed,S50,
+lgu-cho,health-certificate,confirmed,S45,
+lgu-cho,sanitary-permit,confirmed,S46,
+lgu-cto,real-property-tax,confirmed,S48,

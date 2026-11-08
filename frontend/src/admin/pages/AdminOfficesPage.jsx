@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { BadgeCheck, Pencil, Plus } from 'lucide-react'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { formatDate } from '../../utils/format'
+import { parseWeeklyHours } from '../../utils/hours'
 import { adminApi } from '../api'
 import { canEditContent, useAdminAuth } from '../auth'
 import { useAdminList } from '../useAdminList'
@@ -22,6 +23,7 @@ const EMPTY = {
   contact_number: '',
   email: '',
   opening_hours: '',
+  weekly_hours: {},
   latitude: '',
   longitude: '',
   is_verified: false,
@@ -29,14 +31,67 @@ const EMPTY = {
   is_active: true,
 }
 
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 function toForm(office) {
   if (!office) return EMPTY
   return Object.fromEntries(
     Object.keys(EMPTY).map((key) => {
       const value = office[key]
+      if (key === 'weekly_hours') return [key, parseWeeklyHours(value) ?? {}]
       if (typeof EMPTY[key] === 'boolean') return [key, Boolean(value)]
       return [key, value === null || value === undefined ? '' : String(value)]
     })
+  )
+}
+
+// One row per day: tick the days the office opens, then set opening and closing times (Philippine time).
+function WeeklyHoursEditor({ value, onChange, error }) {
+  const setDay = (day, times) => {
+    const next = { ...value }
+    if (times) next[day] = times
+    else delete next[day]
+    onChange(next)
+  }
+  const monday = value[1]
+
+  return (
+    <fieldset className="rounded-lg bg-stone-50 p-4">
+      <legend className="sr-only">Regular weekly hours</legend>
+      <p className="text-sm font-semibold text-stone-800">Regular weekly hours</p>
+      <p className="mt-0.5 text-xs text-stone-500">Used for the Open now label, which residents see only after Details verified is ticked. Holidays are not included.</p>
+      <div className="mt-3 space-y-2">
+        {DAY_NAMES.map((name, index) => {
+          const day = index + 1
+          const times = value[day]
+          return (
+            <div key={name} className="grid grid-cols-[7.5rem_1fr] items-center gap-2 sm:grid-cols-[8rem_1fr_1fr]">
+              <label className="flex items-center gap-2 text-sm text-stone-800">
+                <input type="checkbox" checked={Boolean(times)} onChange={(e) => setDay(day, e.target.checked ? ['08:00', '17:00'] : null)} className="h-4 w-4 accent-bay-700" />
+                {name}
+              </label>
+              {times ? (
+                <div className="col-span-1 flex items-center gap-2 sm:col-span-2">
+                  <label htmlFor={`hours-${day}-open`} className="sr-only">{name} opens</label>
+                  <input id={`hours-${day}-open`} type="time" value={times[0]} onChange={(e) => setDay(day, [e.target.value, times[1]])} className={`${inputClass} w-auto`} />
+                  <span className="text-sm text-stone-500">to</span>
+                  <label htmlFor={`hours-${day}-close`} className="sr-only">{name} closes</label>
+                  <input id={`hours-${day}-close`} type="time" value={times[1]} onChange={(e) => setDay(day, [times[0], e.target.value])} className={`${inputClass} w-auto`} />
+                </div>
+              ) : (
+                <span className="text-sm text-stone-500 sm:col-span-2">Closed</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      {monday && (
+        <button type="button" onClick={() => onChange({ ...value, 2: monday, 3: monday, 4: monday, 5: monday })} className="mt-3 text-sm font-semibold text-bay-700 hover:underline">
+          Copy Monday to Tuesday through Friday
+        </button>
+      )}
+      {error && <p className="mt-2 text-xs font-medium text-red-600">{error}</p>}
+    </fieldset>
   )
 }
 
@@ -93,6 +148,8 @@ function OfficeFormModal({ office, agencies, readOnly, onClose, onSaved }) {
           </div>
 
           {text(values, set, errors, 'opening_hours', 'Office hours', { input: { maxLength: 255, placeholder: 'e.g. Monday to Friday, 8:00 AM – 5:00 PM' } })}
+
+          <WeeklyHoursEditor value={values.weekly_hours} onChange={(weekly_hours) => set({ weekly_hours })} error={errors.weekly_hours} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             {text(values, set, errors, 'latitude', 'Latitude', { hint: 'Optional — for an exact map pin.', input: { inputMode: 'decimal', placeholder: 'e.g. 6.1164' } })}
