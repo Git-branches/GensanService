@@ -16,9 +16,10 @@ class AgencyController
     private const PRESENCE = ['physical_office', 'online_only', 'unconfirmed'];
     private const VERIFICATION_STATUSES = ['verified', 'needs_review', 'unverified', 'outdated'];
 
-    // Logos are re-encoded as small WebP files in public/uploads, served at /api/uploads like the API.
-    private const LOGO_DIR = __DIR__ . '/../../../public/uploads/agencies';
-    private const LOGO_URL = '/api/uploads/agencies/';
+    // Logos are re-encoded as small WebP files in the uploads folder, served at /api/uploads like the
+    // API. The folder and its URL come from config, because shared hosting keeps the writable folder
+    // inside the web root instead of next to the code.
+    private const LOGO_FOLDER = 'agencies';
     private const LOGO_MAX_BYTES = 2 * 1024 * 1024;
     private const LOGO_MAX_SOURCE_PIXELS = 4000;
     private const LOGO_SIZE = 256;
@@ -117,15 +118,16 @@ class AgencyController
         imagefill($logo, 0, 0, imagecolorallocatealpha($logo, 0, 0, 0, 127));
         imagecopyresampled($logo, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
-        if (!is_dir(self::LOGO_DIR) && !mkdir(self::LOGO_DIR, 0755, true) && !is_dir(self::LOGO_DIR)) {
+        $logoDir = $this->logoDir();
+        if (!is_dir($logoDir) && !mkdir($logoDir, 0755, true) && !is_dir($logoDir)) {
             throw new \RuntimeException('Could not create the agency logo folder.');
         }
         $fileName = $agency['slug'] . '-' . bin2hex(random_bytes(4)) . '.webp';
-        if (!imagewebp($logo, self::LOGO_DIR . '/' . $fileName, 90)) {
+        if (!imagewebp($logo, $logoDir . '/' . $fileName, 90)) {
             throw new \RuntimeException('Could not save the agency logo.');
         }
 
-        $url = self::LOGO_URL . $fileName;
+        $url = $this->logoUrl() . $fileName;
         Database::connection()->prepare('UPDATE agencies SET logo_url = :url WHERE id = :id')
             ->execute(['url' => $url, 'id' => $agency['id']]);
         $this->deleteLogoFile($agency['logo_url']);
@@ -176,12 +178,26 @@ class AgencyController
     private function deleteLogoFile(?string $url): void
     {
         // Only files this controller saved are removed; basename() keeps it inside the logo folder.
-        if ($url && str_starts_with($url, self::LOGO_URL)) {
-            $path = self::LOGO_DIR . '/' . basename($url);
+        if ($url && str_starts_with($url, $this->logoUrl())) {
+            $path = $this->logoDir() . '/' . basename($url);
             if (is_file($path)) {
                 unlink($path);
             }
         }
+    }
+
+    /** The folder logos are written to, from UPLOADS_DIR. */
+    private function logoDir(): string
+    {
+        $config = require __DIR__ . '/../../../config/app.php';
+        return rtrim($config['uploads_dir'], '/\\') . '/' . self::LOGO_FOLDER;
+    }
+
+    /** The public address logos are served from, from UPLOADS_URL. */
+    private function logoUrl(): string
+    {
+        $config = require __DIR__ . '/../../../config/app.php';
+        return rtrim($config['uploads_url'], '/') . '/' . self::LOGO_FOLDER . '/';
     }
 
     /** @return array{id: int, name: string, slug: string, logo_url: ?string} */

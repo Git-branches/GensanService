@@ -1,0 +1,20 @@
+# The backend code must never be read over the web. A VirtualHost can keep this folder outside the
+# document root, but shared hosting has no such option: there the whole project sits inside htdocs,
+# so requests for the code, the environment file, and the logs are refused here.
+#
+# The API itself still works. /api is either an alias of public/ (the VirtualHost setup) or a small
+# front controller beside the built site that includes public/index.php. Those requests are served
+# from public/ or htdocs/api/, so they never match the rules below.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(app|config|routes|storage|tests|vendor)(/|$) - [F,L]
+    RewriteRule ^(composer\.(json|lock)|\.env.*)$ - [F,L]
+</IfModule>
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "^\.env">
+        Require all denied
+    </FilesMatch>
+</IfModule>

@@ -194,6 +194,17 @@ node --test "backend/tests/*.test.mjs"
 
 ## Deployment
 
+### Shared hosting with one web root
+
+On a host without SSH, Composer, or a VirtualHost — InfinityFree, for example — the API cannot be
+aliased to `backend/public`, and the code has to sit inside the web root. Follow
+[Deploying on InfinityFree](docs/DEPLOY-INFINITYFREE.md): `npm run deploy:prepare` in `frontend/`
+builds the folder to upload, puts a small front controller at `/api`, and relies on
+`backend/.htaccess` to refuse `app/`, `config/`, `storage/`, `vendor/`, and `.env` over the web.
+Set `FRONTEND_DIST` and `UPLOADS_DIR` in `backend/.env` to the web root and its `api/uploads` folder.
+
+### Apache with a VirtualHost
+
 1. Build the frontend with `npm run build` in `frontend/`. The build also pre-renders the public pages and, when the API is reachable, every published guide and life event with its own title and description, so visitors on slow connections and search engines see them before the JavaScript loads. It reads `http://127.0.0.1:8000/api` by default; set `PRERENDER_API_URL` to build against another address. Without the API the build still succeeds with the fixed pages and the shell. On a server other than Apache, send any address with no matching file to `shell.html`. The output in `frontend/dist/` includes an `.htaccess` file that makes routes like `/services/...` and `/admin` work on reload.
 2. Copy `backend/` to the server, outside the public web folder if possible, and run `composer install --no-dev --optimize-autoloader`.
 3. In `backend/.env`, set `APP_ENV=production`, `APP_DEBUG=false`, an empty `CORS_ALLOWED_ORIGIN`, and your database credentials. If a CDN or reverse proxy sits in front of the site, set `TRUSTED_PROXIES` to its IPs or CIDRs so rate limits and sign-in throttling see the real visitor. Make `backend/storage/logs/` and `backend/public/uploads/` writable by the web server. Uploaded agency logos are saved in `uploads/`, whose `.htaccess` blocks scripts from running there.

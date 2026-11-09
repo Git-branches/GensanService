@@ -1,5 +1,23 @@
 <?php
 
+// Paths in .env can be absolute (/home/vol1_2/example/htdocs) or relative to the project root
+// (frontend/dist). Shared hosts put the code inside the web root, so this keeps one .env working
+// both on a local XAMPP install and on the live server.
+$projectRoot = dirname(__DIR__, 2);
+
+$resolvePath = static function (string $value, string $default) use ($projectRoot): string {
+    if ($value === '') {
+        return $projectRoot . '/' . $default;
+    }
+
+    // Absolute paths are used as written: /unix/path, C:\windows\path, \\network\share.
+    if (preg_match('#^(/|[A-Za-z]:[\\\\/]|\\\\\\\\)#', $value)) {
+        return rtrim($value, '/\\');
+    }
+
+    return $projectRoot . '/' . ltrim(trim($value), '/\\');
+};
+
 return [
     'env' => $_ENV['APP_ENV'] ?? 'production',
     // Safe default: details of server errors are only shown when APP_DEBUG=true is set explicitly.
@@ -15,6 +33,11 @@ return [
     // The public address of the site, such as https://andamgensan.ph, used in link previews and the sitemap.
     // Leave empty to use the address each request came to.
     'site_url' => $_ENV['SITE_URL'] ?? '',
-    // The built frontend, read when filling in link previews.
-    'frontend_dist' => $_ENV['FRONTEND_DIST'] ?? __DIR__ . '/../../frontend/dist',
+    // The built frontend, read when filling in link previews. On shared hosting the built site is the
+    // web root itself, so set this to that folder's absolute path.
+    'frontend_dist' => $resolvePath($_ENV['FRONTEND_DIST'] ?? '', 'frontend/dist'),
+    // Uploaded agency logos. Point UPLOADS_DIR at the absolute path of the writable folder the web
+    // server serves at /api/uploads (on shared hosting that is the uploads folder inside the API folder).
+    'uploads_dir' => $resolvePath($_ENV['UPLOADS_DIR'] ?? '', 'backend/public/uploads'),
+    'uploads_url' => rtrim($_ENV['UPLOADS_URL'] ?? '/api/uploads', '/'),
 ];
