@@ -1,6 +1,14 @@
 const BASE_URL = '/api'
 
-async function request(path, options = {}) {
+// Public reads change slowly, and several parts of the site ask for the same lists (categories,
+// agencies, announcements). Keep a short in-memory cache and share one request when two components
+// ask at the same time. Writes are never cached. The minute matches the API's Cache-Control.
+const CACHE_TTL = 60_000
+const CACHE_LIMIT = 100
+const cache = new Map()
+const inFlight = new Map()
+
+async function send(path, options) {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
@@ -16,6 +24,33 @@ async function request(path, options = {}) {
   }
 
   return body.data
+}
+
+function request(path, options = {}) {
+  if ((options.method ?? 'GET') !== 'GET') return send(path, options)
+
+  const saved = cache.get(path)
+  if (saved && saved.expires > Date.now()) return Promise.resolve(saved.data)
+
+  const pending = inFlight.get(path)
+  if (pending) return pending
+
+  const promise = send(path, options)
+    .then((data) => {
+      if (cache.size >= CACHE_LIMIT) cache.delete(cache.keys().next().value)
+      cache.set(path, { data, expires: Date.now() + CACHE_TTL })
+      return data
+    })
+    .finally(() => inFlight.delete(path))
+
+  inFlight.set(path, promise)
+  return promise
+}
+
+/** Clears the in-memory read cache. Used by tests. */
+export function clearApiCache() {
+  cache.clear()
+  inFlight.clear()
 }
 
 export function reportIssue(slug, data) {
