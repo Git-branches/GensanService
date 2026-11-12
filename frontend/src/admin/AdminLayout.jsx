@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   ChartColumn,
   ExternalLink,
@@ -115,7 +115,17 @@ export default function AdminLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const { pathname } = useLocation()
-  const { data: counts } = useAdminQuery(adminApi.notifications, [pathname])
+  const needsPasswordChange = Boolean(admin?.uses_default_password)
+  // The API refuses every other admin screen until the published default password is replaced,
+  // so take the person straight to the form that fixes it.
+  const { data: counts } = useAdminQuery(
+    needsPasswordChange ? async () => null : adminApi.notifications,
+    [pathname, needsPasswordChange],
+  )
+
+  if (needsPasswordChange && pathname !== '/admin/account') {
+    return <Navigate to="/admin/account" replace />
+  }
 
   async function handleLogout() {
     setSigningOut(true)

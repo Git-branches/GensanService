@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database;
+use App\Request;
 
 /**
  * Pages for search engines and link previews (Facebook, Messenger, Viber, X). Those do not run JavaScript,
@@ -21,7 +22,12 @@ class ShareController
         if ($config['site_url'] !== '') {
             return rtrim($config['site_url'], '/');
         }
-        $https = ($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        if (!$https) {
+            $remote = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+            $https = Request::isTrustedProxy($remote, $config['trusted_proxies'])
+                && ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        }
         $host = preg_replace('/[^a-z0-9.:-]/i', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
         return ($https ? 'https' : 'http') . '://' . $host;
     }

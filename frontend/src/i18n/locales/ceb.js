@@ -350,7 +350,7 @@ items: [
   },
   privacy: {
     pageTitle: 'Polisiya sa pribasidad',
-    updated: 'Katapusang gi-update Nobyembre 5, 2026',
+    updated: 'Katapusang gi-update Nobyembre 12, 2026',
     intro: 'Wala magkinahanglan ang Andam GenSan og account, ug kutob sa mahimo gamay ra ang among kolektahon. Kining panid nagpasabot kung unsa ang among kolektahon ug ngano.',
     sections: [
       {
@@ -373,7 +373,14 @@ items: [
         heading: 'Kung magpadala ka og report',
         paragraphs: [
           'Ang porma nga "I-report ang sayop nga impormasyon" nagtipig sa rason nga imong gipili, imong mensahe, imong email kung ihatag nimo, ug imong IP address. Gigamit namo ang IP address aron lang limitahan ang spam, ug gigamit namo ang imong email kung ang among mga editor kinahanglan mangutana og dugang.',
-          'Palihug ayaw iapil ang mga ID number, password, OTP, o uban pang sensitibo nga detalye. Ang mga report makita lamang sa among admin team. Wala pa kami fixed nga iskedyul sa pagtangtang niini.',
+          'Palihug ayaw iapil ang mga ID number, password, OTP, o uban pang sensitibo nga detalye. Ang mga report makita lamang sa among admin team. Ang sunod nga seksyon nagpasabot kung unsa kadugay namo kini tipigan.',
+        ],
+      },
+      {
+        heading: 'Unsa kadugay namo tipigan ang impormasyon',
+        paragraphs: [
+          'Ang inadlaw nga kinatibuk-an sa mga pagtan-aw sa giya, pagbisita sa panid, ug mga tubag kung nakatabang ba wala makaila kang bisan kinsa ug gitipigan isip estadistika sa site.',
+          'Ang usa ka report pagatangtangon 12 ka bulan human namo kini masulbad, o 24 ka bulan human kini ipadala kung wala pa kini masulbad. Ang mga pagsulay sa pag-sign in sa admin, nga naglakip sa email ug IP address, pagatangtangon human sa 30 ka adlaw. Ang mga anonymous nga counter sa rate limit pagatangtangon human sa 2 ka adlaw. Ang log sa kalihokan sa admin, nga nagtala sa mga kausaban nga gihimo sa among team, gitipigan sulod sa 24 ka bulan.',
         ],
       },
       {

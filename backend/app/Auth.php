@@ -6,6 +6,14 @@ class Auth
 {
     private const IDLE_TIMEOUT_SECONDS = 2 * 60 * 60;
 
+    // PHP's own session garbage collector must not remove a session before the app's idle timeout.
+    // The default (1440 seconds) would sign an admin out after 24 minutes.
+    private const SESSION_GC_SECONDS = 3 * 60 * 60;
+
+    // The password published in the old seeder. An account that still uses it must change it before
+    // any other admin screen will load, because the password is public in the project's history.
+    public const DEFAULT_PASSWORD = 'ChangeMe123!';
+
     public static function startSession(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
@@ -23,6 +31,7 @@ class Auth
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+        ini_set('session.gc_maxlifetime', (string) self::SESSION_GC_SECONDS);
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
         session_start();
@@ -43,6 +52,8 @@ class Auth
         $_SESSION['admin_id'] = (int) $admin['id'];
         $_SESSION['csrf'] = bin2hex(random_bytes(32));
         $_SESSION['last_activity'] = time();
+        // A password change or reset writes a newer timestamp, which ends every older session.
+        $_SESSION['password_changed_at'] = (string) ($admin['password_changed_at'] ?? '');
     }
 
     public static function logout(): void
@@ -72,7 +83,8 @@ class Auth
         }
 
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, role FROM admins WHERE id = :id AND is_active = 1'
+            'SELECT id, name, email, role, password_hash, password_changed_at
+             FROM admins WHERE id = :id AND is_active = 1'
         );
         $stmt->execute(['id' => $id]);
         $admin = $stmt->fetch();
@@ -82,7 +94,20 @@ class Auth
             return null;
         }
 
+        if ((string) ($admin['password_changed_at'] ?? '') !== (string) ($_SESSION['password_changed_at'] ?? '')) {
+            self::logout();
+            return null;
+        }
+
+        $admin['uses_default_password'] = self::usesDefaultPassword((string) $admin['password_hash']);
+        unset($admin['password_hash'], $admin['password_changed_at']);
+
         return $admin;
+    }
+
+    public static function usesDefaultPassword(?string $hash): bool
+    {
+        return $hash !== null && $hash !== '' && password_verify(self::DEFAULT_PASSWORD, $hash);
     }
 
     public static function csrfToken(): string
@@ -112,6 +137,11 @@ class Auth
             Response::error('Your role does not allow this action.', 403);
         }
 
+        // Until the published default password is replaced, only the account screen and sign-out work.
+        if (!empty($admin['uses_default_password']) && !self::isPasswordChangeRequest()) {
+            Response::error('Change the default password before using the admin panel.', 403);
+        }
+
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             $token = Request::header('X-CSRF-Token') ?? '';
             if (!hash_equals(self::csrfToken(), $token)) {
@@ -120,5 +150,12 @@ class Auth
         }
 
         return $admin;
+    }
+
+    private static function isPasswordChangeRequest(): bool
+    {
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+
+        return in_array($path, ['/api/admin/account/password', '/api/admin/logout'], true);
     }
 }

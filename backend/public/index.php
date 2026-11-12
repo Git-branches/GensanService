@@ -6,6 +6,7 @@ use App\Logger;
 use App\Middleware\Cors;
 use App\Response;
 use App\Router;
+use App\SystemCheck;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->safeLoad();
@@ -29,6 +30,13 @@ set_exception_handler(function (Throwable $e) use ($appConfig) {
     Response::error($appConfig['debug'] ? $e->getMessage() : 'Something went wrong on our side. Please try again later.', 500);
 });
 
+// Refuse to serve a production install whose settings would leak error details or run as root.
+$fatalIssues = SystemCheck::fatalIssues($appConfig);
+if ($fatalIssues !== []) {
+    Logger::message('ERROR', 'Refusing to start: ' . implode(' ', $fatalIssues));
+    Response::error('This site is not configured yet. Please contact the administrator.', 503);
+}
+
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -38,7 +46,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
 // Admin and write endpoints must never be reused. Public reads can be cached briefly by the
 // browser, the service worker, and a CDN, which matters on mobile data.
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && !str_starts_with($path, '/api/admin')) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && !str_starts_with($path, '/api/admin') && !str_starts_with($path, '/api/maintenance') && $path !== '/api/health') {
     header('Cache-Control: public, max-age=60, stale-while-revalidate=300');
 } else {
     header('Cache-Control: no-store');

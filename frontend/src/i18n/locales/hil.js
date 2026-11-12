@@ -350,7 +350,7 @@ items: [
   },
   privacy: {
     pageTitle: 'Polisiya sa pribasidad',
-    updated: 'Katapusan nga gin-update Nobyembre 5, 2026',
+    updated: 'Katapusan nga gin-update Nobyembre 12, 2026',
     intro: 'Indi kinahanglan ang account sa Andam GenSan, kag gamay lang ang amon gina-kolekta. Ini nga pahina nagapaathag kon ano ang amon gina-kolekta kag ngaa.',
     sections: [
       {
@@ -373,7 +373,14 @@ items: [
         heading: 'Kon magpadala ka sang report',
         paragraphs: [
           'Ang porma nga "I-report ang sala nga impormasyon" nagatipig sang rason nga ginpili mo, imo mensahe, imo email kon ihatag mo, kag imo IP address. Ginagamit namon ang IP address para lang limitahan ang spam, kag ginagamit namon ang imo email kon ang amon mga editor kinahanglan magpamangkot sang dugang.',
-          'Palihog indi pag-ilakip ang mga ID number, password, OTP, ukon iban pa nga sensitibo nga detalye. Ang mga report makita lang sang amon admin team. Wala pa kami fixed nga iskedyul sa pagtangtang sini.',
+          'Palihog indi pag-ilakip ang mga ID number, password, OTP, ukon iban pa nga sensitibo nga detalye. Ang mga report makita lang sang amon admin team. Ang masunod nga seksyon nagapaathag kon daw kaano namon ini ginatipigan.',
+        ],
+      },
+      {
+        heading: 'Daw kaano namon ginatipigan ang impormasyon',
+        paragraphs: [
+          'Ang adlaw-adlaw nga kabug-usan sang mga pagtan-aw sa giya, pagbisita sa pahina, kag sabat kon nakatabang bala wala nagakilala sang bisan sin-o kag ginatipigan bilang estadistika sang site.',
+          'Ang isa ka report pagatangtangon 12 ka bulan pagkatapos namon ini masulbar, ukon 24 ka bulan pagkatapos ini ipadala kon wala pa ini masulbar. Ang mga pagtilaw sa pag-sign in sang admin, nga may email kag IP address, pagatangtangon pagkatapos sang 30 ka adlaw. Ang mga anonymous nga counter sang rate limit pagatangtangon pagkatapos sang 2 ka adlaw. Ang log sang aktibidad sang admin, nga nagatala sang mga pagbag-o nga ginhimo sang amon team, ginatipigan sa sulod sang 24 ka bulan.',
         ],
       },
       {

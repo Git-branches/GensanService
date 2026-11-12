@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS admins (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    password_changed_at TIMESTAMP NULL DEFAULT NULL,
     role ENUM('super_admin', 'editor', 'reviewer') NOT NULL DEFAULT 'editor',
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     last_login_at TIMESTAMP NULL DEFAULT NULL,

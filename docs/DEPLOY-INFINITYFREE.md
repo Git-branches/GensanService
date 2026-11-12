@@ -47,8 +47,8 @@ the shell pages only.
 The migrations in `database/migrations/` are already folded into `schema.sql`. Only an older database
 needs them (see [database/README.md](../database/README.md)).
 
-Skip `database/seeders/003_seed_admin.sql` if you would rather create the first account another way.
-Keeping it is fine as long as you change the password immediately in step 5.
+Do **not** import `database/seeders/dev/003_seed_admin.sql`: it is a test account. Create the first
+admin in step 5 instead.
 
 ## 3. Upload over FTP
 
@@ -74,6 +74,7 @@ Use FTP rather than the file manager, which caps uploads at a few MB per file. T
 | `FRONTEND_DIST` | absolute path of `htdocs`, such as `/home/vol1_2/if0_12345678/htdocs` |
 | `UPLOADS_DIR` | same path plus `/api/uploads` |
 | `UPLOADS_URL` | `/api/uploads` (already the default) |
+| `MAINTENANCE_TOKEN` | a random value from `php -r "echo bin2hex(random_bytes(32));"`; enables the retention job |
 
 `FRONTEND_DIST` matters: link previews and `sitemap.xml` read the built HTML from that folder. The
 default (`frontend/dist`) does not exist in this layout, so previews would answer "Not found" until
@@ -83,24 +84,45 @@ bar. A relative value is resolved inside the deployed project folder, so use the
 Make `htdocs/backend/storage/logs/` and `htdocs/api/uploads/` writable (0755 is usually enough; some
 hosts want 0775).
 
-## 5. HTTPS first, then sign in
+## 5. HTTPS first, then create the first admin
 
 Turn on the free SSL certificate **before** the first sign-in. With `APP_ENV=production` the admin
 session cookie is marked `Secure`, so signing in over plain HTTP will appear to work and then drop you
 back to the form.
 
-Then open `/admin`, sign in, change the seeded password, and create named accounts for staff.
+Generate the password hash on your own computer, then insert the account in phpMyAdmin:
+
+```bash
+php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
+```
+
+```sql
+INSERT INTO admins (name, email, password_hash, role, password_changed_at)
+VALUES ('Your Name', 'you@example.com', 'PASTE-THE-HASH', 'super_admin', NOW());
+```
+
+Open `/api/health` first and confirm `"status": "ok"`. Then open `/admin`, sign in, and create named
+accounts for staff.
 
 ## 6. Smoke test
 
 - `/` loads, and a guide page survives a refresh
-- `/api/health` returns `{"status":"ok"}`
+- `/api/health` returns `"status": "ok"` with a reachable database
 - `/sitemap.xml` and `/robots.txt` return XML/text, not 404
-- `/backend/.env` returns **403**, and so does `/backend/config/app.php`
+- `/backend/.env` returns **403**, and so do `/backend/config/app.php` and `/backend/public/index.php`
 - `/admin` signs in and can save a guide
 - Uploading an agency logo saves it and shows it from `/api/uploads/agencies/...`
 - A guide link pasted into a chat app shows a title and image (see the caveat below)
 - Install the site on a phone and open a saved guide in airplane mode
+- `POST /api/maintenance/run` with the token returns counts (see [RUNBOOK.md](RUNBOOK.md#4-retention-and-the-maintenance-endpoint))
+
+## 7. Monitoring and housekeeping
+
+The free plan does none of this for you. Follow [RUNBOOK.md](RUNBOOK.md):
+
+- an uptime monitor on `/api/health` that requires `"status":"ok"`
+- a daily external call to `POST /api/maintenance/run` for retention and log rotation
+- weekly database and uploads backups, plus a restore drill before launch
 
 ## Known limits of the free plan
 
@@ -110,9 +132,12 @@ Then open `/admin`, sign in, change the seeded password, and create named accoun
 - **A browser check (`?i=1`).** InfinityFree sometimes shows a JavaScript check before serving a page.
   Two things to verify in step 6: whether link-preview crawlers get through (if they do not, previews
   stay blank on the free plan), and whether the offline worker caches that page instead of the site.
-- **No cron.** Nothing in this project needs a scheduled job, but old rows in `site_daily_views` and
-  the log file are never pruned automatically. Export the database and clear `app.log` from time to
-  time, and keep an eye on the 5 GB quota.
+- **No cron.** Nothing needs a scheduler to stay online, but old rows and the log file are only
+  pruned when something asks. Set `MAINTENANCE_TOKEN` and point a free scheduler such as
+  [cron-job.org](https://cron-job.org) at `POST /api/maintenance/run` once a day; the full setup,
+  retention limits, and fallback are in [RUNBOOK.md](RUNBOOK.md#4-retention-and-the-maintenance-endpoint).
+  Without a scheduler, run the same request from your computer once a month. Keep an eye on the 5 GB
+  quota.
 - **No email.** PHP `mail()` is unavailable. Nothing in the app sends mail, so this only matters if you
   add password resets later.
 - **Manual SSL renewal.** The free certificate has to be reissued every few months; set a reminder.
@@ -138,4 +163,5 @@ cron, 100 MB) fits comfortably. Nothing in the code is specific to InfinityFree.
 4. After schema changes, import the new migration in `database/migrations/` first.
 
 Back up before every deploy: phpMyAdmin → Export → SQL, and download `htdocs/api/uploads/`. There is
-no automatic backup on the free plan.
+no automatic backup on the free plan; [RUNBOOK.md](RUNBOOK.md) covers the schedule and the restore
+drill.

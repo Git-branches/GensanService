@@ -10,6 +10,9 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^(app|config|routes|storage|tests|vendor)(/|$) - [F,L]
+    # The front controller is reached through /api or htdocs/api/index.php. A direct request to
+    # backend/public/ would bypass that path, so refuse it (uploads are served from /api/uploads).
+    RewriteRule ^public(/|$) - [F,L]
     RewriteRule ^(composer\.(json|lock)|\.env.*)$ - [F,L]
 </IfModule>
 

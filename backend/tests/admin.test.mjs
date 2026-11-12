@@ -49,6 +49,19 @@ before(async () => {
   lookups = (await admin.get('/admin/lookups')).json.data
 })
 
+test('resetting a password signs that account out everywhere', async () => {
+  const person = client()
+  const email = `reset-${stamp}@example.com`
+  const created = await admin.post('/admin/admins', { name: 'Reset Test', email, role: 'editor', password: PASSWORD })
+  assert.equal(created.status, 201, JSON.stringify(created.json))
+  await person.signIn(email, PASSWORD)
+  assert.equal((await person.get('/admin/lookups')).status, 200)
+
+  const reset = await admin.post(`/admin/admins/${created.json.data.id}/password`, { password: 'Another-Password-2026!' })
+  assert.equal(reset.status, 200, JSON.stringify(reset.json))
+  assert.equal((await person.get('/admin/lookups')).status, 401)
+})
+
 test('a next review date in the future can be saved', async () => {
   const { id } = (await editor.post('/admin/services', guide(`Review date ${stamp}`))).json.data
   const result = await reviewer.post(`/admin/services/${id}/verification`, { verification_status: 'needs_review', next_review_at: '2999-01-01' })

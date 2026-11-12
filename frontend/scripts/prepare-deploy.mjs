@@ -63,8 +63,10 @@ cpSync(backend, join(htdocs, 'backend'), {
   filter(source) {
     const path = relative(backend, source).split('\\').join('/')
     if (path === '') return true
-    if (path === '.env') return false
+    if (path === '.env' || path.startsWith('.env.')) return false
     if (path === 'tests' || path.startsWith('tests/')) return false
+    if (path === 'public/router.php') return false
+    if (path === 'composer.json' || path === 'composer.lock') return false
     if (path.startsWith('public/uploads')) return false
     if (path.startsWith('storage/logs/') && path.endsWith('.log')) return false
     return true
@@ -86,10 +88,17 @@ Upload the CONTENTS of htdocs/ into the site's htdocs folder over FTP, so the se
 Then, on the server:
 
 1. Create the database in the control panel, open phpMyAdmin, and import
-   database/schema.sql, then database/seeders/001 to 015 in order.
-2. Create backend/.env from the template below. Read the absolute path from the control panel.
-3. Turn on the free SSL certificate BEFORE signing in, because production cookies are Secure-only.
-4. Sign in at /admin with the seeded account and change its password right away.
+   database/schema.sql, then database/seeders/001 to 015 in order. Do NOT import
+   database/seeders/dev/003_seed_admin.sql: that account is for tests only.
+2. Create the first admin. Generate a bcrypt hash on your own computer:
+     php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
+   Then in phpMyAdmin run:
+     INSERT INTO admins (name, email, password_hash, role, password_changed_at)
+     VALUES ('Your Name', 'you@example.com', 'PASTE-THE-HASH', 'super_admin', NOW());
+3. Create backend/.env from the template below. Read the absolute path from the control panel.
+4. Turn on the free SSL certificate BEFORE signing in, because production cookies are Secure-only.
+5. Open https://YOUR-DOMAIN/api/health and confirm "status": "ok" before signing in at /admin.
+   The health check lists missing extensions and unsafe settings.
 
 backend/.env
 
@@ -112,6 +121,10 @@ SITE_URL=https://YOUR-DOMAIN
 FRONTEND_DIST=/home/volX_Y/YOUR-ACCOUNT/htdocs
 UPLOADS_DIR=/home/volX_Y/YOUR-ACCOUNT/htdocs/api/uploads
 UPLOADS_URL=/api/uploads
+
+# Generate with: php -r "echo bin2hex(random_bytes(32));"
+# Used by the external cron job that calls POST /api/maintenance/run. Leave empty to disable it.
+MAINTENANCE_TOKEN=
 
 See docs/DEPLOY-INFINITYFREE.md in the repository for the full checklist.
 `)

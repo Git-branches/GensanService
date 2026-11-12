@@ -18,7 +18,9 @@ use App\Controllers\AnalyticsController;
 use App\Controllers\AnnouncementController;
 use App\Controllers\CategoryController;
 use App\Controllers\FaqController;
+use App\Controllers\HealthController;
 use App\Controllers\LifeEventController;
+use App\Controllers\MaintenanceController;
 use App\Controllers\OfficeController;
 use App\Controllers\ReportController;
 use App\Controllers\SearchController;
@@ -26,14 +28,15 @@ use App\Controllers\ServiceController;
 use App\Controllers\ShareController;
 use App\Controllers\SitemapController;
 use App\Controllers\StatsController;
-use App\Response;
 use App\Router;
 
 /** @var Router $router */
 
-$router->get('/api/health', function () {
-    Response::success(['status' => 'ok', 'time' => date(DATE_ATOM)]);
-});
+$router->get('/api/health', [new HealthController(), 'index']);
+
+// Called by an external scheduler on hosts without cron. POST only, so a browser visit or an uptime
+// check cannot trigger deletions.
+$router->post('/api/maintenance/run', [new MaintenanceController(), 'run']);
 
 $router->get('/api/stats', [new StatsController(), 'index']);
 

@@ -40,4 +40,7 @@ return [
     // server serves at /api/uploads (on shared hosting that is the uploads folder inside the API folder).
     'uploads_dir' => $resolvePath($_ENV['UPLOADS_DIR'] ?? '', 'backend/public/uploads'),
     'uploads_url' => rtrim($_ENV['UPLOADS_URL'] ?? '/api/uploads', '/'),
+    // Shared hosts have no cron, so an external scheduler calls /api/maintenance/run with this token.
+    // Leave it empty to disable the endpoint entirely.
+    'maintenance_token' => $_ENV['MAINTENANCE_TOKEN'] ?? '',
 ];

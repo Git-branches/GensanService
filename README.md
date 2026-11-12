@@ -18,6 +18,7 @@ The project started as *GenSan Service Navigator*. The GitHub repository (`Gensa
   - [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Deployment](#deployment)
+- [Operations](#operations)
 - [Roadmap](#roadmap)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
@@ -25,14 +26,15 @@ The project started as *GenSan Service Navigator*. The GitHub repository (`Gensa
 
 ## Security
 
-- The seeded admin account (`admin@gensan-service-navigator.local` / `ChangeMe123!`) is public. Change its password right after setup. The admin panel shows a warning on every page until you do.
-- Admin passwords are hashed with `password_hash()`. Sign-in is blocked for 15 minutes after 5 failed attempts.
-- Admin sessions use HttpOnly, SameSite cookies, a new session ID at sign-in and after password changes, and a 2-hour idle timeout. Cookies are marked Secure in production.
+- A production install has no seeded admin account. Create the first admin with a locally generated `password_hash()` (see [Deployment](#deployment)); the test-only account in `database/seeders/dev/` is never imported into production. An account that still uses the old published password can sign in but must change it before any other admin screen loads.
+- Admin passwords are hashed with `password_hash()`. Sign-in is throttled per email-and-address pair, per address, and per account, so one visitor cannot lock a known admin's email.
+- Admin sessions use HttpOnly, SameSite cookies, a new session ID at sign-in and after password changes, and a 2-hour idle timeout. Changing or resetting a password ends every older session for that account. Cookies are marked Secure in production.
 - Every admin request that changes data needs a CSRF token. Roles are checked on the server for every request.
 - All input is validated on the server, and all queries use PDO prepared statements.
 - The public report form has a honeypot field and a limit of 5 reports per hour per IP address. Anonymous page views, guide views, and guide feedback are also capped per visitor and hour.
 - In production, errors are logged to `backend/storage/logs/app.log` instead of being shown. The API and the built site send `nosniff`, `X-Frame-Options`, `Referrer-Policy`, and a Content Security Policy; HSTS is sent over HTTPS in production.
 - The site never asks for government account passwords or one-time PINs (OTPs).
+- Visitor records are kept only as long as needed: admin sign-in attempts for 30 days, resolved reports for 12 months (24 months if still unresolved), and the admin activity log for 24 months. The log file rotates at 5 MB. A token-protected maintenance endpoint enforces these limits; see [Operations](#operations).
 
 Do not open a public issue for security problems. Email the maintainer instead (see [Maintainers](#maintainers)).
 
@@ -153,9 +155,9 @@ cd frontend
 npm install
 ```
 
-To add starter data (categories, agencies, a sample guide, and the local admin account), run each file in `database/seeders/` in order. See [database/README.md](database/README.md).
+To add starter data (categories, agencies, a sample guide, and the local test admin), run each file in `database/seeders/` in order, then `database/seeders/dev/003_seed_admin.sql` for local development only. See [database/README.md](database/README.md).
 
-If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, `019_add_resident_features.sql`, `020_add_admin_tools.sql`, `021_add_site_analytics.sql`, `022_add_life_events_feedback_reminders_updates_and_hours.sql`, and `023_add_public_rate_limits.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
+If your database was created before October 2026, run `database/migrations/015_create_login_attempts_table.sql`, `016_add_review_fields_to_content_reports.sql`, `017_add_agency_contacts_and_linked_requirements.sql`, `018_add_review_workflow_verification_and_revisions.sql`, `019_add_resident_features.sql`, `020_add_admin_tools.sql`, `021_add_site_analytics.sql`, `022_add_life_events_feedback_reminders_updates_and_hours.sql`, `023_add_public_rate_limits.sql`, and `024_add_password_changed_at.sql`, in that order. Then run `database/seeders/008_update_categories.sql` and `009_seed_faqs.sql`.
 
 ## Usage
 
@@ -170,7 +172,7 @@ npm run dev
 ```
 
 - Public site: <http://localhost:5173>. Vite forwards `/api` requests to the PHP server.
-- Admin panel: <http://localhost:5173/admin>. Sign in with the seeded account, then change its password from **My account**.
+- Admin panel: <http://localhost:5173/admin>. Sign in with the local test account from `database/seeders/dev/003_seed_admin.sql`, or with an account you create.
 - API health check: <http://127.0.0.1:8000/api/health>
 
 The `public/router.php` argument is required, because without it PHP's built-in server returns 404 for API routes.
@@ -186,7 +188,7 @@ npm run build
 
 `npm test` runs the small unit tests and checks that every language shown in the switcher has all of the English strings.
 
-The API tests create accounts and guides, so run them against a throwaway database, never a real one. Create it from `database/schema.sql` and the seeders, start the API with `DB_DATABASE` set to it, and run this from the project root:
+The API tests create accounts and guides, so run them against a throwaway database, never a real one. Create it from `database/schema.sql`, the seeders, and `database/seeders/dev/003_seed_admin.sql` (the test admin), start the API with `DB_DATABASE` set to it, and run this from the project root:
 
 ```bash
 node --test "backend/tests/*.test.mjs"
@@ -230,11 +232,25 @@ Set `FRONTEND_DIST` and `UPLOADS_DIR` in `backend/.env` to the web root and its 
    </VirtualHost>
    ```
 
-5. Create the database from `database/schema.sql`, run only the seeders you need, and back the database up regularly (for example, a nightly `mysqldump`).
+5. Create the database from `database/schema.sql`, run only the seeders you need, and back the database up regularly (for example, a nightly `mysqldump`). Do not import `database/seeders/dev/003_seed_admin.sql`; it exists for tests.
    Copy `backend/public/uploads/` from your current install too, because agency logos are not in Git.
    Optionally set `SITE_URL` in `backend/.env` to the public address, such as `https://andamgensan.ph`, for link previews and the sitemap. Left empty, each request's own address is used. If the built frontend is not at `../frontend/dist` next to `backend/`, set `FRONTEND_DIST` to its folder.
    Link previews, `/sitemap.xml`, and `/robots.txt` are served by the API through the rules in `frontend/public/.htaccess`, so they need `mod_rewrite` and the `/api` path shown above.
-6. Sign in, change the default password, create named accounts for your staff, and deactivate any accounts you don't need.
+6. Create the first admin with a hash generated on your own machine, never a password sent through chat or email:
+
+   ```bash
+   php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
+   ```
+
+   Then run `INSERT INTO admins (name, email, password_hash, role, password_changed_at) VALUES ('Your Name', 'you@example.com', 'PASTE-THE-HASH', 'super_admin', NOW());` and sign in. Create named accounts for your staff and deactivate any you don't need. Check `/api/health` first; it reports missing extensions and unsafe settings.
+
+## Operations
+
+The [operations runbook](docs/RUNBOOK.md) covers backups and the restore drill, retention, the external cron call, uptime monitoring, and what to do when the site is down.
+
+- `GET /api/health` reports the database, required PHP extensions, writable folders, and unsafe settings. Point an uptime monitor at it and require `"status":"ok"` in the response.
+- `POST /api/maintenance/run` deletes old rows and rotates the log. Set `MAINTENANCE_TOKEN` in `backend/.env`, then call it daily from an external scheduler on hosts without cron. It accepts the token in `X-Maintenance-Token`, returns counts only, and writes one `system.maintenance` row to the activity log.
+- `app.log` rotates at 5 MB into `app.log.1` and `app.log.2`, so the log folder stays bounded.
 
 ## Roadmap
 

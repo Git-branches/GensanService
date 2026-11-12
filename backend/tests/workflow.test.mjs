@@ -1,7 +1,8 @@
 // API tests for the guide review workflow, verification, and version history.
 //
 // Run against a throwaway database, never a real one: the tests create accounts and guides.
-//   1. Create a database from database/schema.sql and the seeders.
+//   1. Create a database from database/schema.sql and the seeders, including
+//      database/seeders/dev/003_seed_admin.sql (the test admin; never import it into production).
 //   2. Start the API with DB_DATABASE set to it.
 //   3. node --test "backend/tests/*.test.mjs"
 //

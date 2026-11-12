@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 
 export const API = process.env.API_URL ?? 'http://127.0.0.1:8000/api'
 export const PASSWORD = 'Test-Password-2026!'
-export const SEED_ADMIN = ['admin@gensan-service-navigator.local', 'ChangeMe123!']
+export const SEED_ADMIN = ['admin@gensan-service-navigator.local', 'LocalDev-Password-2026!']
 
 // One signed-in session: keeps its own cookie and CSRF token.
 export function client() {

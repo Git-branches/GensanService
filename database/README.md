@@ -6,7 +6,8 @@ MySQL 8+ / MariaDB 10.4+ schema for Andam GenSan.
 
 - `schema.sql` creates the full, current schema in one step (use it for new installs).
 - `migrations/` holds the same schema as ordered steps. Run new ones on an existing database.
-- `seeders/` holds starter data: categories, agencies, a local admin account, one sample guide, and five draft guides for the General Santos City offices of SSS, BIR, PhilHealth, Pag-IBIG, and the City Government.
+- `seeders/` holds starter data: categories, agencies, one sample guide, and five draft guides for the General Santos City offices of SSS, BIR, PhilHealth, Pag-IBIG, and the City Government.
+- `seeders/dev/` holds the test-only admin account. It is never imported into a production database.
 
 ## New install (XAMPP / MariaDB)
 
@@ -21,6 +22,12 @@ To load the starter data (Git Bash):
 for f in database/seeders/*.sql; do
   /c/xampp/mysql/bin/mysql.exe -u root gensan_service_navigator < "$f"
 done
+```
+
+For local development and the API tests only, also load the test admin:
+
+```bash
+/c/xampp/mysql/bin/mysql.exe -u root gensan_service_navigator < database/seeders/dev/003_seed_admin.sql
 ```
 
 Add `-p` if your MySQL user has a password.
@@ -40,15 +47,25 @@ Run any migrations your database doesn't have yet, in order:
 | `021_add_site_analytics.sql` | Anonymous daily page counts (page type, language, and screen size only) for the admin analytics page |
 | `022_add_life_events_feedback_reminders_updates_and_hours.sql` | Life events and their steps, anonymous "Did this guide help?" totals, the renewal reminder flag on guides, notes for residents on guide versions, and weekly office hours |
 | `023_add_public_rate_limits.sql` | Per-hour counters that keep anonymous page views, guide views, and feedback honest |
+| `024_add_password_changed_at.sql` | The last password change, used to end older admin sessions after a change or reset |
 
-## Default local admin account
+## Admin accounts
 
-Created by `seeders/003_seed_admin.sql`:
+There is no production seed account. Create the first super admin with a hash generated on your own
+machine:
 
-- Email: `admin@gensan-service-navigator.local`
-- Password: `ChangeMe123!`
+```bash
+php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
+```
 
-This password is public. The admin panel shows a warning on every page until it is changed from **My account**. For production, change it immediately and create named accounts for each staff member.
+```sql
+INSERT INTO admins (name, email, password_hash, role, password_changed_at)
+VALUES ('Your Name', 'you@example.com', 'PASTE-THE-HASH', 'super_admin', NOW());
+```
+
+`seeders/dev/003_seed_admin.sql` creates a local test account
+(`admin@gensan-service-navigator.local` / `LocalDev-Password-2026!`). It is for development and the API
+tests only; never import it into a production database.
 
 ## Notes
 

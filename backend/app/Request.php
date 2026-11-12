@@ -27,7 +27,7 @@ class Request
 
         // Behind a proxy or CDN, REMOTE_ADDR is the proxy. Only trust a forwarded address when the
         // direct peer is one we listed, so a visitor cannot choose their own rate-limit key.
-        if (self::isTrusted($remote, $config['trusted_proxies'])) {
+        if (self::isTrustedProxy($remote, $config['trusted_proxies'])) {
             foreach (['CF-Connecting-IP', 'X-Forwarded-For'] as $name) {
                 $value = self::header($name);
                 if ($value === null || $value === '') {
@@ -44,7 +44,7 @@ class Request
     }
 
     /** @param string[] $trusted */
-    private static function isTrusted(string $ip, array $trusted): bool
+    public static function isTrustedProxy(string $ip, array $trusted): bool
     {
         foreach ($trusted as $entry) {
             if ($entry === $ip || (str_contains($entry, '/') && self::inCidr($ip, $entry))) {

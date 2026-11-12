@@ -102,6 +102,14 @@ class AgencyController
     public function uploadLogo(array $params): void
     {
         $admin = Auth::requireAdmin(self::EDITORS);
+
+        // Shared hosts sometimes ship PHP without GD. Fail with a clear message instead of a 500.
+        if (!function_exists('imagecreatetruecolor')) {
+            Response::error('Image uploads are not available on this server.', 503, [
+                'logo' => 'This server cannot process images. Contact the administrator.',
+            ]);
+        }
+
         $agency = $this->findOrFail((int) $params['id']);
         $image = $this->readUploadedImage($_FILES['logo'] ?? null);
 
@@ -122,8 +130,13 @@ class AgencyController
         if (!is_dir($logoDir) && !mkdir($logoDir, 0755, true) && !is_dir($logoDir)) {
             throw new \RuntimeException('Could not create the agency logo folder.');
         }
-        $fileName = $agency['slug'] . '-' . bin2hex(random_bytes(4)) . '.webp';
-        if (!imagewebp($logo, $logoDir . '/' . $fileName, 90)) {
+        $fileName = $agency['slug'] . '-' . bin2hex(random_bytes(4)) . '.' . $this->logoExtension();
+        $path = $logoDir . '/' . $fileName;
+        // WebP is smaller, but not every shared host builds GD with WebP support. PNG always works.
+        $saved = function_exists('imagewebp')
+            ? imagewebp($logo, $path, 90)
+            : imagepng($logo, $path, 9);
+        if (!$saved) {
             throw new \RuntimeException('Could not save the agency logo.');
         }
 
@@ -173,6 +186,12 @@ class AgencyController
             $invalid('This image could not be read. Try saving it as a PNG.');
         }
         return $image;
+    }
+
+    /** The file extension this server's GD can actually write. */
+    private function logoExtension(): string
+    {
+        return function_exists('imagewebp') ? 'webp' : 'png';
     }
 
     private function deleteLogoFile(?string $url): void

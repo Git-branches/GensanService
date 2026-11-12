@@ -34,7 +34,8 @@ class AdminUserController
         $v->failIfErrors();
 
         $pdo->prepare(
-            'INSERT INTO admins (name, email, password_hash, role, is_active) VALUES (:name, :email, :hash, :role, :active)'
+            'INSERT INTO admins (name, email, password_hash, role, is_active, password_changed_at)
+             VALUES (:name, :email, :hash, :role, :active, NOW())'
         )->execute($data + ['hash' => password_hash($password, PASSWORD_DEFAULT)]);
         $id = (int) $pdo->lastInsertId();
 
@@ -85,7 +86,8 @@ class AdminUserController
         $password = $v->password(Request::json()['password'] ?? null, 'password');
         $v->failIfErrors();
 
-        $pdo->prepare('UPDATE admins SET password_hash = :hash WHERE id = :id')
+        // Bumping the timestamp signs this account out everywhere it is already signed in.
+        $pdo->prepare('UPDATE admins SET password_hash = :hash, password_changed_at = NOW() WHERE id = :id')
             ->execute(['hash' => password_hash($password, PASSWORD_DEFAULT), 'id' => $id]);
 
         ActivityLogger::log((int) $actor['id'], 'admin.password_reset', 'admin', $id, ['email' => $target['email']]);

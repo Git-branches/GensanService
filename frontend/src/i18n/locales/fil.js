@@ -350,7 +350,7 @@ items: [
   },
   privacy: {
     pageTitle: 'Patakaran sa privacy',
-    updated: 'Huling na-update Nobyembre 5, 2026',
+    updated: 'Huling na-update Nobyembre 12, 2026',
     intro: 'Hindi kailangan ng account sa Andam GenSan, at kakaunti lang ang kinokolekta namin. Ipinaliwanag ng pahinang ito kung ano ang kinokolekta namin at bakit.',
     sections: [
       {
@@ -373,7 +373,14 @@ items: [
         heading: 'Kung magpapadala ka ng report',
         paragraphs: [
           'Itinatago ng form na "I-report ang maling impormasyon" ang dahilan na pinili mo, ang iyong mensahe, ang iyong email kung ibibigay mo, at ang iyong IP address. Ginagamit namin ang IP address para lang limitahan ang spam, at ginagamit namin ang iyong email kung kailangang magtanong ng follow-up ang aming mga editor.',
-          'Pakiusap, huwag isama ang mga ID number, password, OTP, o iba pang sensitibong detalye. Ang mga report ay makikita lang ng aming admin team. Wala pa kaming takdang iskedyul para sa pagbura ng mga ito.',
+          'Pakiusap, huwag isama ang mga ID number, password, OTP, o iba pang sensitibong detalye. Ang mga report ay makikita lang ng aming admin team. Ipinaliwanag sa susunod na seksyon kung gaano katagal namin ito itinatago.',
+        ],
+      },
+      {
+        heading: 'Gaano katagal namin itinatago ang impormasyon',
+        paragraphs: [
+          'Ang araw-araw na kabuuan ng mga pagtingin sa gabay, pagbisita sa pahina, at sagot kung nakatulong ba ay hindi nagpapakilala sa sinuman at itinatago bilang estadistika ng site.',
+          'Ang isang report ay binubura 12 buwan pagkatapos naming maresolba ito, o 24 na buwan pagkatapos itong ipadala kung hindi pa ito naresolba. Ang mga pagtatangkang mag-sign in ng admin, na may email at IP address, ay binubura pagkatapos ng 30 araw. Ang mga anonymous na counter ng rate limit ay binubura pagkatapos ng 2 araw. Ang log ng aktibidad ng admin, na nagtatala ng mga pagbabagong ginawa ng aming team, ay itinatago nang 24 na buwan.',
         ],
       },
       {

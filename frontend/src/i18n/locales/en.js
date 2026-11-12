@@ -350,7 +350,7 @@ items: [
   },
   privacy: {
     pageTitle: 'Privacy policy',
-    updated: 'Last updated November 5, 2026',
+    updated: 'Last updated November 12, 2026',
     intro: 'Andam GenSan does not need an account, and we collect as little as we can. This page explains what we collect and why.',
     sections: [
       {
@@ -373,7 +373,14 @@ items: [
         heading: 'If you send a report',
         paragraphs: [
           'The "Report incorrect information" form saves the reason you chose, your message, your email if you give one, and your IP address. We use the IP address only to limit spam, and we use your email only if our editors need to ask you a follow-up question.',
-          'Please do not include ID numbers, passwords, OTPs, or other sensitive details. Reports are visible only to our admin team. We do not yet have a fixed schedule for deleting them.',
+          'Please do not include ID numbers, passwords, OTPs, or other sensitive details. Reports are visible only to our admin team. The next section explains how long we keep them.',
+        ],
+      },
+      {
+        heading: 'How long we keep information',
+        paragraphs: [
+          'Daily totals of guide views, page visits, and helpful votes do not identify anyone and are kept as site statistics.',
+          'A report is deleted 12 months after we resolve it, or 24 months after it was sent if it is still unresolved. Admin sign-in attempts, which include an email and IP address, are deleted after 30 days. Anonymous rate-limit counters are deleted after 2 days. The admin activity log, which records changes made by our team, is kept for 24 months.',
         ],
       },
       {
