@@ -1,8 +1,9 @@
 -- Two City Government guides written from the City's Citizen's Charter: Business Permit Renewal and Health Certificate.
 --
 -- Read on 2026-11-05 from the charter PDFs linked on https://gensantos.gov.ph/?slug=citizen-s-charter.
--- Both guides are PUBLISHED but stay unverified (the site owner asked for them on 2026-11-05), so residents see a
--- "Not yet verified" badge until someone confirms them. verification_notes lists what each guide still needs.
+-- Both guides are PUBLISHED but start unverified (the site owner asked for them on 2026-11-05), so residents see a
+-- "Not yet verified" badge until someone confirms them. verification_notes lists what each guide still needs;
+-- seeder 017 marks both verified after the charter check on 2026-11-12.
 --
 -- Run after migrations through 021 and seeders 005 and 010. Safe to run more than once: a guide that already
 -- exists is left as it is.
