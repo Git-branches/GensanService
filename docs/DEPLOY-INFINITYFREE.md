@@ -42,7 +42,7 @@ the shell pages only.
 2. Open phpMyAdmin, select that database, and import in this order:
    - `database/schema.sql`
    - `database/seeders/001_seed_categories.sql` through
-     `database/seeders/015_seed_life_events.sql`, in numeric order
+     `database/seeders/017_verify_city_guides.sql`, in numeric order
 
 The migrations in `database/migrations/` are already folded into `schema.sql`. Only an older database
 needs them (see [database/README.md](../database/README.md)).

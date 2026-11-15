@@ -42,8 +42,9 @@ processing times match. What changed:
 - **Health certificate.** The charter confirms specimen acceptance from 8:00 am to 3:00 pm. The live
   booking site at <https://choappointment.lgugensan.com/> confirms online booking and says only 200
   online and 50 walk-in appointments are accepted each day; that limit is now in step 1. The charter
-  does not give the office address or hours, or say how specimens should be collected and packed, so
-  the City Health Office stays unverified.
+  does not give the office address or hours, or say how specimens should be collected and packed, and
+  the City Health Office's 2026 all-services charter (32 pages) does not either. The City Health
+  Office therefore stays unverified, and no office is linked to the guide yet.
 
 ## Office readiness
 

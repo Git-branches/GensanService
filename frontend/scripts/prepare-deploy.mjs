@@ -88,7 +88,7 @@ Upload the CONTENTS of htdocs/ into the site's htdocs folder over FTP, so the se
 Then, on the server:
 
 1. Create the database in the control panel, open phpMyAdmin, and import
-   database/schema.sql, then database/seeders/001 to 015 in order. Do NOT import
+   database/schema.sql, then database/seeders/001 to 017 in order. Do NOT import
    database/seeders/dev/003_seed_admin.sql: that account is for tests only.
 2. Create the first admin. Generate a bcrypt hash on your own computer:
      php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
