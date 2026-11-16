@@ -73,6 +73,11 @@ cpSync(backend, join(htdocs, 'backend'), {
   },
 })
 
+// backend/public is reached only through api/index.php on shared hosting. Its own .htaccess
+// replaces the parent's rewrite rules, so a direct /backend/public/... request would otherwise
+// run the API. Deny the whole folder in the deploy; PHP includes from api/index.php still work.
+writeFileSync(join(htdocs, 'backend', 'public', '.htaccess'), 'Require all denied\n')
+
 // Writable folders have to exist after an FTP upload, because FTP cannot create empty folders reliably.
 mkdirSync(join(htdocs, 'backend', 'storage', 'logs'), { recursive: true })
 
@@ -88,7 +93,7 @@ Upload the CONTENTS of htdocs/ into the site's htdocs folder over FTP, so the se
 Then, on the server:
 
 1. Create the database in the control panel, open phpMyAdmin, and import
-   database/schema.sql, then database/seeders/001 to 017 in order. Do NOT import
+   database/schema.sql, then database/seeders/001 to 018 in order. Do NOT import
    database/seeders/dev/003_seed_admin.sql: that account is for tests only.
 2. Create the first admin. Generate a bcrypt hash on your own computer:
      php -r "echo password_hash('YOUR-STRONG-PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"

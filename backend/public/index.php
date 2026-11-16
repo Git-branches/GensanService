@@ -60,4 +60,16 @@ Cors::handle();
 $router = new Router();
 require __DIR__ . '/../routes/api.php';
 
-$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+// frontend/public/.htaccess serves the sitemap, robots.txt, and crawler share pages at the site
+// root by rewriting them to the API. mod_rewrite keeps REQUEST_URI, so the router still sees the
+// original address. Point those requests at the routes they were rewritten to.
+$uri = $_SERVER['REQUEST_URI'] ?? '/';
+if ($path === '/sitemap.xml') {
+    $uri = '/api/sitemap.xml';
+} elseif ($path === '/robots.txt') {
+    $uri = '/api/robots.txt';
+} elseif (!str_starts_with($path, '/api') && isset($_GET['path'])) {
+    $uri = '/api/share';
+}
+
+$router->dispatch($_SERVER['REQUEST_METHOD'], $uri);

@@ -13,7 +13,9 @@ htdocs/backend/             the API code, refused over the web by backend/.htacc
 
 Everything in `backend/` except `public/uploads` is unreachable from the browser: `backend/.htaccess`
 returns 403 for `app/`, `config/`, `routes/`, `storage/`, `vendor/`, `tests/`, `composer.*`, and `.env`.
-Check this after uploading (step 6) — it holds your database password.
+`prepare-deploy` also writes a deny-all `.htaccess` into the deployed `backend/public/`, because that
+folder's own rewrite rules would otherwise let a direct request run the API. Check this after
+uploading (step 6) — it holds your database password.
 
 ## 1. Build the upload folder
 
@@ -42,7 +44,7 @@ the shell pages only.
 2. Open phpMyAdmin, select that database, and import in this order:
    - `database/schema.sql`
    - `database/seeders/001_seed_categories.sql` through
-     `database/seeders/017_verify_city_guides.sql`, in numeric order
+     `database/seeders/018_office_launch_details.sql`, in numeric order
 
 The migrations in `database/migrations/` are already folded into `schema.sql`. Only an older database
 needs them (see [database/README.md](../database/README.md)).

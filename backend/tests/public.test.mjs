@@ -152,9 +152,11 @@ test('the FAQ comes in each language and falls back to English', async () => {
   }
 })
 
-test('agency presence stays unconfirmed until someone sets it', async () => {
-  const agency = (await visitor.get('/agencies')).json.data[0]
-  assert.equal(agency.presence, 'unconfirmed')
+test('agency presence defaults to unconfirmed and rejects unknown values', async () => {
+  const plain = await editor.post('/admin/agencies', { name: `Agency ${stamp} Plain` })
+  assert.equal(plain.status, 201, JSON.stringify(plain.json))
+  const seeded = (await visitor.get('/agencies')).json.data
+  assert.equal(seeded.find((a) => a.name === `Agency ${stamp} Plain`).presence, 'unconfirmed')
 
   const created = await editor.post('/admin/agencies', { name: `Agency ${stamp}`, presence: 'physical_office' })
   assert.equal(created.status, 201, JSON.stringify(created.json))
@@ -194,4 +196,21 @@ test('public reads are cacheable and admin responses are not', async () => {
 
   const adminRead = await fetch(`${API}/admin/me`)
   assert.match(adminRead.headers.get('cache-control') ?? '', /no-store/)
+})
+
+test('the sitemap and robots file are served by the API', async () => {
+  const sitemap = await fetch(`${API}/sitemap.xml`)
+  assert.equal(sitemap.status, 200)
+  assert.match(sitemap.headers.get('content-type') ?? '', /xml/)
+  const xml = await sitemap.text()
+  assert.match(xml, /<urlset/)
+  assert.match(xml, /<loc>/)
+
+  const robots = await fetch(`${API}/robots.txt`)
+  assert.equal(robots.status, 200)
+  assert.match(robots.headers.get('content-type') ?? '', /text\/plain/)
+  const text = await robots.text()
+  assert.match(text, /User-agent: \*/)
+  assert.match(text, /Disallow: \/admin/)
+  assert.match(text, /Sitemap: .*\/sitemap\.xml/)
 })
