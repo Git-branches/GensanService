@@ -24,6 +24,9 @@ deploy
 *.sln
 *.sw?
 
+# Local database exports (contain admin hashes and activity data)
+gensan_service_navigator-*.sql
+
 # Backend (PHP)
 backend/vendor
 backend/.env
