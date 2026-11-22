@@ -118,6 +118,46 @@ accounts for staff.
 - Install the site on a phone and open a saved guide in airplane mode
 - `POST /api/maintenance/run` with the token returns counts (see [RUNBOOK.md](RUNBOOK.md#4-retention-and-the-maintenance-endpoint))
 
+### If `/api` answers 403 or 404 but the pages load
+
+Check three URLs in the browser:
+
+| URL | Expected | What a wrong answer means |
+|---|---|---|
+| `/api/uploads/agencies/<some-logo>.webp` | the image | The `api` folder itself is fine. |
+| `/api/index.php` | JSON or a JSON error | **403** with the line above working means `htdocs/api/.htaccess` is wrong. |
+| `/api/health` | JSON | **404** means the same: the rewrite rule is missing. |
+
+The usual cause is that the uploads rule (`<FilesMatch "\.(php…)$"> Require all denied`) was copied
+into `htdocs/api/.htaccess` instead of `htdocs/api/uploads/.htaccess`. With it in place every PHP
+file under `/api` is refused, so the front controller never runs, while images still load.
+
+Restore `htdocs/api/.htaccess` to exactly this:
+
+```apache
+# Front controller for the PHP API. Served at /api (see "Deployment" in the README).
+Options -Indexes
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+
+    # Never serve hidden files (e.g. .env if it were ever copied here).
+    RewriteRule (^|/)\. - [F,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+```
+
+The `.env` file must be `htdocs/backend/.env`, not `htdocs/.env`: `backend/public/index.php` loads it
+from `backend/`. A file in the web root is ignored, and the API then falls back to the `root` user and
+stops with "The production database user must not be root."
+
 ## 7. Monitoring and housekeeping
 
 The free plan does none of this for you. Follow [RUNBOOK.md](RUNBOOK.md):
